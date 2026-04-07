@@ -110,8 +110,8 @@ export default function Login() {
     setLoading(true);
     setProgress(0);
 
-    // Increment progress over 3.5s (Reduced from 6s for better UX)
-    const duration = 3500;
+    // Increment progress over 5s
+    const duration = 5000;
     const interval = 40;
     const steps = duration / interval;
     const increment = 100 / steps;

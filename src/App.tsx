@@ -135,8 +135,8 @@ function NavigationLoader() {
         return;
       }
 
-      // Standard Portal Navigation (snappy but premium)
-      const duration = 800; // Fast-track transition
+      // Standard Portal Navigation
+      const duration = 5000; // 5-second transition
 
       setLoading(true);
       setProgress(0);

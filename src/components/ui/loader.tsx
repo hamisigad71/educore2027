@@ -38,7 +38,7 @@ const SPIN = {
 
 function HexMark({ size }: { size: number }) {
   return (
-    <LogoIcon className="w-full h-full" style={{ width: size, height: size }} />
+    <LogoIcon src="/loader,logo.png" className="w-full h-full" style={{ width: size, height: size }} />
   );
 }
 
