@@ -14,9 +14,8 @@ import { cn } from "@/lib/utils";
 
 // lucide
 import {
-  Home, Monitor, Users, Settings,
-  Eye, EyeOff, Loader2, CheckCircle2,
-  ArrowRight, Shield, BookOpen, GraduationCap,
+  Users, Eye, EyeOff, Loader2, CheckCircle2,
+  ArrowRight, BookOpen, GraduationCap,
   Wrench, TrendingUp, Globe, Award, Crown,
 } from "lucide-react";
 
@@ -138,7 +137,7 @@ export default function Login() {
 
           {/* Logo */}
           <div className="relative z-10 mb-12">
-            <LogoFull src="/draklogo.png" className="h-[120px] w-auto" />
+            <LogoFull src="/draklogo.png" className="h-[110px] w-auto" />
           </div>
 
           {/* Hero */}
@@ -208,7 +207,7 @@ export default function Login() {
 
             {/* Mobile logo */}
             <div className="flex lg:hidden items-center justify-center mb-10">
-              <LogoFull src="/draklogo.png" className="h-[120px] w-auto" />
+              <LogoFull src="/logo.png" className="h-[110px] w-auto" />
             </div>
 
             {/* Heading */}
