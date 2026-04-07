@@ -28,17 +28,17 @@ import { cn } from "@/lib/utils";
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 function gradeLabel(score: number) {
-  if (score >= 80) return { label: "A", cls: "bg-emerald-50 text-emerald-700 border-emerald-200" };
-  if (score >= 70) return { label: "B", cls: "bg-indigo-50 text-indigo-700 border-indigo-200" };
-  if (score >= 60) return { label: "C", cls: "bg-amber-50 text-amber-700 border-amber-200" };
-  return { label: "D", cls: "bg-rose-50 text-rose-700 border-rose-200" };
+  if (score >= 80) return { label: "A", cls: "bg-indigo-600 text-white border-indigo-600 shadow-sm shadow-indigo-100" };
+  if (score >= 70) return { label: "B", cls: "bg-slate-100 text-slate-700 border-slate-200" };
+  if (score >= 60) return { label: "C", cls: "bg-slate-50 text-slate-500 border-slate-100" };
+  return { label: "D", cls: "bg-rose-50 text-rose-600 border-rose-100" };
 }
 
 function performanceLabel(score: number) {
-  if (score >= 80) return { text: "Excellent", color: "text-emerald-600" };
-  if (score >= 70) return { text: "Good", color: "text-indigo-600" };
-  if (score >= 60) return { text: "Average", color: "text-amber-600" };
-  return { text: "Needs Support", color: "text-rose-600" };
+  if (score >= 80) return { text: "Elite", color: "text-indigo-600" };
+  if (score >= 70) return { text: "Good", color: "text-slate-600" };
+  if (score >= 60) return { text: "Average", color: "text-slate-500" };
+  return { text: "Support Needed", color: "text-rose-500" };
 }
 
 // ─── Circular Progress ───────────────────────────────────────────────────────
@@ -137,72 +137,69 @@ export default function PortalDashboard() {
     <div className="space-y-6">
 
       {/* ── Welcome Banner ──────────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-2xl bg-white border border-slate-200 p-7 text-slate-900 shadow-sm">
-        {/* Decorative orbs */}
-        <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-indigo-50 pointer-events-none" />
-        <div className="absolute -bottom-10 left-1/3 w-40 h-40 rounded-full bg-violet-50/50 pointer-events-none" />
-        <div className="absolute top-0 right-0 bottom-0 w-1/3 opacity-[0.05] pointer-events-none"
-          style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%236366f1' fill-opacity='1'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E\")" }}
+      <div className="relative overflow-hidden rounded-[24px] bg-white border border-slate-200/60 p-6 sm:p-8 text-slate-900 shadow-sm">
+        {/* Modern decorative patterns */}
+        <div className="absolute top-0 right-0 h-full w-1/3 opacity-[0.03] pointer-events-none"
+          style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234338ca' fill-opacity='1'%3E%3Cpath d='M0 0h20L0 20z'/%3E%3C/g%3E%3C/svg%3E\")" }}
         />
+        <div className="absolute -top-24 -left-24 w-64 h-64 rounded-full bg-indigo-50/40 pointer-events-none blur-3xl" />
+        <div className="absolute -bottom-16 right-1/4 w-48 h-48 rounded-full bg-violet-50/50 pointer-events-none blur-2xl" />
 
-        <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-6">
-          {/* Avatar + status */}
+        <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
+          {/* Avatar + high-end status ring */}
           <div className="relative shrink-0">
-            <Avatar className="h-20 w-20 border-[3px] border-white shadow-xl ring-4 ring-indigo-50">
-              <AvatarImage src={student.photo} className="object-cover" />
-              <AvatarFallback className="text-xl font-bold text-indigo-700 bg-indigo-50">
-                {student.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center">
-              <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
+            <div className="p-1 px-1.5 rounded-full bg-white shadow-xl shadow-indigo-100/50 ring-1 ring-slate-100">
+              <Avatar className="h-20 w-20 sm:h-24 sm:w-24 border-2 border-white">
+                <AvatarImage src={student.photo} className="object-cover" />
+                <AvatarFallback className="text-2xl font-bold text-indigo-700 bg-indigo-50">
+                  {student.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+            <div className="absolute bottom-1 right-2 h-5 w-5 rounded-full bg-emerald-500 border-[3px] border-white shadow-lg flex items-center justify-center">
+              <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
             </div>
           </div>
 
-          {/* Info */}
-          <div className="flex-1 text-center md:text-left">
-            <p className="text-indigo-600 text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5">
-              Student Portal · Dashboard
-            </p>
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight mb-3">
-              Hello, {student.name.split(" ")[0]} 👋
+          {/* Info context */}
+          <div className="flex-1 text-center md:text-left pt-1">
+            <div className="inline-flex items-center gap-2 mb-3">
+              <span className="h-[1px] w-4 bg-indigo-200 hidden md:block" />
+              <p className="text-indigo-600 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.25em]">
+                Student Portal
+              </p>
+            </div>
+            <h2 className="text-[28px] sm:text-[34px] font-bold text-slate-900 tracking-tight leading-tight mb-4">
+              Hello, <span className="text-indigo-600">{student.name.split(" ")[0]}</span> 👋
             </h2>
-            <div className="flex flex-wrap justify-center md:justify-start gap-2">
-              <Badge variant="secondary" className="bg-slate-100 text-slate-600 border-0 py-1 px-2.5 text-[10px] font-bold uppercase tracking-widest">
+            
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5">
+              <Badge variant="secondary" className="bg-slate-50 text-slate-500 border border-slate-100 h-6 px-3 text-[10px] font-bold uppercase tracking-widest shadow-sm">
                 {student.klass}
               </Badge>
-              <Badge variant="secondary" className="bg-slate-100 text-slate-600 border-0 py-1 px-2.5 text-[10px] font-bold uppercase tracking-widest">
+              <Badge variant="secondary" className="bg-slate-50 text-slate-500 border border-slate-100 h-6 px-3 text-[10px] font-bold uppercase tracking-widest shadow-sm">
                 ID: {student.admission}
               </Badge>
-              <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 border py-1 px-2.5 text-[10px] font-bold uppercase tracking-widest">
+              <Badge className="bg-emerald-50 text-emerald-700 border-emerald-100 border h-6 px-3 text-[10px] font-bold uppercase tracking-widest shadow-sm">
                 Active Enrollment
               </Badge>
             </div>
           </div>
 
-          {/* Progress ring */}
-          <div className="hidden xl:flex flex-col items-center gap-1 shrink-0">
-            <CircularProgress value={avgScore} size={80} stroke={6} color="#4F46E5">
-              <div className="text-center">
-                <p className="text-lg font-bold text-indigo-600 leading-none">{avgScore}</p>
-                <p className="text-[9px] text-slate-400 font-bold uppercase mt-0.5">Avg</p>
-              </div>
+          {/* Performance Insight (Desktop Only) */}
+          <div className="hidden lg:flex flex-col items-center justify-center gap-1.5 bg-slate-50/50 rounded-2xl p-4 border border-slate-100/50 shrink-0 self-center">
+            <CircularProgress value={avgScore} size={64} stroke={5} color="#4F46E5">
+              <span className="text-sm font-bold text-slate-800">{avgScore}%</span>
             </CircularProgress>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Performance</p>
+            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Score Avg</p>
           </div>
 
-          {/* Quick actions */}
-          <div className="hidden lg:flex flex-col gap-2 shrink-0">
+          {/* Quick Connect (Desktop Only) */}
+          <div className="hidden md:flex lg:flex-col gap-2 shrink-0 self-center">
             <Button size="sm"
               onClick={() => navigate("/parent-and-student-portal/results")}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm text-xs h-9 gap-1.5 px-5">
-              <BarChartIcon /> View Results
-            </Button>
-            <Button size="sm"
-              variant="outline"
-              onClick={() => navigate("/parent-and-student-portal/fees")}
-              className="bg-white border-slate-200 text-slate-600 hover:bg-slate-50 text-xs h-9 gap-1.5 px-5">
-              <CreditCard size={12} /> Pay Fees
+              className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200 text-[11px] font-bold h-9 gap-2 px-6 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]">
+              View Results <ArrowUpRight size={14} />
             </Button>
           </div>
         </div>
@@ -212,29 +209,29 @@ export default function PortalDashboard() {
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
         <StatCard
           label="Attendance Rate" value={`${student.attendance}%`} subText="Present this term"
-          icon={Calendar} iconBg="bg-emerald-50 border-emerald-100" iconColor="text-emerald-600"
-          progress={student.attendance} progressColor="[&>div]:bg-emerald-500"
+          icon={Calendar} iconBg="bg-slate-50 border-slate-100" iconColor="text-indigo-600"
+          progress={student.attendance} progressColor="[&>div]:bg-indigo-600"
           trend={{ val: "+2%", up: true }}
         />
         <StatCard
           label="Average Score" value={`${avgScore}%`} subText="All subjects · Term 2"
-          icon={Trophy} iconBg="bg-indigo-50 border-indigo-100" iconColor="text-indigo-600"
-          progress={avgScore} progressColor="[&>div]:bg-indigo-500"
+          icon={Trophy} iconBg="bg-slate-50 border-slate-100" iconColor="text-indigo-600"
+          progress={avgScore} progressColor="[&>div]:bg-indigo-600"
           trend={{ val: avgScore >= 70 ? "+5%" : "-3%", up: avgScore >= 70 }}
         />
         <StatCard
           label="Learning Group" value={student.klass} subText="Current active class"
-          icon={Layers} iconBg="bg-purple-50 border-purple-100" iconColor="text-purple-600"
+          icon={Layers} iconBg="bg-slate-50 border-slate-100" iconColor="text-indigo-600"
         />
         <StatCard
           label="Fees Status"
           value={feesCleared ? "Cleared" : currency(student.balance)}
-          subText={`Paid this term: ${currency(paid)}`}
+          subText={`Paid: ${currency(paid)}`}
           icon={CreditCard}
-          iconBg={feesCleared ? "bg-emerald-50 border-emerald-100" : "bg-amber-50 border-amber-100"}
-          iconColor={feesCleared ? "text-emerald-600" : "text-amber-600"}
+          iconBg="bg-slate-50 border-slate-100"
+          iconColor={feesCleared ? "text-indigo-600" : "text-slate-600"}
           progress={Math.round((paid / (paid + student.balance)) * 100)}
-          progressColor={feesCleared ? "[&>div]:bg-emerald-500" : "[&>div]:bg-amber-500"}
+          progressColor="[&>div]:bg-indigo-600"
         />
       </div>
 
@@ -306,9 +303,8 @@ export default function PortalDashboard() {
                         <div className="space-y-1">
                           <Progress value={m.score}
                             className={cn("h-1.5 bg-slate-100",
-                              m.score >= 80 ? "[&>div]:bg-emerald-500"
-                              : m.score >= 65 ? "[&>div]:bg-indigo-500"
-                              : "[&>div]:bg-amber-500"
+                              m.score >= 80 ? "[&>div]:bg-indigo-600"
+                              : "[&>div]:bg-indigo-500/60"
                             )}
                           />
                           <p className="text-[10px] text-slate-400">{m.score}%</p>
@@ -365,30 +361,30 @@ export default function PortalDashboard() {
             </CardHeader>
             <CardContent className="p-4 space-y-3">
               {student.balance > 0 && (
-                <div className="flex gap-3 p-3.5 rounded-xl bg-amber-50 border border-amber-100">
-                  <AlertCircle size={14} className="text-amber-500 shrink-0 mt-0.5" />
+                <div className="flex gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                  <AlertCircle size={14} className="text-slate-400 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-semibold text-amber-900">Fee Balance Due</p>
-                    <p className="text-[11px] text-amber-700/80 mt-0.5 leading-relaxed">
+                    <p className="text-xs font-semibold text-slate-900 border-l-2 border-indigo-500 pl-2">Fee Balance Due</p>
+                    <p className="text-[11px] text-slate-500 mt-1 leading-relaxed pl-2">
                       {currency(student.balance)} remaining. Clear before end of term.
                     </p>
                   </div>
                 </div>
               )}
-              <div className="flex gap-3 p-3.5 rounded-xl bg-indigo-50 border border-indigo-100">
+              <div className="flex gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
                 <Calendar size={14} className="text-indigo-500 shrink-0 mt-0.5" />
                 <div>
                   <p className="text-xs font-semibold text-indigo-900">PTA General Meeting</p>
-                  <p className="text-[11px] text-indigo-700/80 mt-0.5 leading-relaxed">
+                  <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
                     Saturday, 9:00 AM · Main Hall
                   </p>
                 </div>
               </div>
-              <div className="flex gap-3 p-3.5 rounded-xl bg-emerald-50 border border-emerald-100">
-                <CheckCircle2 size={14} className="text-emerald-500 shrink-0 mt-0.5" />
+              <div className="flex gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                <CheckCircle2 size={14} className="text-slate-400 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-semibold text-emerald-900">Term 2 Finals</p>
-                  <p className="text-[11px] text-emerald-700/80 mt-0.5 leading-relaxed">
+                  <p className="text-xs font-semibold text-slate-900">Term 2 Finals</p>
+                  <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
                     Begins 15th October. Timetables posted.
                   </p>
                 </div>

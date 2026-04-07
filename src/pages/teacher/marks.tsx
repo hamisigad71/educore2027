@@ -64,7 +64,7 @@ export default function TeacherMarks() {
             </Select>
           </div>
           <div className="space-y-1.5">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Examination / Assessment</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">ExLovethtion / Assessment</p>
             <Select value={exam} onValueChange={setExam}>
               <SelectTrigger className="w-[220px] h-10 border-slate-200 bg-white shadow-sm">
                 <SelectValue />
