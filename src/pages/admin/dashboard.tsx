@@ -19,7 +19,7 @@ import {
 import {
   Users, Wallet, GraduationCap, Calendar, 
   TrendingUp, ArrowUpRight, ArrowDownRight, Zap,
-  Search, Bell, MoreHorizontal, CheckCircle2, Clock
+  Search, MoreHorizontal, CheckCircle2, Clock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -87,10 +87,6 @@ export default function AdminDashboard() {
         actions={
           <div className="flex items-center gap-2">
             <Badge className="bg-indigo-600 text-[10px] h-6 px-2.5 font-bold uppercase tracking-widest border-0">Live Updates</Badge>
-            <div className="h-8 w-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 cursor-pointer bg-white shadow-sm transition-colors relative">
-               <Bell size={14} />
-               <span className="absolute top-1 right-1 h-2 w-2 bg-rose-500 rounded-full border-2 border-white" />
-            </div>
           </div>
         }
       />

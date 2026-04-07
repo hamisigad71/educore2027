@@ -1,6 +1,7 @@
-import React from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import Loader from "@/components/ui/loader";
 
 // Pages
 import Login from "@/pages/login";
@@ -111,6 +112,88 @@ function AppRoutes() {
   );
 }
 
+/**
+ * Global Navigation Loader
+ * Triggers on every route change to give a "premium" transition feel.
+ */
+function NavigationLoader() {
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [prevPath, setPrevPath] = useState(location.pathname);
+
+  useEffect(() => {
+    // Trigger on route change — Standard transition should be snappier
+    if (location.pathname !== prevPath) {
+      const fromLogin = prevPath === "/login" || prevPath === "/";
+      const toLogin = location.pathname === "/login";
+      
+      setPrevPath(location.pathname);
+
+      // Skip the global loader if we just came from Login (Login has its own 6s timer)
+      // or if we are going to Login.
+      if (fromLogin || toLogin) {
+        return;
+      }
+
+      // Standard Portal Navigation (snappy but premium)
+      const duration = 800; // Fast-track transition
+
+      setLoading(true);
+      setProgress(0);
+
+      const interval = 20;
+      const increment = 100 / (duration / interval);
+
+      const timer = setInterval(() => {
+        setProgress(p => Math.min(100, p + increment));
+      }, interval);
+
+      const navTimer = setTimeout(() => {
+        setLoading(false);
+        clearInterval(timer);
+      }, duration);
+
+      return () => {
+        clearInterval(timer);
+        clearTimeout(navTimer);
+      };
+    }
+  }, [location.pathname, prevPath]);
+
+  // Initial app boot
+  useEffect(() => {
+    setLoading(true);
+    setProgress(0);
+    const duration = 1800; // Snappy premium splash
+    const interval = 30;
+    const increment = 100 / (duration / interval);
+    const timer = setInterval(() => setProgress(p => Math.min(100, p + increment)), interval);
+    const bootTimer = setTimeout(() => {
+      setLoading(false);
+      clearInterval(timer);
+    }, duration);
+    return () => {
+      clearInterval(timer);
+      clearTimeout(bootTimer);
+    };
+  }, []);
+
+  if (!loading) return null;
+
+  return (
+    <Loader 
+      fullScreen 
+      variant="progress"
+      text="Updating Workspace" 
+      subText="Fetching fresh data for your session..."
+      size="lg"
+      progress={progress}
+      steps={["Syncing", "Verifying", "Optimizing", "Ready"]}
+    />
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -120,6 +203,7 @@ export default function App() {
             * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }
             :root { color-scheme: light; }
           `}</style>
+          <NavigationLoader />
           <AppRoutes />
         </div>
       </AuthProvider>

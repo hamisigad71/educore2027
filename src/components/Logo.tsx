@@ -42,9 +42,17 @@ const LOGO_STYLES = `
  * LogoFull — full logo image (icon + EduCore text)
  * Use on the login page and splash screens
  */
-export function LogoFull({ src = LOGO_SRC, className = "h-[40px] w-auto" }: { src?: string; className?: string }) {
+export function LogoFull({ 
+  src = LOGO_SRC, 
+  className = "h-[40px] w-auto",
+  style
+}: { 
+  src?: string; 
+  className?: string; 
+  style?: React.CSSProperties 
+}) {
   return (
-    <div className={cn("relative overflow-hidden inline-block shrink-0", className)}>
+    <div className={cn("relative overflow-hidden inline-block shrink-0", className)} style={style}>
       <style>{LOGO_STYLES}</style>
       <img
         src={src}
@@ -61,9 +69,17 @@ export function LogoFull({ src = LOGO_SRC, className = "h-[40px] w-auto" }: { sr
  * LogoIcon — icon portion of the logo, cropped to the top graphic part
  * Used in compact spaces: sidebar header, topbar
  */
-export function LogoIcon({ src = LOGO_SRC, className = "h-[40px] w-auto" }: { src?: string; className?: string }) {
+export function LogoIcon({ 
+  src = LOGO_SRC, 
+  className = "h-[40px] w-auto",
+  style
+}: { 
+  src?: string; 
+  className?: string; 
+  style?: React.CSSProperties 
+}) {
   return (
-    <div className={cn("relative overflow-hidden inline-block shrink-0", className)}>
+    <div className={cn("relative overflow-hidden inline-block shrink-0", className)} style={style}>
       <style>{LOGO_STYLES}</style>
       <img
         src={src}

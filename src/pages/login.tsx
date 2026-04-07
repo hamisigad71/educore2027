@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useAuth, Role } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { LogoFull } from "@/components/Logo";
+import { LogoFull, LogoIcon } from "@/components/Logo";
+import Loader, { ButtonLoader } from "@/components/ui/loader";
 
 // shadcn/ui
 import { Button } from "@/components/ui/button";
@@ -14,9 +15,9 @@ import { cn } from "@/lib/utils";
 
 // lucide
 import {
-  Users, Eye, EyeOff, Loader2, CheckCircle2,
+  Users, Eye, EyeOff, CheckCircle2,
   ArrowRight, BookOpen, GraduationCap,
-  Wrench, TrendingUp, Globe, Award, Crown,
+  Wrench, TrendingUp, Globe, Award, ShieldCheck,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -38,7 +39,7 @@ const roles: RoleConfig[] = [
     role: "admin",
     label: "Administrator",
     desc: "Full system access — students, fees, staff, reports",
-    icon: <Crown size={15} />,
+    icon: <ShieldCheck size={15} />,
     iconBg: "bg-indigo-50",
     iconColor: "text-indigo-600",
     accentColor: "border-indigo-500 bg-indigo-50/60",
@@ -99,6 +100,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const selectedConfig = roles.find((r) => r.role === selected);
   const emailValue = selected ? `${selected}@shule.go.ke` : "";
@@ -106,7 +108,20 @@ export default function Login() {
   function handleLogin() {
     if (!selected || loading) return;
     setLoading(true);
+    setProgress(0);
+
+    // Increment progress over 3.5s (Reduced from 6s for better UX)
+    const duration = 3500;
+    const interval = 40;
+    const steps = duration / interval;
+    const increment = 100 / steps;
+    
+    const timer = setInterval(() => {
+      setProgress(prev => Math.min(100, prev + increment));
+    }, interval);
+
     setTimeout(() => {
+      clearInterval(timer);
       login(selected);
       const routeMap: Record<string, string> = {
         admin:   "/admin/dashboard",
@@ -115,7 +130,7 @@ export default function Login() {
         staff:   "/staff/dashboard",
       };
       navigate(routeMap[selected]);
-    }, 900);
+    }, duration);
   }
 
   return (
@@ -332,7 +347,7 @@ export default function Login() {
               )}
             >
               {loading ? (
-                <><Loader2 size={15} className="mr-2 animate-spin" />Signing in…</>
+                <><ButtonLoader className="mr-2" />Signing in…</>
               ) : selected ? (
                 <>Sign in as {selectedConfig?.label}<ArrowRight size={14} className="ml-2" /></>
               ) : (
@@ -374,6 +389,19 @@ export default function Login() {
             </p>
           </div>
         </main>
+
+        {/* Branded Loader Overlay */}
+        {loading && (
+          <Loader 
+            fullScreen 
+            variant="progress"
+            text="Securing your session" 
+            subText="Bright Futures Academy · School Management System"
+            size="lg"
+            progress={progress}
+            steps={["Authenticating", "Loading Environment", "Fetching Modules", "Syncing Data", "Ready"]}
+          />
+        )}
       </div>
     </>
   );
