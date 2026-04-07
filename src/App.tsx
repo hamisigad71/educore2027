@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import Loader from "@/components/ui/loader";
 
 // Pages
+import Home from "@/pages/home";
 import Login from "@/pages/login";
 
 // Admin
@@ -106,8 +107,8 @@ function AppRoutes() {
       </Route>
 
       {/* Fallback */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={user ? <Navigate to={`/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : user.role === "parent" ? "parent-and-student-portal" : "staff"}/dashboard`} replace /> : <Home />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
