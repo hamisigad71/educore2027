@@ -27,18 +27,18 @@ function TeacherStatCard({
 }) {
   return (
     <Card className="shadow-sm border-slate-200/80">
-      <CardContent className="p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center border", color)}>
-            <Icon size={18} />
+      <CardContent className="p-3.5 sm:p-5">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <div className={cn("h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl flex items-center justify-center border", color)}>
+            <Icon size={14} className="sm:size-[18px]" />
           </div>
-          <div className="w-16">
+          <div className="w-12 sm:w-16">
             <Sparkline data={sparkData} />
           </div>
         </div>
-        <p className="text-2xl font-bold text-slate-900 tracking-tight leading-none">{value}</p>
-        <p className="text-[13px] font-medium text-slate-500 mt-2">{label}</p>
-        <p className="text-[10px] text-slate-400 mt-1 font-medium italic">{subText}</p>
+        <p className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-none">{value}</p>
+        <p className="text-[11px] sm:text-[13px] font-medium text-slate-500 mt-2">{label}</p>
+        <p className="text-[9px] sm:text-[10px] text-slate-400 mt-1 font-medium italic leading-tight">{subText}</p>
       </CardContent>
     </Card>
   );
@@ -61,7 +61,7 @@ export default function TeacherDashboard() {
       />
 
       {/* Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <TeacherStatCard 
           label="Assigned Classes" value={teacher.classes.length} subText={teacher.classes.join(", ")}
           icon={BookOpen} color="bg-indigo-50 text-indigo-600 border-indigo-100" sparkData={[2, 2, 3, 3, 3]} />

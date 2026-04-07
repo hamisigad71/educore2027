@@ -31,31 +31,31 @@ const initials = (name: string) =>
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 
 function DashboardStatCard({
-  label, value, sub, color, icon: Icon, trend, trendDir
+  label, value, subText, color, icon: Icon, trend, trendDir
 }: {
   label: string; value: string | number; subText: string; color: string;
   icon: any; trend?: string; trendDir?: 'up' | 'down';
 }) {
   return (
     <Card className="shadow-sm border-slate-200/80">
-      <CardContent className="p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center border", color)}>
-            <Icon size={18} />
+      <CardContent className="p-3.5 sm:p-5">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <div className={cn("h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl flex items-center justify-center border", color)}>
+            <Icon size={14} className="sm:size-[18px]" />
           </div>
           {trend && (
             <div className={cn(
-              "flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-full border",
+              "flex items-center gap-0.5 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0 sm:py-0.5 rounded-full border",
               trendDir === 'up' ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-rose-50 text-rose-600 border-rose-100"
             )}>
-              {trendDir === 'up' ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}
+              {trendDir === 'up' ? <ArrowUpRight size={9} className="sm:size-[10px]" /> : <ArrowDownRight size={9} className="sm:size-[10px]" />}
               {trend}
             </div>
           )}
         </div>
-        <p className="text-2xl font-bold text-slate-900 tracking-tight leading-none">{value}</p>
-        <p className="text-[13px] font-medium text-slate-500 mt-2">{label}</p>
-        <div className="mt-4">
+        <p className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-none">{value}</p>
+        <p className="text-[11px] sm:text-[13px] font-medium text-slate-500 mt-2">{label}</p>
+        <div className="mt-2 sm:mt-4 overflow-hidden -mx-2 h-8">
           <Sparkline data={[12, 14, 13, 16, 18, 17, 20, 22, 21, 24]} className={trendDir === 'down' ? "text-rose-500" : "text-indigo-500"} />
         </div>
       </CardContent>
@@ -96,7 +96,7 @@ export default function AdminDashboard() {
       />
 
       {/* Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <DashboardStatCard label="Total Enrollment" value={totalStudents} subText="+12 this term" 
           icon={Users} color="bg-indigo-50 text-indigo-600 border-indigo-100" trend="4.2%" trendDir="up" />
         <DashboardStatCard label="Fees Collected" value={currency(feesCollected)} subText="92% of target" 
