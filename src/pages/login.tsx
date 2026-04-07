@@ -136,11 +136,9 @@ export default function Login() {
           <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-violet-600/10 pointer-events-none" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-indigo-900/20 pointer-events-none" />
 
-          {/* Logo on white card */}
+          {/* Logo */}
           <div className="relative z-10 mb-12">
-            <div className="inline-flex bg-white rounded-2xl px-6 py-3 shadow-2xl shadow-black/30">
-              <LogoFull className="h-[38px] w-auto" />
-            </div>
+            <LogoFull src="/draklogo.png" className="h-[120px] w-auto" />
           </div>
 
           {/* Hero */}
@@ -210,7 +208,7 @@ export default function Login() {
 
             {/* Mobile logo */}
             <div className="flex lg:hidden items-center justify-center mb-10">
-              <LogoFull className="h-21 w-auto" />
+              <LogoFull src="/draklogo.png" className="h-[120px] w-auto" />
             </div>
 
             {/* Heading */}

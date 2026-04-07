@@ -42,12 +42,12 @@ const LOGO_STYLES = `
  * LogoFull — full logo image (icon + EduCore text)
  * Use on the login page and splash screens
  */
-export function LogoFull({ className = "h-[40px] w-auto" }: { className?: string }) {
+export function LogoFull({ src = LOGO_SRC, className = "h-[40px] w-auto" }: { src?: string; className?: string }) {
   return (
     <div className={cn("relative overflow-hidden inline-block shrink-0", className)}>
       <style>{LOGO_STYLES}</style>
       <img
-        src={LOGO_SRC}
+        src={src}
         alt="EduCore"
         className="h-full w-auto"
         style={{ objectFit: "contain" }}
@@ -61,12 +61,12 @@ export function LogoFull({ className = "h-[40px] w-auto" }: { className?: string
  * LogoIcon — icon portion of the logo, cropped to the top graphic part
  * Used in compact spaces: sidebar header, topbar
  */
-export function LogoIcon({ className = "h-[40px] w-auto" }: { className?: string }) {
+export function LogoIcon({ src = LOGO_SRC, className = "h-[40px] w-auto" }: { src?: string; className?: string }) {
   return (
     <div className={cn("relative overflow-hidden inline-block shrink-0", className)}>
       <style>{LOGO_STYLES}</style>
       <img
-        src={LOGO_SRC}
+        src={src}
         alt="EduCore"
         className="h-full w-auto"
         style={{ objectFit: "contain", objectPosition: "top center" }}
