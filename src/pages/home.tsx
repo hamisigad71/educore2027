@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Login from "./login";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { 
   ShieldCheck, 
@@ -492,7 +493,14 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-white selection:bg-indigo-100 selection:text-indigo-900">
+    <>
+      {/* Mobile Login View */}
+      <div className="md:hidden block">
+        <Login />
+      </div>
+
+      {/* Desktop Homepage */}
+      <div className="hidden md:block min-h-screen bg-white selection:bg-indigo-100 selection:text-indigo-900">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800;9..40,900&family=DM+Serif+Display:ital@0;1&display=swap');
         * { font-family: 'DM Sans', sans-serif; }
@@ -1431,5 +1439,6 @@ export default function Home() {
         </div>
       </footer>
     </div>
+    </>
   );
 }

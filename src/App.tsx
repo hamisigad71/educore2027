@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import Loader from "@/components/ui/loader";
 
@@ -121,18 +121,16 @@ function NavigationLoader() {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [prevPath, setPrevPath] = useState(location.pathname);
+  const prevPathRef = useRef(location.pathname);
 
   useEffect(() => {
     // Trigger on route change — Standard transition should be snappier
-    if (location.pathname !== prevPath) {
-      const fromLogin = prevPath === "/login" || prevPath === "/";
+    if (location.pathname !== prevPathRef.current) {
+      const fromLogin = prevPathRef.current === "/login" || prevPathRef.current === "/";
       const toLogin = location.pathname === "/login";
       
-      setPrevPath(location.pathname);
+      prevPathRef.current = location.pathname;
 
-      // Skip the global loader if we just came from Login (Login has its own 6s timer)
-      // or if we are going to Login.
       if (fromLogin || toLogin) {
         return;
       }
@@ -158,9 +156,10 @@ function NavigationLoader() {
       return () => {
         clearInterval(timer);
         clearTimeout(navTimer);
+        setLoading(false);
       };
     }
-  }, [location.pathname, prevPath]);
+  }, [location.pathname]);
 
   // Initial app boot
   useEffect(() => {
