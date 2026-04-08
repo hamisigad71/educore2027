@@ -17,7 +17,8 @@ import { cn } from "@/lib/utils";
 import {
   Users, Eye, EyeOff, CheckCircle2,
   ArrowRight, BookOpen, GraduationCap,
-  Wrench, TrendingUp, Globe, Award, ShieldCheck,
+  Wrench, TrendingUp, Globe, Award, ShieldCheck, School,
+  Landmark, Stethoscope, Activity, Shield, Bus, Package
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -38,38 +39,38 @@ const roles: RoleConfig[] = [
   {
     role: "admin",
     label: "Administrator",
-    desc: "Full system access — students, fees, staff, reports",
-    icon: <ShieldCheck size={15} />,
+    desc: "Full system access & reports",
+    icon: <ShieldCheck size={18} />,
     iconBg: "bg-indigo-50",
     iconColor: "text-indigo-600",
-    accentColor: "border-indigo-500 bg-indigo-50/60",
+    accentColor: "bg-indigo-50 ring-2 ring-indigo-500/20",
   },
   {
     role: "teacher",
     label: "Teacher",
-    desc: "Enter marks, take attendance, manage classes",
-    icon: <BookOpen size={15} />,
+    desc: "Marks, attendance & classes",
+    icon: <BookOpen size={18} />,
     iconBg: "bg-sky-50",
     iconColor: "text-sky-600",
-    accentColor: "border-sky-500 bg-sky-50/60",
+    accentColor: "bg-sky-50 ring-2 ring-sky-500/20",
   },
   {
     role: "parent",
     label: "Parent / Student",
-    desc: "View results, fees balance, attendance reports",
-    icon: <GraduationCap size={15} />,
+    desc: "Results, fees & attendance",
+    icon: <GraduationCap size={18} />,
     iconBg: "bg-emerald-50",
     iconColor: "text-emerald-600",
-    accentColor: "border-emerald-500 bg-emerald-50/60",
+    accentColor: "bg-emerald-50 ring-2 ring-emerald-500/20",
   },
   {
     role: "staff",
     label: "Staff / Worker",
-    desc: "Track tasks, attendance and school notices",
-    icon: <Wrench size={15} />,
+    desc: "Tasks, attendance & notices",
+    icon: <Wrench size={18} />,
     iconBg: "bg-amber-50",
     iconColor: "text-amber-600",
-    accentColor: "border-amber-500 bg-amber-50/60",
+    accentColor: "bg-amber-50 ring-2 ring-amber-500/20",
   },
 ];
 
@@ -96,11 +97,24 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const [portal, setPortal] = useState<"primary" | "highschool">("primary");
   const [selected, setSelected] = useState<Role>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [staffRole, setStaffRole] = useState<string>("dashboard");
+
+  const highschoolStaffRoles = [
+    { id: "dashboard", label: "General Staff", icon: Wrench },
+    { id: "bursar", label: "Bursar's Office", icon: Landmark },
+    { id: "admissions", label: "Admissions Office", icon: GraduationCap },
+    { id: "inventory", label: "Inventory & ICT", icon: Package },
+    { id: "library", label: "School Library", icon: BookOpen },
+    { id: "sanatorium", label: "Health Clinic", icon: Stethoscope },
+    { id: "boarding", label: "Boarding & Welfare", icon: Activity },
+    { id: "operations", label: "Site Operations", icon: Shield },
+  ];
 
   const selectedConfig = roles.find((r) => r.role === selected);
   const emailValue = selected ? `${selected}@shule.go.ke` : "";
@@ -122,13 +136,23 @@ export default function Login() {
 
     setTimeout(() => {
       clearInterval(timer);
-      login(selected);
-      const routeMap: Record<string, string> = {
+      const dept = selected === "staff" && portal === "highschool" ? staffRole : undefined;
+      login(selected, portal, dept);
+      const primaryRoutes: Record<string, string> = {
         admin:   "/admin/dashboard",
         teacher: "/teacher/dashboard",
         parent:  "/parent-and-student-portal/dashboard",
         staff:   "/staff/dashboard",
       };
+      
+      const highschoolRoutes: Record<string, string> = {
+        admin:   "/highschool/admin/dashboard",
+        teacher: "/highschool/teacher/dashboard",
+        parent:  "/highschool/parent-and-student-portal/dashboard",
+        staff:   `/highschool/staff/${staffRole}`,
+      };
+      
+      const routeMap = portal === "highschool" ? highschoolRoutes : primaryRoutes;
       navigate(routeMap[selected]);
     }, duration);
   }
@@ -225,6 +249,31 @@ export default function Login() {
               <LogoFull src="/logo.png" className="h-[110px] w-auto" />
             </div>
 
+            {/* Portal Selector */}
+            <div className="mb-6">
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-3">
+                Select Portal
+              </p>
+              <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl">
+                {(['primary', 'highschool'] as const).map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setPortal(p)}
+                    className={cn(
+                      "flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200",
+                      portal === p
+                        ? "bg-white text-indigo-700 shadow-sm border border-slate-200 font-semibold"
+                        : "text-slate-500 hover:text-slate-700"
+                    )}
+                  >
+                    {p === 'primary' ? <School size={14} className={portal === p ? "text-indigo-500" : "text-slate-400"} /> : <BookOpen size={14} className={portal === p ? "text-indigo-500" : "text-slate-400"} />}
+                    {p === 'primary' ? 'Primary' : 'High School'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Heading */}
             <div className="mb-8">
               <h2 className="text-2xl font-semibold text-slate-900 tracking-tight mb-1.5">
@@ -245,10 +294,10 @@ export default function Login() {
                     type="button"
                     onClick={() => setSelected(r.role)}
                     className={cn(
-                      "relative rounded-xl p-3.5 text-left border-[1.5px] transition-all duration-150 bg-white group",
+                      "relative rounded-2xl p-4 text-left transition-all duration-200 bg-white group border-0",
                       selected === r.role
-                        ? r.accentColor + " shadow-sm"
-                        : "border-slate-200 hover:border-slate-300 hover:bg-slate-50/80"
+                        ? r.accentColor + " shadow-indigo-100 shadow-lg scale-[1.02]"
+                        : "hover:bg-slate-50 hover:shadow-sm"
                     )}
                   >
                     {selected === r.role && (
@@ -265,6 +314,43 @@ export default function Login() {
                 ))}
               </div>
             </div>
+
+            {/* ── High School Staff Department Selector ────────────────── */}
+            {portal === "highschool" && selected === "staff" && (
+              <div className="mt-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-3">
+                  Select Department
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {highschoolStaffRoles.map((role) => (
+                    <button
+                      key={role.id}
+                      type="button"
+                      onClick={() => setStaffRole(role.id)}
+                      className={cn(
+                        "flex items-center gap-2.5 p-3 rounded-xl border text-left transition-all duration-200",
+                        staffRole === role.id
+                          ? "bg-indigo-50 border-indigo-200 ring-1 ring-indigo-500/10 shadow-sm"
+                          : "bg-white border-slate-100 hover:border-slate-200 text-slate-500"
+                      )}
+                    >
+                      <div className={cn(
+                        "h-7 w-7 rounded-lg flex items-center justify-center shrink-0",
+                        staffRole === role.id ? "bg-indigo-600 text-white" : "bg-slate-50 text-slate-400"
+                      )}>
+                        <role.icon size={14} />
+                      </div>
+                      <span className={cn(
+                        "text-[11px] font-bold leading-tight",
+                        staffRole === role.id ? "text-indigo-900" : "text-slate-600"
+                      )}>
+                        {role.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <Separator className="my-5" />
 

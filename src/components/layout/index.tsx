@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { LogoFull } from "@/components/Logo";
 
 // shadcn/ui
 import { Badge } from "@/components/ui/badge";
@@ -31,11 +30,14 @@ import {
   Zap,
   Crown,
   BookOpen,
-  TrendingUp,
   Shield,
-  ExternalLink,
   ChevronRight,
-  Sparkles,
+  Landmark, Banknote, ShoppingBag, 
+  Stethoscope, Pill, ActivitySquare,
+  UserPlus, Archive, Package,
+  Wrench, Bus, ShieldAlert,
+  Bed, Scale, Library,
+  FileText, BadgeDollarSign, MapPin
 } from "lucide-react";
 
 export { Topbar } from "./Topbar";
@@ -166,6 +168,20 @@ const staffNav: NavGroup[] = [
   },
 ];
 
+// ─── Helper for High School prefixing ──────────────────────────────────────────
+
+function prefixNav(nav: NavGroup[], prefix: string): NavGroup[] {
+  return nav.map(group => ({
+    ...group,
+    items: group.items.map(item => ({
+      ...item,
+      to: `${prefix}${item.to}`
+    }))
+  }));
+}
+
+
+
 // ─── Badge colour map ─────────────────────────────────────────────────────────
 
 const BADGE_CLASSES: Record<string, string> = {
@@ -192,38 +208,43 @@ function NavItemLink({
       onClick={onClose}
       className={({ isActive }) =>
         cn(
-          "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-150 select-none",
-          collapsed ? "justify-center px-0 w-10 mx-auto" : "",
+          "group relative flex items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium transition-all duration-200 select-none my-0.5",
+          collapsed ? "justify-center px-0 w-10 mx-auto h-10" : "h-10",
           isActive
-            ? "bg-indigo-600 text-white shadow-md shadow-indigo-200"
-            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+            ? "bg-indigo-50/80 text-indigo-700 shadow-[inset_0_0_0_1px_rgba(79,70,229,0.1)]"
+            : "text-slate-500 hover:bg-slate-100/80 hover:text-slate-900"
         )
       }
     >
       {({ isActive }) => (
         <>
-          {/* Left accent bar */}
-          {!collapsed && !isActive && (
-            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-0 group-hover:h-5 rounded-full bg-indigo-400 transition-all duration-200" />
+          {/* Active indicator bar */}
+          {!collapsed && isActive && (
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full bg-indigo-600" />
           )}
 
           <item.icon
-            size={17}
+            size={18}
             className={cn(
-              "shrink-0 transition-colors duration-150",
-              isActive ? "text-white" : "text-slate-400 group-hover:text-indigo-500"
+              "shrink-0 transition-colors duration-200",
+              isActive ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-600/80"
             )}
           />
 
           {!collapsed && (
             <>
-              <span className="flex-1 leading-none">{item.label}</span>
+              <span className={cn(
+                "flex-1 leading-none tracking-tight",
+                isActive ? "font-semibold" : "font-medium"
+              )}>
+                {item.label}
+              </span>
               {item.badge && (
                 <span
                   className={cn(
-                    "text-[10px] font-semibold px-1.5 py-0.5 rounded-md border leading-none",
+                    "text-[10px] font-bold px-1.5 py-0.5 rounded-md border leading-none ml-1",
                     isActive
-                      ? "bg-white/20 text-white border-white/30"
+                      ? "bg-indigo-100 text-indigo-700 border-indigo-200"
                       : BADGE_CLASSES[item.badgeVariant ?? "default"]
                   )}
                 >
@@ -231,6 +252,11 @@ function NavItemLink({
                 </span>
               )}
             </>
+          )}
+
+          {/* Hover indicator bar - subtle */}
+          {!collapsed && !isActive && (
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 group-hover:h-3 rounded-full bg-slate-200 transition-all duration-200" />
           )}
         </>
       )}
@@ -302,50 +328,55 @@ function Sidebar({
         )}
       >
 
-        {/* ── Collapse toggle / role icon ─────────────────────────── */}
-        {onToggleCollapse && (
+        {/* ── Header / Role Identity ─────────────────────────── */}
+        <div className={cn(
+          "shrink-0 flex items-center gap-3 transition-all duration-300",
+          collapsed ? "flex-col py-4" : "px-5 py-5 pb-4"
+        )}>
+          {/* Role Icon Area */}
           <div className={cn(
-            "shrink-0 pt-3 pb-2",
-            collapsed ? "flex flex-col items-center gap-2" : "px-4 flex justify-end"
+            "rounded-2xl flex items-center justify-center text-white shadow-lg shrink-0 transition-all duration-300",
+            collapsed ? "h-10 w-10" : "h-11 w-11 shadow-indigo-200/50",
+            roleColor
           )}>
-            {/* Role icon — collapsed only */}
-            {collapsed && (
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className={cn(
-                      "h-9 w-9 rounded-xl flex items-center justify-center text-white shadow-md mb-1",
-                      roleColor
-                    )}>
-                      {roleIcon ?? <Crown size={18} fill="currentColor" />}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" className="text-xs font-medium">{label}</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
+            {roleIcon ?? <Crown size={collapsed ? 20 : 22} fill="currentColor" />}
+          </div>
+
+          {!collapsed && (
+            <div className="flex-1 min-w-0">
+              <h2 className="text-[15px] font-bold text-slate-900 truncate tracking-tight">{label}</h2>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">High School</span>
+              </div>
+            </div>
+          )}
+
+          {onToggleCollapse && !collapsed && (
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
                     onClick={onToggleCollapse}
-                    className={cn(
-                      "hidden lg:flex items-center justify-center rounded-lg border border-slate-200 text-slate-400",
-                      "hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-all duration-150",
-                      collapsed ? "h-9 w-9" : "h-7 w-7"
-                    )}
+                    className="h-8 w-8 flex items-center justify-center rounded-xl border border-slate-100 text-slate-300 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100 transition-all duration-200"
                   >
-                    <ChevronLeft
-                      size={14}
-                      className={cn("transition-transform duration-300", collapsed && "rotate-180")}
-                    />
+                    <ChevronLeft size={16} />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="right" className="text-xs">
-                  {collapsed ? "Expand" : "Collapse"} sidebar
-                </TooltipContent>
+                <TooltipContent side="right" className="text-xs">Collapse menu</TooltipContent>
               </Tooltip>
             </TooltipProvider>
+          )}
+        </div>
+
+        {collapsed && onToggleCollapse && (
+          <div className="px-3 pb-2 pt-1 flex justify-center">
+            <button
+              onClick={onToggleCollapse}
+              className="h-9 w-9 flex items-center justify-center rounded-xl border border-slate-100 text-slate-300 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100 transition-all duration-200"
+            >
+              <ChevronRight size={16} />
+            </button>
           </div>
         )}
 
@@ -517,6 +548,104 @@ export function StaffSidebar(props: PublicSidebarProps) {
   );
 }
 
+export function HSAdminSidebar(props: PublicSidebarProps) {
+  return (
+    <Sidebar
+      nav={hsAdminNav}
+      label="HS Admin Portal"
+      roleColor="bg-indigo-700"
+      roleIcon={<Crown size={17} className="text-white" />}
+      {...props}
+    />
+  );
+}
+
+export function HSTeacherSidebar(props: PublicSidebarProps) {
+  return (
+    <Sidebar
+      nav={hsTeacherNav}
+      label="HS Teacher Portal"
+      roleColor="bg-sky-700"
+      roleIcon={<BookOpen size={17} className="text-white" />}
+      {...props}
+    />
+  );
+}
+
+export function HSPortalSidebar(props: PublicSidebarProps) {
+  return (
+    <Sidebar
+      nav={hsPortalNav}
+      label="HS Parent / Student"
+      roleColor="bg-emerald-700"
+      roleIcon={<Users size={17} className="text-white" />}
+      {...props}
+    />
+  );
+}
+
+export function HSStaffSidebar(props: PublicSidebarProps & { department?: string }) {
+  let nav = hsStaffNav;
+  let label = "HS Staff Portal";
+  let color = "bg-amber-700";
+  let icon = <ClipboardList size={17} className="text-white" />;
+
+  switch (props.department) {
+    case "bursar":
+      nav = bursarNav;
+      label = "Bursar's Office";
+      color = "bg-emerald-700";
+      icon = <Landmark size={17} className="text-white" />;
+      break;
+    case "admissions":
+      nav = admissionsNav;
+      label = "Admissions Office";
+      color = "bg-indigo-700";
+      icon = <UserPlus size={17} className="text-white" />;
+      break;
+    case "library":
+      nav = libraryNav;
+      label = "School Library";
+      color = "bg-blue-700";
+      icon = <Library size={17} className="text-white" />;
+      break;
+    case "sanatorium":
+      nav = sanatoriumNav;
+      label = "Sanatorium / Clinic";
+      color = "bg-rose-700";
+      icon = <Stethoscope size={17} className="text-white" />;
+      break;
+    case "inventory":
+      nav = inventoryNav;
+      label = "Inventory & Labs";
+      color = "bg-slate-700";
+      icon = <Package size={17} className="text-white" />;
+      break;
+    case "boarding":
+      nav = boardingNav;
+      label = "Boarding & Welfare";
+      color = "bg-purple-700";
+      icon = <Bed size={17} className="text-white" />;
+      break;
+    case "operations":
+      nav = operationsNav;
+      label = "Ops & Security";
+      color = "bg-orange-700";
+      icon = <ShieldAlert size={17} className="text-white" />;
+      break;
+  }
+
+  return (
+    <Sidebar
+      nav={nav}
+      label={label}
+      roleColor={color}
+      roleIcon={icon}
+      {...props}
+    />
+  );
+}
+
 // ─── Bottom Nav Items ──────────────────────────────────────────────────────────
 
 export const adminBottomNav = [
@@ -550,6 +679,161 @@ export const staffBottomNav = [
   { to: "/staff/notices",    label: "Notices",  icon: Bell           },
   { to: "/staff/profile",    label: "Profile",  icon: User           },
 ];
+
+// ─── High School Navs ────────────────────────────────────────────────────────
+
+export const hsAdminNav = prefixNav(adminNav, "/highschool");
+export const hsTeacherNav = prefixNav(teacherNav, "/highschool");
+export const hsPortalNav = prefixNav(portalNav, "/highschool");
+export const hsStaffNav = prefixNav(staffNav, "/highschool");
+
+// ─── Specialized High School Staff Navs ─────────────────────────────────────
+
+export const bursarNav: NavGroup[] = [
+  {
+    items: [{ to: "/highschool/staff/bursar", label: "Dashboard", icon: LayoutDashboard }],
+  },
+  {
+    groupLabel: "Finance",
+    items: [
+      { to: "/highschool/staff/bursar/fees", label: "Fee Collection", icon: Landmark },
+      { to: "/highschool/staff/bursar/payroll", label: "Staff Payroll", icon: Banknote },
+      { to: "/highschool/staff/bursar/expenses", label: "Expenditures", icon: ShoppingBag },
+    ],
+  },
+  {
+    groupLabel: "System",
+    items: [
+      { to: "/highschool/staff/bursar/reports", label: "Financial Reports", icon: BarChart3 },
+    ],
+  },
+];
+
+export const admissionsNav: NavGroup[] = [
+  {
+    items: [{ to: "/highschool/staff/admissions", label: "Dashboard", icon: LayoutDashboard }],
+  },
+  {
+    groupLabel: "Registration",
+    items: [
+      { to: "/highschool/staff/admissions/inquiries", label: "Inquiries", icon: UserPlus },
+      { to: "/highschool/staff/admissions/enrollment", label: "Enrollment", icon: Users },
+      { to: "/highschool/staff/admissions/transfers", label: "Transfers", icon: Archive },
+    ],
+  },
+];
+
+export const libraryNav: NavGroup[] = [
+  {
+    items: [{ to: "/highschool/staff/library", label: "Dashboard", icon: LayoutDashboard }],
+  },
+  {
+    groupLabel: "Library Ops",
+    items: [
+      { to: "/highschool/staff/library/catalog", label: "Book Catalog", icon: Library },
+      { to: "/highschool/staff/library/circulation", label: "Circulation", icon: BookOpen },
+      { to: "/highschool/staff/library/fines", label: "Library Fines", icon: BadgeDollarSign },
+    ],
+  },
+];
+
+export const sanatoriumNav: NavGroup[] = [
+  {
+    items: [{ to: "/highschool/staff/sanatorium", label: "Dashboard", icon: LayoutDashboard }],
+  },
+  {
+    groupLabel: "Medical",
+    items: [
+      { to: "/highschool/staff/sanatorium/records", label: "Medical Records", icon: FileText },
+      { to: "/highschool/staff/sanatorium/visits", label: "Clinic Visits", icon: ActivitySquare },
+      { to: "/highschool/staff/sanatorium/supplies", label: "Supplies Stock", icon: Pill },
+    ],
+  },
+];
+
+export const inventoryNav: NavGroup[] = [
+  {
+    items: [{ to: "/highschool/staff/inventory", label: "Dashboard", icon: LayoutDashboard }],
+  },
+  {
+    groupLabel: "Inventory",
+    items: [
+      { to: "/highschool/staff/inventory/assets", label: "Asset Tracking", icon: Package },
+      { to: "/highschool/staff/inventory/requests", label: "Procurement", icon: ClipboardList },
+      { to: "/highschool/staff/inventory/maintenance", label: "IT & Maintenance", icon: Wrench },
+    ],
+  },
+];
+
+export const boardingNav: NavGroup[] = [
+  {
+    items: [{ to: "/highschool/staff/boarding", label: "Dashboard", icon: LayoutDashboard }],
+  },
+  {
+    groupLabel: "Welfare",
+    items: [
+      { to: "/highschool/staff/boarding/allocations", label: "Allocations", icon: Bed },
+      { to: "/highschool/staff/boarding/incidents", label: "Incidents", icon: Scale },
+      { to: "/highschool/staff/boarding/exeats", label: "Exeat Passes", icon: MapPin },
+    ],
+  },
+];
+
+export const operationsNav: NavGroup[] = [
+  {
+    items: [{ to: "/highschool/staff/operations", label: "Dashboard", icon: LayoutDashboard }],
+  },
+  {
+    groupLabel: "Operational",
+    items: [
+      { to: "/highschool/staff/operations/visitors", label: "Visitor Logs", icon: ShieldAlert },
+      { to: "/highschool/staff/operations/transport", label: "Transport", icon: Bus },
+      { to: "/highschool/staff/operations/work-orders", label: "Work Orders", icon: Wrench },
+    ],
+  },
+];
+
+export const hsAdminBottomNav = adminBottomNav.map(i => ({ ...i, to: `/highschool${i.to}` }));
+export const hsTeacherBottomNav = teacherBottomNav.map(i => ({ ...i, to: `/highschool${i.to}` }));
+export const hsPortalBottomNav = portalBottomNav.map(i => ({ ...i, to: `/highschool${i.to}` }));
+export const hsStaffBottomNav = staffBottomNav.map(i => ({ ...i, to: `/highschool${i.to}` }));
+
+export function getHSStaffBottomNav(department?: string) {
+  if (!department) return hsStaffBottomNav;
+
+  const base = `/highschool/staff/${department}`;
+  
+  switch (department) {
+    case "bursar":
+      return [
+        { to: base, label: "Home", icon: LayoutDashboard },
+        { to: `${base}/fees`, label: "Fees", icon: Landmark },
+        { to: `${base}/payroll`, label: "Payroll", icon: Banknote },
+        { to: `${base}/expenses`, label: "Expenses", icon: ShoppingBag },
+        { to: "/highschool/staff/profile", label: "Profile", icon: User },
+      ];
+    case "admissions":
+      return [
+        { to: base, label: "Home", icon: LayoutDashboard },
+        { to: `${base}#intake`, label: "Intake", icon: UserPlus },
+        { to: `${base}#roster`, label: "Roster", icon: Users },
+        { to: "/highschool/staff/profile", label: "Profile", icon: User },
+      ];
+    case "sanatorium":
+      return [
+        { to: base, label: "Home", icon: LayoutDashboard },
+        { to: `${base}#patients`, label: "Patients", icon: ActivitySquare },
+        { to: `${base}#pharmacy`, label: "Pharmacy", icon: Pill },
+        { to: "/highschool/staff/profile", label: "Profile", icon: User },
+      ];
+    default:
+      return [
+        { to: base, label: "Home", icon: LayoutDashboard },
+        { to: "/highschool/staff/tasks", label: "Tasks", icon: ClipboardList },
+        { to: "/highschool/staff/profile", label: "Profile", icon: User },
+      ];
+  }
+}
 
 // ─── Page Header ──────────────────────────────────────────────────────────────
 

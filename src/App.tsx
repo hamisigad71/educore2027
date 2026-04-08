@@ -8,41 +8,114 @@ import Home from "@/pages/home";
 import Login from "@/pages/login";
 
 // Admin
-import AdminLayout from "@/pages/admin/layout";
-import AdminDashboard from "@/pages/admin/dashboard";
-import AdminStudents from "@/pages/admin/students";
-import AdminTeachers from "@/pages/admin/teachers";
-import AdminClasses from "@/pages/admin/classes";
-import AdminFees from "@/pages/admin/fees";
-import AdminResults from "@/pages/admin/results";
-import AdminAttendance from "@/pages/admin/attendance";
-import AdminTimetable from "@/pages/admin/timetable";
-import AdminSettings from "@/pages/admin/settings";
+import AdminLayout from "@/primaryschool/src/pages/admin/layout";
+import AdminDashboard from "@/primaryschool/src/pages/admin/dashboard";
+import AdminStudents from "@/primaryschool/src/pages/admin/students";
+import AdminTeachers from "@/primaryschool/src/pages/admin/teachers";
+import AdminClasses from "@/primaryschool/src/pages/admin/classes";
+import AdminFees from "@/primaryschool/src/pages/admin/fees";
+import AdminResults from "@/primaryschool/src/pages/admin/results";
+import AdminAttendance from "@/primaryschool/src/pages/admin/attendance";
+import AdminTimetable from "@/primaryschool/src/pages/admin/timetable";
+import AdminSettings from "@/primaryschool/src/pages/admin/settings";
 
 // Teacher
-import TeacherLayout from "@/pages/teacher/layout";
-import TeacherDashboard from "@/pages/teacher/dashboard";
-import TeacherClasses from "@/pages/teacher/classes";
-import TeacherStudents from "@/pages/teacher/students";
-import TeacherMarks from "@/pages/teacher/marks";
-import TeacherAttendance from "@/pages/teacher/attendance";
-import TeacherProfile from "@/pages/teacher/profile";
+import TeacherLayout from "@/primaryschool/src/pages/teacher/layout";
+import TeacherDashboard from "@/primaryschool/src/pages/teacher/dashboard";
+import TeacherClasses from "@/primaryschool/src/pages/teacher/classes";
+import TeacherStudents from "@/primaryschool/src/pages/teacher/students";
+import TeacherMarks from "@/primaryschool/src/pages/teacher/marks";
+import TeacherAttendance from "@/primaryschool/src/pages/teacher/attendance";
+import TeacherProfile from "@/primaryschool/src/pages/teacher/profile";
 
 // Parent/Student Portal
-import ParentLayout from "@/pages/parent-and-student-portal/layout";
-import PortalDashboard from "@/pages/parent-and-student-portal/dashboard";
-import PortalResults from "@/pages/parent-and-student-portal/results";
-import PortalFees from "@/pages/parent-and-student-portal/fees";
-import PortalAttendance from "@/pages/parent-and-student-portal/attendance";
-import PortalProfile from "@/pages/parent-and-student-portal/profile";
+import ParentLayout from "@/primaryschool/src/pages/parent-and-student-portal/layout";
+import PortalDashboard from "@/primaryschool/src/pages/parent-and-student-portal/dashboard";
+import PortalResults from "@/primaryschool/src/pages/parent-and-student-portal/results";
+import PortalFees from "@/primaryschool/src/pages/parent-and-student-portal/fees";
+import PortalAttendance from "@/primaryschool/src/pages/parent-and-student-portal/attendance";
+import PortalProfile from "@/primaryschool/src/pages/parent-and-student-portal/profile";
 
 // Staff
-import StaffLayout from "@/pages/staff/layout";
-import StaffDashboard from "@/pages/staff/dashboard";
-import StaffTasks from "@/pages/staff/tasks";
-import StaffAttendance from "@/pages/staff/attendance";
-import StaffNotices from "@/pages/staff/notices";
-import StaffProfile from "@/pages/staff/profile";
+import StaffLayout from "@/primaryschool/src/pages/staff/layout";
+import StaffDashboard from "@/primaryschool/src/pages/staff/dashboard";
+import StaffTasks from "@/primaryschool/src/pages/staff/tasks";
+import StaffAttendance from "@/primaryschool/src/pages/staff/attendance";
+import StaffNotices from "@/primaryschool/src/pages/staff/notices";
+import StaffProfile from "@/primaryschool/src/pages/staff/profile";
+
+// High School Admin
+import HSAdminLayout from "@/highschool/src/pages/admin/layout";
+import HSAdminDashboard from "@/highschool/src/pages/admin/dashboard";
+import HSAdminStudents from "@/highschool/src/pages/admin/students";
+import HSAdminTeachers from "@/highschool/src/pages/admin/teachers";
+import HSAdminClasses from "@/highschool/src/pages/admin/classes";
+import HSAdminFees from "@/highschool/src/pages/admin/fees";
+import HSAdminResults from "@/highschool/src/pages/admin/results";
+import HSAdminAttendance from "@/highschool/src/pages/admin/attendance";
+import HSAdminTimetable from "@/highschool/src/pages/admin/timetable";
+import HSAdminSettings from "@/highschool/src/pages/admin/settings";
+
+// High School Teacher
+import HSTeacherLayout from "@/highschool/src/pages/teacher/layout";
+import HSTeacherDashboard from "@/highschool/src/pages/teacher/dashboard";
+import HSTeacherClasses from "@/highschool/src/pages/teacher/classes";
+import HSTeacherStudents from "@/highschool/src/pages/teacher/students";
+import HSTeacherMarks from "@/highschool/src/pages/teacher/marks";
+import HSTeacherAttendance from "@/highschool/src/pages/teacher/attendance";
+import HSTeacherProfile from "@/highschool/src/pages/teacher/profile";
+
+// High School Parent/Student Portal
+import HSParentLayout from "@/highschool/src/pages/parent-and-student-portal/layout";
+import HSPortalDashboard from "@/highschool/src/pages/parent-and-student-portal/dashboard";
+import HSPortalResults from "@/highschool/src/pages/parent-and-student-portal/results";
+import HSPortalFees from "@/highschool/src/pages/parent-and-student-portal/fees";
+import HSPortalAttendance from "@/highschool/src/pages/parent-and-student-portal/attendance";
+import HSPortalProfile from "@/highschool/src/pages/parent-and-student-portal/profile";
+
+// High School Staff
+import HSStaffLayout from "@/highschool/src/pages/staff/layout";
+import HSStaffDashboard from "@/highschool/src/pages/staff/dashboard";
+import HSStaffTasks from "@/highschool/src/pages/staff/tasks";
+import HSStaffAttendance from "@/highschool/src/pages/staff/attendance";
+import HSStaffNotices from "@/highschool/src/pages/staff/notices";
+import HSStaffProfile from "@/highschool/src/pages/staff/profile";
+
+// High School Specialized Staff
+import HSBursarDashboard from "@/highschool/src/pages/staff/bursar/dashboard";
+import HSBursarFees from "@/highschool/src/pages/staff/bursar/fees";
+import HSBursarPayroll from "@/highschool/src/pages/staff/bursar/payroll";
+import HSBursarExpenses from "@/highschool/src/pages/staff/bursar/expenses";
+
+import HSAdmissionsPortal from "@/highschool/src/pages/staff/admissions/dashboard";
+import AdmissionsInquiries from "@/highschool/src/pages/staff/admissions/inquiries";
+import AdmissionsEnrollment from "@/highschool/src/pages/staff/admissions/enrollment";
+import AdmissionsTransfers from "@/highschool/src/pages/staff/admissions/transfers";
+
+import HSInventoryPortal from "@/highschool/src/pages/staff/inventory/dashboard";
+import InventoryAssets from "@/highschool/src/pages/staff/inventory/assets";
+import InventoryRequests from "@/highschool/src/pages/staff/inventory/requests";
+import InventoryMaintenance from "@/highschool/src/pages/staff/inventory/maintenance";
+
+import HSLibraryPortal from "@/highschool/src/pages/staff/library/dashboard";
+import LibraryCatalog from "@/highschool/src/pages/staff/library/catalog";
+import LibraryCirculation from "@/highschool/src/pages/staff/library/circulation";
+import LibraryFines from "@/highschool/src/pages/staff/library/fines";
+
+import HSSanatoriumPortal from "@/highschool/src/pages/staff/sanatorium/dashboard";
+import SanatoriumRecords from "@/highschool/src/pages/staff/sanatorium/records";
+import SanatoriumVisits from "@/highschool/src/pages/staff/sanatorium/visits";
+import SanatoriumSupplies from "@/highschool/src/pages/staff/sanatorium/supplies";
+
+import HSBoardingPortal from "@/highschool/src/pages/staff/boarding/dashboard";
+import BoardingAllocations from "@/highschool/src/pages/staff/boarding/allocations";
+import BoardingIncidents from "@/highschool/src/pages/staff/boarding/incidents";
+import BoardingExeats from "@/highschool/src/pages/staff/boarding/exeats";
+
+import HSOperationsPortal from "@/highschool/src/pages/staff/operations/dashboard";
+import OperationsVisitors from "@/highschool/src/pages/staff/operations/visitors";
+import OperationsTransport from "@/highschool/src/pages/staff/operations/transport";
+import OperationsWorkOrders from "@/highschool/src/pages/staff/operations/work-orders";
 
 // Route guard
 function RequireAuth({ children, role }: { children: React.ReactNode; role?: string }) {
@@ -54,12 +127,106 @@ function RequireAuth({ children, role }: { children: React.ReactNode; role?: str
 }
 
 function AppRoutes() {
-  const { user } = useAuth();
+  const { user, portal, department } = useAuth();
 
   return (
     <Routes>
+      {/* High School Admin Portal */}
+      <Route path="/highschool/admin" element={<RequireAuth role="admin"><HSAdminLayout /></RequireAuth>}>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<HSAdminDashboard />} />
+        <Route path="students" element={<HSAdminStudents />} />
+        <Route path="teachers" element={<HSAdminTeachers />} />
+        <Route path="classes" element={<HSAdminClasses />} />
+        <Route path="fees" element={<HSAdminFees />} />
+        <Route path="results" element={<HSAdminResults />} />
+        <Route path="attendance" element={<HSAdminAttendance />} />
+        <Route path="timetable" element={<HSAdminTimetable />} />
+        <Route path="settings" element={<HSAdminSettings />} />
+      </Route>
+
+      {/* High School Teacher Portal */}
+      <Route path="/highschool/teacher" element={<RequireAuth role="teacher"><HSTeacherLayout /></RequireAuth>}>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<HSTeacherDashboard />} />
+        <Route path="classes" element={<HSTeacherClasses />} />
+        <Route path="students" element={<HSTeacherStudents />} />
+        <Route path="marks" element={<HSTeacherMarks />} />
+        <Route path="attendance" element={<HSTeacherAttendance />} />
+        <Route path="profile" element={<HSTeacherProfile />} />
+      </Route>
+
+      {/* High School Parent/Student Portal */}
+      <Route path="/highschool/parent-and-student-portal" element={<RequireAuth role="parent"><HSParentLayout /></RequireAuth>}>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<HSPortalDashboard />} />
+        <Route path="results" element={<HSPortalResults />} />
+        <Route path="fees" element={<HSPortalFees />} />
+        <Route path="attendance" element={<HSPortalAttendance />} />
+        <Route path="profile" element={<HSPortalProfile />} />
+      </Route>
+
+      <Route path="/highschool/staff" element={<RequireAuth role="staff"><HSStaffLayout /></RequireAuth>}>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<HSStaffDashboard />} />
+        
+        {/* Specialized Modules */}
+        <Route path="bursar">
+          <Route index element={<HSBursarDashboard />} />
+          <Route path="fees" element={<HSBursarFees />} />
+          <Route path="payroll" element={<HSBursarPayroll />} />
+          <Route path="expenses" element={<HSBursarExpenses />} />
+        </Route>
+        
+        <Route path="admissions">
+          <Route index element={<HSAdmissionsPortal />} />
+          <Route path="inquiries" element={<AdmissionsInquiries />} />
+          <Route path="enrollment" element={<AdmissionsEnrollment />} />
+          <Route path="transfers" element={<AdmissionsTransfers />} />
+        </Route>
+        <Route path="inventory">
+          <Route index element={<HSInventoryPortal />} />
+          <Route path="assets" element={<InventoryAssets />} />
+          <Route path="requests" element={<InventoryRequests />} />
+          <Route path="maintenance" element={<InventoryMaintenance />} />
+        </Route>
+        <Route path="library">
+          <Route index element={<HSLibraryPortal />} />
+          <Route path="catalog" element={<LibraryCatalog />} />
+          <Route path="circulation" element={<LibraryCirculation />} />
+          <Route path="fines" element={<LibraryFines />} />
+        </Route>
+        <Route path="sanatorium">
+          <Route index element={<HSSanatoriumPortal />} />
+          <Route path="records" element={<SanatoriumRecords />} />
+          <Route path="visits" element={<SanatoriumVisits />} />
+          <Route path="supplies" element={<SanatoriumSupplies />} />
+        </Route>
+        <Route path="boarding">
+          <Route index element={<HSBoardingPortal />} />
+          <Route path="allocations" element={<BoardingAllocations />} />
+          <Route path="incidents" element={<BoardingIncidents />} />
+          <Route path="exeats" element={<BoardingExeats />} />
+        </Route>
+        <Route path="operations">
+          <Route index element={<HSOperationsPortal />} />
+          <Route path="visitors" element={<OperationsVisitors />} />
+          <Route path="transport" element={<OperationsTransport />} />
+          <Route path="work-orders" element={<OperationsWorkOrders />} />
+        </Route>
+
+        <Route path="tasks" element={<HSStaffTasks />} />
+        <Route path="attendance" element={<HSStaffAttendance />} />
+        <Route path="notices" element={<HSStaffNotices />} />
+        <Route path="profile" element={<HSStaffProfile />} />
+      </Route>
+
       {/* Login */}
-      <Route path="/login" element={user ? <Navigate to={`/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : user.role === "parent" ? "parent-and-student-portal" : "staff"}/dashboard`} replace /> : <Login />} />
+      <Route path="/login" element={user ? (
+        portal === "highschool"
+          ? <Navigate to={`/highschool/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : user.role === "parent" ? "parent-and-student-portal" : "staff"}/${user.role === "staff" && department ? department : "dashboard"}`} replace />
+          : <Navigate to={`/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : user.role === "parent" ? "parent-and-student-portal" : "staff"}/dashboard`} replace />
+      ) : <Login />} />
 
       {/* Admin Portal */}
       <Route path="/admin" element={<RequireAuth role="admin"><AdminLayout /></RequireAuth>}>
@@ -107,11 +274,16 @@ function AppRoutes() {
       </Route>
 
       {/* Fallback */}
-      <Route path="/" element={user ? <Navigate to={`/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : user.role === "parent" ? "parent-and-student-portal" : "staff"}/dashboard`} replace /> : <Home />} />
+      <Route path="/" element={user ? (
+        portal === "highschool"
+          ? <Navigate to={`/highschool/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : user.role === "parent" ? "parent-and-student-portal" : "staff"}/${user.role === "staff" && department ? department : "dashboard"}`} replace />
+          : <Navigate to={`/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : user.role === "parent" ? "parent-and-student-portal" : "staff"}/dashboard`} replace />
+      ) : <Home />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
+
 
 /**
  * Global Navigation Loader
