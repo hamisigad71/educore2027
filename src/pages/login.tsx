@@ -18,7 +18,8 @@ import {
   Users, Eye, EyeOff, CheckCircle2,
   ArrowRight, BookOpen, GraduationCap,
   Wrench, TrendingUp, Globe, Award, ShieldCheck, School,
-  Landmark, Stethoscope, Activity, Shield, Bus, Package
+  Landmark, Stethoscope, Activity, Shield, Bus, Package,
+  UtensilsCrossed, FileText, UserCog
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -116,6 +117,14 @@ export default function Login() {
     { id: "operations", label: "Site Operations", icon: Shield },
   ];
 
+  const primaryStaffRoles = [
+    { id: "dashboard",   label: "General Staff",    icon: Wrench },
+    { id: "headteacher", label: "Head Teacher",      icon: UserCog },
+    { id: "bursar",      label: "Bursar's Office",   icon: Landmark },
+    { id: "secretary",   label: "Secretary / Clerk", icon: FileText },
+    { id: "canteen",     label: "Canteen & Kitchen", icon: UtensilsCrossed },
+  ];
+
   const selectedConfig = roles.find((r) => r.role === selected);
   const emailValue = selected ? `${selected}@shule.go.ke` : "";
 
@@ -136,13 +145,13 @@ export default function Login() {
 
     setTimeout(() => {
       clearInterval(timer);
-      const dept = selected === "staff" && portal === "highschool" ? staffRole : undefined;
+      const dept = selected === "staff" ? staffRole : undefined;
       login(selected, portal, dept);
       const primaryRoutes: Record<string, string> = {
         admin:   "/admin/dashboard",
         teacher: "/teacher/dashboard",
         parent:  "/parent-and-student-portal/dashboard",
-        staff:   "/staff/dashboard",
+        staff:   `/staff/${staffRole}`,
       };
       
       const highschoolRoutes: Record<string, string> = {
@@ -315,42 +324,45 @@ export default function Login() {
               </div>
             </div>
 
-            {/* ── High School Staff Department Selector ────────────────── */}
-            {portal === "highschool" && selected === "staff" && (
-              <div className="mt-6 animate-in fade-in slide-in-from-top-2 duration-300">
-                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-3">
-                  Select Department
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  {highschoolStaffRoles.map((role) => (
-                    <button
-                      key={role.id}
-                      type="button"
-                      onClick={() => setStaffRole(role.id)}
-                      className={cn(
-                        "flex items-center gap-2.5 p-3 rounded-xl border text-left transition-all duration-200",
-                        staffRole === role.id
-                          ? "bg-indigo-50 border-indigo-200 ring-1 ring-indigo-500/10 shadow-sm"
-                          : "bg-white border-slate-100 hover:border-slate-200 text-slate-500"
-                      )}
-                    >
-                      <div className={cn(
-                        "h-7 w-7 rounded-lg flex items-center justify-center shrink-0",
-                        staffRole === role.id ? "bg-indigo-600 text-white" : "bg-slate-50 text-slate-400"
-                      )}>
-                        <role.icon size={14} />
-                      </div>
-                      <span className={cn(
-                        "text-[11px] font-bold leading-tight",
-                        staffRole === role.id ? "text-indigo-900" : "text-slate-600"
-                      )}>
-                        {role.label}
-                      </span>
-                    </button>
-                  ))}
+            {/* ── Staff Department Selector ─────────────────────────────── */}
+            {selected === "staff" && (() => {
+              const deptRoles = portal === "highschool" ? highschoolStaffRoles : primaryStaffRoles;
+              return (
+                <div className="mt-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-3">
+                    Select Department
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {deptRoles.map((role) => (
+                      <button
+                        key={role.id}
+                        type="button"
+                        onClick={() => setStaffRole(role.id)}
+                        className={cn(
+                          "flex items-center gap-2.5 p-3 rounded-xl border text-left transition-all duration-200",
+                          staffRole === role.id
+                            ? "bg-indigo-50 border-indigo-200 ring-1 ring-indigo-500/10 shadow-sm"
+                            : "bg-white border-slate-100 hover:border-slate-200 text-slate-500"
+                        )}
+                      >
+                        <div className={cn(
+                          "h-7 w-7 rounded-lg flex items-center justify-center shrink-0",
+                          staffRole === role.id ? "bg-indigo-600 text-white" : "bg-slate-50 text-slate-400"
+                        )}>
+                          <role.icon size={14} />
+                        </div>
+                        <span className={cn(
+                          "text-[11px] font-bold leading-tight",
+                          staffRole === role.id ? "text-indigo-900" : "text-slate-600"
+                        )}>
+                          {role.label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             <Separator className="my-5" />
 

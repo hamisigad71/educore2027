@@ -11,7 +11,7 @@ import AdminFees from "./pages/admin/fees";
 import AdminResults from "./pages/admin/results";
 import AdminAttendance from "./pages/admin/attendance";
 import AdminTimetable from "./pages/admin/timetable";
-import AdminSettings from "./pages/admin/settings";
+import AdminStaffManagement from "./pages/admin/staff";
 
 import TeacherLayout from "./pages/teacher/layout";
 import TeacherDashboard from "./pages/teacher/dashboard";
@@ -59,7 +59,7 @@ function App() {
           <Route path="results" element={<AdminResults />} />
           <Route path="attendance" element={<AdminAttendance />} />
           <Route path="timetable" element={<AdminTimetable />} />
-          <Route path="settings" element={<AdminSettings />} />
+          <Route path="staff" element={<AdminStaffManagement />} />
         </Route>
 
         {/* Teacher Portal */}

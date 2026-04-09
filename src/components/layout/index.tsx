@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 // shadcn/ui
 import { Badge } from "@/components/ui/badge";
@@ -37,7 +38,7 @@ import {
   UserPlus, Archive, Package,
   Wrench, Bus, ShieldAlert,
   Bed, Scale, Library,
-  FileText, BadgeDollarSign, MapPin
+  FileText, BadgeDollarSign, MapPin, Building2
 } from "lucide-react";
 
 export { Topbar } from "./Topbar";
@@ -91,7 +92,7 @@ const adminNav: NavGroup[] = [
   {
     groupLabel: "System",
     items: [
-      { to: "/admin/settings", label: "Settings", icon: Settings },
+      { to: "/admin/staff", label: "Staff", icon: Users },
     ],
   },
 ];
@@ -339,7 +340,7 @@ function Sidebar({
             collapsed ? "h-10 w-10" : "h-11 w-11 shadow-indigo-200/50",
             roleColor
           )}>
-            {roleIcon ?? <Crown size={collapsed ? 20 : 22} fill="currentColor" />}
+            {roleIcon ?? <Building2 size={collapsed ? 20 : 22} />}
           </div>
 
           {!collapsed && (
@@ -439,7 +440,7 @@ function Sidebar({
               <div className="relative">
                 <div className="flex items-center gap-2 mb-2.5">
                   <div className="h-7 w-7 rounded-lg bg-indigo-600 flex items-center justify-center shadow-md shadow-indigo-300/50">
-                    <Crown size={13} className="text-white" />
+                    <Zap size={13} className="text-white" />
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600">
                     Pro Feature
@@ -506,7 +507,7 @@ export function AdminSidebar(props: PublicSidebarProps) {
       nav={adminNav}
       label="Admin Portal"
       roleColor="bg-indigo-600"
-      roleIcon={<Crown size={17} className="text-white" />}
+      roleIcon={<Building2 size={17} className="text-white" />}
       {...props}
     />
   );
@@ -537,10 +538,76 @@ export function PortalSidebar(props: PublicSidebarProps) {
 }
 
 export function StaffSidebar(props: PublicSidebarProps) {
+  const { department, portal } = useAuth();
+
+  // Build department-specific module nav for primary school
+  const deptNav: NavGroup[] = React.useMemo(() => {
+    if (portal === "highschool") return []; // HS uses its own HSStaffSidebar
+
+    const deptBaseNav: Record<string, NavGroup[]> = {
+      headteacher: [{
+        groupLabel: "Head Teacher",
+        items: [
+          { to: "/staff/headteacher",           label: "Overview",   icon: LayoutDashboard },
+          { to: "/staff/headteacher/academics",  label: "Academics",  icon: BookOpen },
+          { to: "/staff/headteacher/reports",    label: "Reports",    icon: ClipboardList },
+        ],
+      }],
+      bursar: [{
+        groupLabel: "Bursar's Office",
+        items: [
+          { to: "/staff/bursar",          label: "Fees Dashboard", icon: LayoutDashboard },
+          { to: "/staff/bursar/payroll",  label: "Payroll",        icon: Wallet },
+          { to: "/staff/bursar/expenses", label: "Expenses",       icon: Banknote },
+        ],
+      }],
+      secretary: [{
+        groupLabel: "Secretary",
+        items: [
+          { to: "/staff/secretary",                 label: "Admissions",      icon: LayoutDashboard },
+          { to: "/staff/secretary/correspondence",  label: "Correspondence",  icon: Bell },
+          { to: "/staff/secretary/records",         label: "Student Records", icon: ClipboardList },
+        ],
+      }],
+      canteen: [{
+        groupLabel: "Canteen",
+        items: [
+          { to: "/staff/canteen",           label: "Meal Planner", icon: LayoutDashboard },
+          { to: "/staff/canteen/inventory", label: "Food Inventory", icon: Package },
+        ],
+      }],
+    };
+
+    return deptBaseNav[department ?? ""] ?? [];
+  }, [department, portal]);
+
+  const combinedNav: NavGroup[] = [
+    {
+      items: [
+        { to: "/staff/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      ],
+    },
+    ...deptNav,
+    {
+      groupLabel: "Work",
+      items: [
+        { to: "/staff/tasks",      label: "My Tasks",     icon: ClipboardList, badge: "3", badgeVariant: "warning" },
+        { to: "/staff/attendance", label: "Attendance",   icon: CalendarDays },
+        { to: "/staff/notices",    label: "Notice Board", icon: Bell, badge: "2", badgeVariant: "default" },
+      ],
+    },
+    {
+      groupLabel: "Account",
+      items: [
+        { to: "/staff/profile", label: "Profile", icon: User },
+      ],
+    },
+  ];
+
   return (
     <Sidebar
-      nav={staffNav}
-      label="Staff / Workers"
+      nav={combinedNav}
+      label="Staff Portal"
       roleColor="bg-amber-600"
       roleIcon={<ClipboardList size={17} className="text-white" />}
       {...props}
@@ -554,7 +621,7 @@ export function HSAdminSidebar(props: PublicSidebarProps) {
       nav={hsAdminNav}
       label="HS Admin Portal"
       roleColor="bg-indigo-700"
-      roleIcon={<Crown size={17} className="text-white" />}
+      roleIcon={<Building2 size={17} className="text-white" />}
       {...props}
     />
   );
@@ -653,7 +720,7 @@ export const adminBottomNav = [
   { to: "/admin/students",   label: "Students", icon: GraduationCap   },
   { to: "/admin/teachers",   label: "Teachers", icon: UserSquare2    },
   { to: "/admin/fees",       label: "Fees",     icon: Wallet         },
-  { to: "/admin/settings",   label: "Settings", icon: Settings       },
+  { to: "/admin/staff",      label: "Staff",    icon: Users       },
 ];
 
 export const teacherBottomNav = [

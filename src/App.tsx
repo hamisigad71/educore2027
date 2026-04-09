@@ -17,7 +17,7 @@ import AdminFees from "@/primaryschool/src/pages/admin/fees";
 import AdminResults from "@/primaryschool/src/pages/admin/results";
 import AdminAttendance from "@/primaryschool/src/pages/admin/attendance";
 import AdminTimetable from "@/primaryschool/src/pages/admin/timetable";
-import AdminSettings from "@/primaryschool/src/pages/admin/settings";
+import AdminStaffManagement from "@/primaryschool/src/pages/admin/staff";
 
 // Teacher
 import TeacherLayout from "@/primaryschool/src/pages/teacher/layout";
@@ -44,6 +44,25 @@ import StaffAttendance from "@/primaryschool/src/pages/staff/attendance";
 import StaffNotices from "@/primaryschool/src/pages/staff/notices";
 import StaffProfile from "@/primaryschool/src/pages/staff/profile";
 
+// Primary — Head Teacher
+import PSHeadTeacherPortal from "@/primaryschool/src/pages/staff/headteacher/dashboard";
+import PSHeadTeacherAcademics from "@/primaryschool/src/pages/staff/headteacher/academics";
+import PSHeadTeacherReports from "@/primaryschool/src/pages/staff/headteacher/reports";
+
+// Primary — Bursar
+import PSBursarPortal from "@/primaryschool/src/pages/staff/bursar/dashboard";
+import PSBursarPayroll from "@/primaryschool/src/pages/staff/bursar/payroll";
+import PSBursarExpenses from "@/primaryschool/src/pages/staff/bursar/expenses";
+
+// Primary — Secretary
+import PSSecretaryPortal from "@/primaryschool/src/pages/staff/secretary/dashboard";
+import PSSecretaryCorrespondence from "@/primaryschool/src/pages/staff/secretary/correspondence";
+import PSSecretaryRecords from "@/primaryschool/src/pages/staff/secretary/records";
+
+// Primary — Canteen
+import PSCanteenPortal from "@/primaryschool/src/pages/staff/canteen/dashboard";
+import PSCanteenInventory from "@/primaryschool/src/pages/staff/canteen/inventory";
+
 // High School Admin
 import HSAdminLayout from "@/highschool/src/pages/admin/layout";
 import HSAdminDashboard from "@/highschool/src/pages/admin/dashboard";
@@ -54,7 +73,7 @@ import HSAdminFees from "@/highschool/src/pages/admin/fees";
 import HSAdminResults from "@/highschool/src/pages/admin/results";
 import HSAdminAttendance from "@/highschool/src/pages/admin/attendance";
 import HSAdminTimetable from "@/highschool/src/pages/admin/timetable";
-import HSAdminSettings from "@/highschool/src/pages/admin/settings";
+import HSAdminStaffManagement from "@/highschool/src/pages/admin/staff";
 
 // High School Teacher
 import HSTeacherLayout from "@/highschool/src/pages/teacher/layout";
@@ -142,7 +161,7 @@ function AppRoutes() {
         <Route path="results" element={<HSAdminResults />} />
         <Route path="attendance" element={<HSAdminAttendance />} />
         <Route path="timetable" element={<HSAdminTimetable />} />
-        <Route path="settings" element={<HSAdminSettings />} />
+        <Route path="staff" element={<HSAdminStaffManagement />} />
       </Route>
 
       {/* High School Teacher Portal */}
@@ -225,7 +244,7 @@ function AppRoutes() {
       <Route path="/login" element={user ? (
         portal === "highschool"
           ? <Navigate to={`/highschool/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : user.role === "parent" ? "parent-and-student-portal" : "staff"}/${user.role === "staff" && department ? department : "dashboard"}`} replace />
-          : <Navigate to={`/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : user.role === "parent" ? "parent-and-student-portal" : "staff"}/dashboard`} replace />
+          : <Navigate to={`/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : user.role === "parent" ? "parent-and-student-portal" : "staff"}/${user.role === "staff" && department ? department : "dashboard"}`} replace />
       ) : <Login />} />
 
       {/* Admin Portal */}
@@ -239,7 +258,7 @@ function AppRoutes() {
         <Route path="results" element={<AdminResults />} />
         <Route path="attendance" element={<AdminAttendance />} />
         <Route path="timetable" element={<AdminTimetable />} />
-        <Route path="settings" element={<AdminSettings />} />
+        <Route path="staff" element={<AdminStaffManagement />} />
       </Route>
 
       {/* Teacher Portal */}
@@ -271,6 +290,33 @@ function AppRoutes() {
         <Route path="attendance" element={<StaffAttendance />} />
         <Route path="notices" element={<StaffNotices />} />
         <Route path="profile" element={<StaffProfile />} />
+
+        {/* Head Teacher */}
+        <Route path="headteacher">
+          <Route index element={<PSHeadTeacherPortal />} />
+          <Route path="academics" element={<PSHeadTeacherAcademics />} />
+          <Route path="reports" element={<PSHeadTeacherReports />} />
+        </Route>
+
+        {/* Bursar */}
+        <Route path="bursar">
+          <Route index element={<PSBursarPortal />} />
+          <Route path="payroll" element={<PSBursarPayroll />} />
+          <Route path="expenses" element={<PSBursarExpenses />} />
+        </Route>
+
+        {/* Secretary */}
+        <Route path="secretary">
+          <Route index element={<PSSecretaryPortal />} />
+          <Route path="correspondence" element={<PSSecretaryCorrespondence />} />
+          <Route path="records" element={<PSSecretaryRecords />} />
+        </Route>
+
+        {/* Canteen */}
+        <Route path="canteen">
+          <Route index element={<PSCanteenPortal />} />
+          <Route path="inventory" element={<PSCanteenInventory />} />
+        </Route>
       </Route>
 
       {/* Fallback */}

@@ -98,7 +98,7 @@ export default function InventoryPortal() {
                   className="pl-9 h-9 w-[220px] text-xs bg-slate-50 border-slate-200 focus-visible:ring-indigo-500/20"
                 />
               </div>
-              <Select value={category} onValueChange={setCategory}>
+              <Select value={category} onValueChange={(v) => setCategory(v ?? "All")}>
                 <SelectTrigger className="h-9 w-[140px] text-xs bg-slate-50 border-slate-200 font-medium">
                   <SelectValue placeholder="Department" />
                 </SelectTrigger>
