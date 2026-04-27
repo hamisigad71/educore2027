@@ -250,13 +250,19 @@ export default function Login() {
         </aside>
 
         {/* ── RIGHT FORM PANEL ──────────────────────────────────────── */}
-        <main className="flex-1 flex items-center justify-center p-6 sm:p-10 overflow-y-auto bg-white lg:bg-slate-50">
-          <div className="w-full max-w-[420px]">
+        <main className="flex-1 flex items-center justify-center p-4 sm:p-10 overflow-y-auto bg-slate-50 relative">
+          {/* Mobile top background */}
+          <div className="absolute top-0 left-0 right-0 h-64 bg-[#1E1B4B] lg:hidden rounded-b-[2.5rem]" />
+
+          <div className="w-full max-w-[420px] relative z-10 pb-8">
 
             {/* Mobile logo */}
-            <div className="flex lg:hidden items-center justify-center mb-10">
-              <LogoFull src="/logo.png" className="h-[110px] w-auto" />
+            <div className="flex lg:hidden items-center justify-center mb-6 mt-4">
+              <LogoFull src="/draklogo.png" className="h-[90px] w-auto drop-shadow-md" />
             </div>
+
+            {/* Mobile Card Wrapper */}
+            <div className="w-full bg-white p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.06)] lg:shadow-none lg:bg-transparent lg:p-0">
 
             {/* Portal Selector */}
             <div className="mb-6">
@@ -482,9 +488,10 @@ export default function Login() {
             )}
 
             {/* Footer */}
-            <p className="text-center text-[11px] text-slate-400 mt-8">
+            <p className="text-center text-[11px] text-slate-400 mt-6 lg:mt-8">
               EduCore v1.0 — Built for Kenyan Schools 🇰🇪
             </p>
+            </div>{/* end card wrapper */}
           </div>
         </main>
 

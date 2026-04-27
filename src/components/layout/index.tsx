@@ -307,6 +307,8 @@ function Sidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const navigate = useNavigate();
+  const { portal } = useAuth();
+  const portalLabel = portal === "highschool" ? "High School" : "Primary School";
 
   return (
     <>
@@ -348,7 +350,7 @@ function Sidebar({
               <h2 className="text-[15px] font-bold text-slate-900 truncate tracking-tight">{label}</h2>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">High School</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">{portalLabel}</span>
               </div>
             </div>
           )}
