@@ -27,6 +27,14 @@ import TeacherStudents from "@/primaryschool/src/pages/teacher/students";
 import TeacherMarks from "@/primaryschool/src/pages/teacher/marks";
 import TeacherAttendance from "@/primaryschool/src/pages/teacher/attendance";
 import TeacherProfile from "@/primaryschool/src/pages/teacher/profile";
+import TeacherLessons from "@/primaryschool/src/pages/teacher/lessons";
+import TeacherTimetable from "@/primaryschool/src/pages/teacher/timetable";
+import TeacherResources from "@/primaryschool/src/pages/teacher/resources";
+import TeacherAssignments from "@/primaryschool/src/pages/teacher/assignments";
+import TeacherConduct from "@/primaryschool/src/pages/teacher/conduct";
+import TeacherWelfare from "@/primaryschool/src/pages/teacher/welfare";
+import TeacherAnalytics from "@/primaryschool/src/pages/teacher/analytics";
+import TeacherRequests from "@/primaryschool/src/pages/teacher/requests";
 
 // Parent/Student Portal
 import ParentLayout from "@/primaryschool/src/pages/parent-and-student-portal/layout";
@@ -83,6 +91,14 @@ import HSTeacherStudents from "@/highschool/src/pages/teacher/students";
 import HSTeacherMarks from "@/highschool/src/pages/teacher/marks";
 import HSTeacherAttendance from "@/highschool/src/pages/teacher/attendance";
 import HSTeacherProfile from "@/highschool/src/pages/teacher/profile";
+import HSTeacherLessons from "@/highschool/src/pages/teacher/lessons";
+import HSTeacherTimetable from "@/highschool/src/pages/teacher/timetable";
+import HSTeacherResources from "@/highschool/src/pages/teacher/resources";
+import HSTeacherAssignments from "@/highschool/src/pages/teacher/assignments";
+import HSTeacherConduct from "@/highschool/src/pages/teacher/conduct";
+import HSTeacherWelfare from "@/highschool/src/pages/teacher/welfare";
+import HSTeacherAnalytics from "@/highschool/src/pages/teacher/analytics";
+import HSTeacherRequests from "@/highschool/src/pages/teacher/requests";
 
 // High School Parent/Student Portal
 import HSParentLayout from "@/highschool/src/pages/parent-and-student-portal/layout";
@@ -173,6 +189,14 @@ function AppRoutes() {
         <Route path="marks" element={<HSTeacherMarks />} />
         <Route path="attendance" element={<HSTeacherAttendance />} />
         <Route path="profile" element={<HSTeacherProfile />} />
+        <Route path="lessons" element={<HSTeacherLessons />} />
+        <Route path="timetable" element={<HSTeacherTimetable />} />
+        <Route path="resources" element={<HSTeacherResources />} />
+        <Route path="assignments" element={<HSTeacherAssignments />} />
+        <Route path="conduct" element={<HSTeacherConduct />} />
+        <Route path="welfare" element={<HSTeacherWelfare />} />
+        <Route path="analytics" element={<HSTeacherAnalytics />} />
+        <Route path="requests" element={<HSTeacherRequests />} />
       </Route>
 
       {/* High School Parent/Student Portal */}
@@ -270,6 +294,14 @@ function AppRoutes() {
         <Route path="marks" element={<TeacherMarks />} />
         <Route path="attendance" element={<TeacherAttendance />} />
         <Route path="profile" element={<TeacherProfile />} />
+        <Route path="lessons" element={<TeacherLessons />} />
+        <Route path="timetable" element={<TeacherTimetable />} />
+        <Route path="resources" element={<TeacherResources />} />
+        <Route path="assignments" element={<TeacherAssignments />} />
+        <Route path="conduct" element={<TeacherConduct />} />
+        <Route path="welfare" element={<TeacherWelfare />} />
+        <Route path="analytics" element={<TeacherAnalytics />} />
+        <Route path="requests" element={<TeacherRequests />} />
       </Route>
 
       {/* Parent/Student Portal */}

@@ -191,7 +191,7 @@ export default function AdminTeachers() {
                   className="pl-9 h-9 w-[260px] text-sm bg-slate-50 border-slate-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400"
                 />
               </div>
-              <Select value={subjectFilter} onValueChange={setSubjectFilter}>
+              <Select value={subjectFilter} onValueChange={(v) => setSubjectFilter(v ?? "All")}>
                 <SelectTrigger className="h-9 w-[155px] text-sm bg-slate-50 border-slate-200">
                   <SelectValue placeholder="All Subjects" />
                 </SelectTrigger>
@@ -310,7 +310,7 @@ export default function AdminTeachers() {
                             <Pencil size={12} />Edit
                           </Button>
                           <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
+                          <DropdownMenuTrigger>
                               <Button variant="ghost" size="sm"
                                 className="h-8 w-8 p-0 text-slate-400 hover:text-slate-600 hover:bg-slate-100">
                                 <MoreHorizontal size={14} />

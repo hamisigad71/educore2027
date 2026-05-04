@@ -299,7 +299,7 @@ export default function StaffTasks() {
                     </button>
 
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+                    <DropdownMenuTrigger>
                         <button className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 opacity-0 group-hover:opacity-100 transition-all">
                           <MoreVertical size={13} />
                         </button>
@@ -400,9 +400,7 @@ export default function StaffTasks() {
             </div>
           </div>
           <DialogFooter className="gap-2">
-            <DialogClose asChild>
-              <Button variant="outline" size="sm" className="text-xs">Cancel</Button>
-            </DialogClose>
+            <DialogClose render={<Button variant="outline" size="sm" className="text-xs" />}>Cancel</DialogClose>
             <Button size="sm" onClick={saveTask} className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs gap-1.5">
               {editTask ? <><Edit3 size={12}/> Save Changes</> : <><Plus size={12}/> Create Task</>}
             </Button>

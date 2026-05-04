@@ -104,12 +104,35 @@ const teacherNav: NavGroup[] = [
     ],
   },
   {
+    groupLabel: "Academic",
+    items: [
+      { to: "/teacher/classes",     label: "My Classes",     icon: Users, badge: "5" },
+      { to: "/teacher/lessons",     label: "Lesson Planner", icon: BookOpen },
+      { to: "/teacher/timetable",   label: "My Timetable",   icon: CalendarClock },
+      { to: "/teacher/resources",   label: "Resources",      icon: Library },
+      { to: "/teacher/assignments", label: "Assignments",    icon: FileText },
+    ],
+  },
+  {
     groupLabel: "Teaching",
     items: [
-      { to: "/teacher/classes",    label: "My Classes",  icon: Users,          badge: "5"  },
-      { to: "/teacher/students",   label: "Students",    icon: GraduationCap              },
-      { to: "/teacher/marks",      label: "Enter Marks", icon: ClipboardList              },
-      { to: "/teacher/attendance", label: "Attendance",  icon: CalendarDays               },
+      { to: "/teacher/students",   label: "Students",    icon: GraduationCap },
+      { to: "/teacher/marks",      label: "Enter Marks", icon: ClipboardList },
+      { to: "/teacher/attendance", label: "Attendance",  icon: CalendarDays },
+    ],
+  },
+  {
+    groupLabel: "Welfare & Conduct",
+    items: [
+      { to: "/teacher/conduct", label: "Behavioral Log", icon: ShieldAlert },
+      { to: "/teacher/welfare", label: "Student Welfare", icon: Stethoscope },
+    ],
+  },
+  {
+    groupLabel: "Management",
+    items: [
+      { to: "/teacher/analytics", label: "Analytics",      icon: BarChart3 },
+      { to: "/teacher/requests",  label: "Leaves & Reqs",  icon: Archive },
     ],
   },
   {
@@ -911,20 +934,51 @@ export function PageHeader({
   subtitle,
   actions,
   badge,
+  variant = "default",
 }: {
   title: string;
   subtitle?: string;
   actions?: React.ReactNode;
   badge?: { label: string; variant?: "default" | "success" | "warning" | "danger" };
+  variant?: "default" | "banner";
 }) {
+  if (variant === "banner") {
+    return (
+      <div className="relative overflow-hidden rounded-[24px] bg-primary text-white p-6 sm:p-8 mb-8 shadow-xl shadow-indigo-200/20">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 h-full w-1/2 opacity-10 pointer-events-none select-none">
+          <Building2 size={180} className="absolute -right-4 -bottom-8 rotate-12" />
+        </div>
+        <div className="absolute top-0 left-1/4 h-full w-1/4 bg-white/5 skew-x-[30deg] pointer-events-none" />
+        
+        <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-6">
+          <div className="text-center sm:text-left">
+            <p className="text-indigo-100/80 text-xs sm:text-sm font-medium mb-1.5 uppercase tracking-widest">{subtitle}</p>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2 flex items-center justify-center sm:justify-start gap-3">
+              {title}
+            </h1>
+            <div className="flex items-center justify-center sm:justify-start gap-2 text-indigo-100/70 text-[11px] font-semibold uppercase tracking-wider">
+               <MapPin size={12} /> Greenwood High School
+            </div>
+          </div>
+          {actions && (
+            <div className="shrink-0">
+              {actions}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-7">
       <div className="flex items-start gap-3">
         {/* Vertical accent */}
-        <div className="w-1 h-10 rounded-full bg-indigo-600 mt-0.5 shrink-0 hidden sm:block" />
+        <div className="w-1 h-10 rounded-full bg-primary mt-0.5 shrink-0 hidden sm:block" />
         <div>
           <div className="flex items-center gap-2.5 flex-wrap">
-            <h1 className="text-[22px] font-semibold text-slate-900 tracking-tight leading-tight">
+            <h1 className="text-[22px] font-semibold text-foreground tracking-tight leading-tight">
               {title}
             </h1>
             {badge && (
@@ -940,7 +994,7 @@ export function PageHeader({
             )}
           </div>
           {subtitle && (
-            <p className="text-sm text-slate-500 mt-1 leading-snug">{subtitle}</p>
+            <p className="text-sm text-muted-foreground mt-1 leading-snug">{subtitle}</p>
           )}
         </div>
       </div>

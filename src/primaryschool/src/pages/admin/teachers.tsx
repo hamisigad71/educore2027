@@ -307,7 +307,7 @@ export default function AdminTeachers() {
                             <Pencil size={12} />Edit
                           </Button>
                           <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
+                          <DropdownMenuTrigger>
                               <Button variant="ghost" size="sm"
                                 className="h-8 w-8 p-0 text-slate-400 hover:text-slate-600 hover:bg-slate-100">
                                 <MoreHorizontal size={14} />

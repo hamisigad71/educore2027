@@ -40,31 +40,31 @@ function StaffStatCard({
   return (
     <Card 
       className={cn(
-        "shadow-lg border-slate-200/80 transition-all duration-300",
-        interactive && "cursor-pointer hover:shadow-xl hover:-translate-y-1 hover:border-indigo-300"
+        "relative overflow-hidden border-0 shadow-lg bg-gradient-to-br from-primary to-indigo-700 text-white transition-all duration-300",
+        interactive && "cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
       )}
       onClick={onClick}
     >
-      <CardContent className="p-6">
+      {/* Decorative Blur */}
+      <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+      
+      <CardContent className="p-6 relative z-10">
         <div className="flex items-center justify-between mb-4">
-          <div className={cn("h-12 w-12 rounded-xl flex items-center justify-center border shadow-sm", color)}>
-            <Icon size={20} />
+          <div className="h-12 w-12 rounded-xl flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 shadow-inner">
+            <Icon size={20} className="text-white" />
           </div>
           {trend && (
             <div className={cn(
-              "flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold",
-              trend === "up" ? "bg-emerald-50 text-emerald-700" :
-              trend === "down" ? "bg-rose-50 text-rose-700" :
-              "bg-slate-50 text-slate-700"
+              "flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold border border-white/20 bg-white/10 backdrop-blur-sm text-white"
             )}>
               <TrendingUp size={12} className={trend === "down" ? "rotate-180" : ""} />
               {change}
             </div>
           )}
         </div>
-        <p className="text-2xl font-bold text-slate-900 tracking-tight leading-none mb-1">{value}</p>
-        <p className="text-sm font-semibold text-slate-700 mb-1">{label}</p>
-        <p className="text-xs text-slate-500">{subText}</p>
+        <p className="text-2xl font-bold tracking-tight leading-none mb-2 text-white">{value}</p>
+        <p className="text-[12px] font-bold text-white/90 mb-1 uppercase tracking-wider">{label}</p>
+        <p className="text-[10px] text-white/50 font-medium italic truncate">{subText}</p>
       </CardContent>
     </Card>
   );
@@ -96,10 +96,10 @@ function TimeTracker() {
       <CardContent className="p-6">
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Timer className="h-5 w-5 text-indigo-600" />
-            <h3 className="font-semibold text-slate-900">Work Timer</h3>
+            <Timer className="h-5 w-5 text-primary" />
+            <h3 className="font-semibold text-foreground">Work Timer</h3>
           </div>
-          <div className="text-3xl font-mono font-bold text-slate-900 tracking-wider">
+          <div className="text-3xl font-mono font-bold text-foreground tracking-wider">
             {formatTime(elapsed)}
           </div>
           <Button
@@ -327,49 +327,19 @@ export default function StaffDashboard() {
 
   return (
     <div className="space-y-8">
-      {/* Enhanced Welcome Section */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 via-amber-600 to-orange-600 p-8 text-white shadow-2xl">
-        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-          <Construction size={120} />
-        </div>
-        <div className="relative z-10 grid md:grid-cols-2 gap-6 items-center">
-          <div className="flex items-center gap-6">
-            <Avatar className="h-20 w-20 border-4 border-white/30 shadow-xl bg-white/10">
-              <AvatarImage src={user?.photo} className="object-cover" />
-              <AvatarFallback className="text-xl font-bold text-amber-700 bg-white">
-                {user?.name?.split(" ").map((n:any) => n[0]).slice(0,2).join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="text-amber-100 text-sm font-medium mb-1">
-                {getGreeting()}, it's {currentTime.toLocaleDateString('en-KE', { weekday: 'long' })} 👋
-              </p>
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">{user?.name}</h2>
-              <div className="flex flex-wrap gap-2">
-                <Badge className="bg-white/20 text-white border-white/30 font-semibold">
-                  <Briefcase className="mr-1 h-3 w-3" />
-                  Operations Staff
-                </Badge>
-                <Badge className="bg-white/20 text-white border-white/30 font-semibold">
-                  <Construction className="mr-1 h-3 w-3" />
-                  Maintenance Team
-                </Badge>
-              </div>
-            </div>
+      <PageHeader 
+        variant="banner"
+        title={`Hello, ${user?.name?.split(" ")[1] ?? "Staff"} 👋`} 
+        subtitle={Math.floor(currentTime.getHours() / 12) === 0 ? "Good Morning" : "Good Afternoon"} 
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <Badge className="bg-white/20 text-white border-white/30 font-semibold backdrop-blur-sm">
+              <Briefcase className="mr-1 h-3 w-3" />
+              Operations Staff
+            </Badge>
           </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/20">
-              <p className="text-3xl font-bold text-white">{completionRate}%</p>
-              <p className="text-amber-100 text-sm font-medium">Tasks Complete</p>
-            </div>
-            <div className="text-center bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/20">
-              <p className="text-3xl font-bold text-white">8.5</p>
-              <p className="text-amber-100 text-sm font-medium">Hours Today</p>
-            </div>
-          </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Enhanced Stats Grid */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -420,12 +390,12 @@ export default function StaffDashboard() {
             <CardHeader className="bg-gradient-to-r from-slate-50 to-white border-b border-slate-200/60 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-xl font-bold text-slate-900">Work Queue</CardTitle>
-                  <CardDescription className="text-sm text-slate-600 mt-1">
+                  <CardTitle className="text-xl font-bold text-foreground">Work Queue</CardTitle>
+                  <CardDescription className="text-sm text-muted-foreground mt-1">
                     Your assigned tasks and maintenance work orders
                   </CardDescription>
                 </div>
-                <Button className="bg-indigo-600 hover:bg-indigo-700 shadow-sm">
+                <Button className="bg-primary hover:bg-primary/90 shadow-sm">
                   <Plus className="mr-2 h-4 w-4" />
                   New Task
                 </Button>

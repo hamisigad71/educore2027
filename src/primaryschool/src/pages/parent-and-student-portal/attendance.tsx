@@ -377,9 +377,7 @@ export default function PortalAttendance() {
                 </p>
               </div>
 
-              <DialogClose asChild>
-                <Button variant="outline" size="sm" className="w-full text-xs font-semibold">Close</Button>
-              </DialogClose>
+              <DialogClose render={<Button variant="outline" size="sm" className="w-full text-xs font-semibold" />}>Close</DialogClose>
             </div>
           )}
         </DialogContent>
@@ -421,9 +419,7 @@ export default function PortalAttendance() {
             </div>
           </div>
           <DialogFooter className="gap-2">
-            <DialogClose asChild>
-              <Button variant="outline" size="sm" className="text-xs">Cancel</Button>
-            </DialogClose>
+            <DialogClose render={<Button variant="outline" size="sm" className="text-xs" />}>Cancel</DialogClose>
             <Button
               size="sm"
               onClick={submitLeave}

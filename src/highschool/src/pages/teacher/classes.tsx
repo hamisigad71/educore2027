@@ -1,4 +1,4 @@
-import React from "react";
+
 import { PageHeader } from "@/components/layout";
 import { teachersSeed } from "../../data/mockData";
 

@@ -338,87 +338,130 @@ export default function PortalDashboard() {
                 <span className="text-sm font-semibold text-indigo-600">{avgScore}%</span>
               </div>
             </div>
+
+            <Separator />
+
+            {/* Relocated Sections */}
+            <div className="grid md:grid-cols-2 gap-0 border-t border-slate-100">
+              {/* School Notices Section */}
+              <div className="p-5 border-r border-slate-100">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">School Notices</p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">Latest announcements</p>
+                  </div>
+                  <div className="relative">
+                    <Bell size={14} className="text-slate-400" />
+                    <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-rose-500 border-2 border-white" />
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {student.balance > 0 && (
+                    <div className="flex gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                      <AlertCircle size={12} className="text-slate-400 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-[11px] font-semibold text-slate-900 border-l-2 border-indigo-500 pl-2">Fee Balance Due</p>
+                        <p className="text-[10px] text-slate-500 mt-1 leading-relaxed pl-2">
+                          {currency(student.balance)} remaining.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                    <Calendar size={12} className="text-indigo-500 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-[11px] font-semibold text-indigo-900">PTA General Meeting</p>
+                      <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">
+                        Saturday, 9:00 AM · Main Hall
+                      </p>
+                    </div>
+                  </div>
+                  <Button variant="ghost" size="sm"
+                    className="w-full text-[10px] text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 gap-1 h-7">
+                    All Notices <ChevronRight size={10} />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Quick Access Section */}
+              <div className="p-6 bg-white">
+                <div className="flex items-center justify-between mb-5 px-1">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400">Quick Access</p>
+                  <div className="h-1 w-8 bg-indigo-100 rounded-full" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { label: "Results", icon: Trophy, color: "text-indigo-600", bg: "bg-indigo-50", border: "hover:border-indigo-200", shadow: "hover:shadow-indigo-50", href: "/highschool/parent-and-student-portal/results" },
+                    { label: "Attendance", icon: ClipboardList, color: "text-emerald-600", bg: "bg-emerald-50", border: "hover:border-emerald-200", shadow: "hover:shadow-emerald-50", href: "/highschool/parent-and-student-portal/attendance" },
+                    { label: "Fees", icon: CreditCard, color: "text-amber-600", bg: "bg-amber-50", border: "hover:border-amber-200", shadow: "hover:shadow-amber-50", href: "/highschool/parent-and-student-portal/fees" },
+                    { label: "Profile", icon: GraduationCap, color: "text-purple-600", bg: "bg-purple-50", border: "hover:border-purple-200", shadow: "hover:shadow-purple-50", href: "/highschool/parent-and-student-portal/profile" },
+                  ].map((l) => (
+                    <button key={l.href}
+                      onClick={() => navigate(l.href)}
+                      className={cn(
+                        "flex flex-col items-start gap-3 w-full p-4 rounded-2xl transition-all duration-300",
+                        "border border-slate-100 bg-white group text-left",
+                        "hover:shadow-lg hover:-translate-y-1",
+                        l.border, l.shadow
+                      )}
+                    >
+                      <div className={cn("h-9 w-9 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110", l.bg)}>
+                        <l.icon size={16} className={l.color} />
+                      </div>
+                      <div className="space-y-0.5">
+                        <span className="text-[13px] font-bold text-slate-800 group-hover:text-slate-900 block">{l.label}</span>
+                        <span className="text-[9px] text-slate-400 font-medium flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          View details <ChevronRight size={8} />
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
         {/* Right column */}
         <div className="space-y-5">
 
-          {/* School Notices */}
-          <Card className="shadow-sm border-slate-200/80">
+          {/* Marketing Card */}
+          <Card className="shadow-sm border-slate-200/80 overflow-hidden group">
             <CardHeader className="p-0">
-              <div className="flex items-center justify-between px-5 pt-5 pb-4">
+               <div className="flex items-center justify-between px-5 pt-5 pb-4 bg-gradient-to-r from-amber-50 to-bg-card">
                 <div>
-                  <CardTitle className="text-base font-semibold text-slate-900">School Notices</CardTitle>
-                  <CardDescription className="text-sm text-slate-500 mt-0.5">Latest announcements</CardDescription>
+                  <CardTitle className="text-base font-bold text-slate-900">Partner Features</CardTitle>
+                  <CardDescription className="text-xs text-amber-600 font-medium">Exclusive offers for EduCore parents</CardDescription>
                 </div>
-                <div className="relative">
-                  <Bell size={16} className="text-slate-400" />
-                  <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-rose-500 border-2 border-white" />
+                <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+                  <Star size={14} className="fill-amber-600" />
                 </div>
               </div>
               <Separator />
             </CardHeader>
-            <CardContent className="p-4 space-y-3">
-              {student.balance > 0 && (
-                <div className="flex gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                  <AlertCircle size={14} className="text-slate-400 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-xs font-semibold text-slate-900 border-l-2 border-indigo-500 pl-2">Fee Balance Due</p>
-                    <p className="text-[11px] text-slate-500 mt-1 leading-relaxed pl-2">
-                      {currency(student.balance)} remaining. Clear before end of term.
-                    </p>
-                  </div>
-                </div>
-              )}
-              <div className="flex gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                <Calendar size={14} className="text-indigo-500 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-semibold text-indigo-900">PTA General Meeting</p>
-                  <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
-                    Saturday, 9:00 AM · Main Hall
-                  </p>
+            <CardContent className="p-0 relative">
+              <div className="w-full bg-slate-100 relative overflow-hidden border-b border-slate-100">
+                <img 
+                  src="/wap2.png" 
+                  alt="Partner Promotion" 
+                  className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                  <p className="text-white text-[10px] font-bold uppercase tracking-wider mb-1">New Partner Deal</p>
+                  <p className="text-white/80 text-[9px] font-medium leading-tight">Click to explore exclusive savings on school supplies and more.</p>
                 </div>
               </div>
-              <div className="flex gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                <CheckCircle2 size={14} className="text-slate-400 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-semibold text-slate-900">Term 2 Finals</p>
-                  <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
-                    Begins 15th October. Timetables posted.
-                  </p>
-                </div>
+              <div className="p-4 bg-slate-50/50">
+                <Button className="w-full h-9 bg-slate-900 hover:bg-black text-white text-[11px] font-bold rounded-xl gap-2 shadow-lg shadow-slate-200 transition-all active:scale-95">
+                  Learn More <ArrowUpRight size={14} />
+                </Button>
               </div>
-              <Button variant="ghost" size="sm"
-                className="w-full text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 gap-1 mt-1 h-8">
-                All Notices <ChevronRight size={12} />
-              </Button>
             </CardContent>
           </Card>
 
-          {/* Quick Links */}
-          <Card className="shadow-sm border-slate-200/80">
-            <CardContent className="p-4 space-y-2">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 px-1 mb-3">Quick Access</p>
-              {[
-                { label: "My Results", icon: Trophy, color: "text-indigo-600", bg: "bg-indigo-50", href: "/highschool/parent-and-student-portal/results" },
-                { label: "Attendance Record", icon: ClipboardList, color: "text-emerald-600", bg: "bg-emerald-50", href: "/highschool/parent-and-student-portal/attendance" },
-                { label: "Fee Statement", icon: CreditCard, color: "text-amber-600", bg: "bg-amber-50", href: "/highschool/parent-and-student-portal/fees" },
-                { label: "My Profile", icon: GraduationCap, color: "text-purple-600", bg: "bg-purple-50", href: "/highschool/parent-and-student-portal/profile" },
-              ].map((l) => (
-                <button key={l.href}
-                  onClick={() => navigate(l.href)}
-                  className="flex items-center gap-3 w-full p-2.5 rounded-xl hover:bg-slate-50 transition-colors group text-left"
-                >
-                  <div className={cn("h-8 w-8 rounded-lg flex items-center justify-center shrink-0", l.bg)}>
-                    <l.icon size={14} className={l.color} />
-                  </div>
-                  <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900 flex-1">{l.label}</span>
-                  <ArrowUpRight size={13} className="text-slate-300 group-hover:text-slate-400" />
-                </button>
-              ))}
-            </CardContent>
-          </Card>
+
+
+
 
         </div>
       </div>

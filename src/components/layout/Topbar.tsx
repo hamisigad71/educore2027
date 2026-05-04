@@ -303,7 +303,7 @@ export function Topbar({
 
           {/* Notifications bell */}
           <Popover>
-            <PopoverTrigger asChild>
+            <PopoverTrigger>
               <Button
                 variant="ghost"
                 size="sm"
@@ -402,7 +402,7 @@ export function Topbar({
 
           {/* User dropdown */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger>
               <button className="flex items-center gap-2.5 pl-1 hover:bg-slate-50 rounded-xl pr-2 py-1 transition-colors group">
                 <Avatar className="h-8 w-8 ring-2 ring-slate-100 group-hover:ring-indigo-200 transition-all shadow-sm">
                   <AvatarImage src={userImg || user?.photo} className="object-cover" />

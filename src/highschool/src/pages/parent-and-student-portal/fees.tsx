@@ -368,9 +368,7 @@ export default function PortalFees() {
             </div>
           </div>
           <DialogFooter className="gap-2">
-            <DialogClose asChild>
-              <Button variant="outline" size="sm" className="text-xs">Cancel</Button>
-            </DialogClose>
+            <DialogClose render={<Button variant="outline" size="sm" className="text-xs" />}>Cancel</DialogClose>
             <Button
               size="sm"
               onClick={handlePay}
@@ -427,9 +425,7 @@ export default function PortalFees() {
                   >
                     <Download size={12} /> Download Receipt
                   </Button>
-                  <DialogClose asChild>
-                    <Button variant="outline" size="sm" className="text-xs font-semibold">Close</Button>
-                  </DialogClose>
+                  <DialogClose render={<Button variant="outline" size="sm" className="text-xs font-semibold" />}>Close</DialogClose>
                 </div>
               </div>
             );

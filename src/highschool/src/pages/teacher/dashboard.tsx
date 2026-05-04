@@ -1,4 +1,4 @@
-import React from "react";
+
 import { PageHeader } from "@/components/layout";
 import { useAuth } from "@/context/AuthContext";
 import { teachersSeed, studentsSeed } from "../../data/mockData";

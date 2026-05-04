@@ -172,7 +172,7 @@ export default function AdminStudents() {
                   className="pl-9 h-9 w-[220px] text-sm bg-slate-50 border-slate-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400"
                 />
               </div>
-              <Select value={klassFilter} onValueChange={setKlassFilter}>
+              <Select value={klassFilter} onValueChange={(v) => setKlassFilter(v ?? "All")}>
                 <SelectTrigger className="h-9 w-[140px] text-sm bg-slate-50 border-slate-200">
                   <SelectValue placeholder="All Classes" />
                 </SelectTrigger>
@@ -283,7 +283,7 @@ export default function AdminStudents() {
                             <Pencil size={12} />Edit
                           </Button>
                           <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
+                          <DropdownMenuTrigger>
                               <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-400 hover:text-slate-600">
                                 <MoreHorizontal size={14} />
                               </Button>

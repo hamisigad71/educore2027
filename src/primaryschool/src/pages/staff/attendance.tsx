@@ -303,9 +303,7 @@ export default function StaffAttendance() {
                     </div>
                   ))}
                 </div>
-                <DialogClose asChild>
-                  <Button variant="outline" size="sm" className="w-full text-xs font-semibold">Close</Button>
-                </DialogClose>
+                <DialogClose render={<Button variant="outline" size="sm" className="w-full text-xs font-semibold" />}>Close</DialogClose>
               </div>
             );
           })()}

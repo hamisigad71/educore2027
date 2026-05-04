@@ -96,7 +96,7 @@ function Badge({ children, className }: { children: React.ReactNode; className?:
 
 function GradientText({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <span className={cn("text-indigo-600", className)}>
+    <span className={cn("text-primary", className)}>
       {children}
     </span>
   );
@@ -118,11 +118,11 @@ function FeatureCard({ icon: Icon, title, description, color = "indigo", delay =
   icon: any; title: string; description: string; color?: string; delay?: number;
 }) {
   const colorMap: Record<string, { bg: string; text: string; hover: string; glow: string }> = {
-    indigo: { bg: "bg-indigo-50", text: "text-indigo-600", hover: "group-hover:bg-indigo-600", glow: "group-hover:shadow-indigo-100" },
-    violet: { bg: "bg-violet-50", text: "text-violet-600", hover: "group-hover:bg-violet-600", glow: "group-hover:shadow-violet-100" },
-    emerald: { bg: "bg-emerald-50", text: "text-emerald-600", hover: "group-hover:bg-emerald-600", glow: "group-hover:shadow-emerald-100" },
-    amber: { bg: "bg-amber-50", text: "text-amber-600", hover: "group-hover:bg-amber-600", glow: "group-hover:shadow-amber-100" },
-    sky: { bg: "bg-sky-50", text: "text-sky-600", hover: "group-hover:bg-sky-600", glow: "group-hover:shadow-sky-100" },
+    indigo: { bg: "bg-primary/10", text: "text-primary", hover: "group-hover:bg-primary", glow: "group-hover:shadow-primary/10" },
+    violet: { bg: "bg-chart-5/10", text: "text-chart-5", hover: "group-hover:bg-chart-5", glow: "group-hover:shadow-chart-5/10" },
+    emerald: { bg: "bg-chart-1/10", text: "text-chart-1", hover: "group-hover:bg-chart-1", glow: "group-hover:shadow-chart-1/10" },
+    amber: { bg: "bg-chart-2/10", text: "text-chart-2", hover: "group-hover:bg-chart-2", glow: "group-hover:shadow-chart-2/10" },
+    sky: { bg: "bg-chart-3/20", text: "text-indigo-600", hover: "group-hover:bg-indigo-600", glow: "group-hover:shadow-indigo-100" },
     rose: { bg: "bg-rose-50", text: "text-rose-600", hover: "group-hover:bg-rose-600", glow: "group-hover:shadow-rose-100" },
   };
   const c = colorMap[color] || colorMap.indigo;
@@ -136,13 +136,13 @@ function FeatureCard({ icon: Icon, title, description, color = "indigo", delay =
       custom={delay}
       whileHover={{ y: -6 }}
       className={cn(
-        "relative p-7 rounded-3xl bg-white border border-slate-100/80 shadow-sm group",
+        "relative p-7 rounded-3xl bg-card border border-border/50 shadow-sm group",
         "transition-all duration-300 hover:shadow-2xl hover:border-transparent cursor-default overflow-hidden",
         c.glow
       )}
     >
       {/* Background pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-transparent to-slate-50/50 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent to-secondary/50 pointer-events-none" />
       
       <div className={cn(
         "relative w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300",
@@ -150,8 +150,8 @@ function FeatureCard({ icon: Icon, title, description, color = "indigo", delay =
       )}>
         <Icon size={26} />
       </div>
-      <h3 className="relative text-base font-black text-slate-900 mb-2.5 tracking-tight">{title}</h3>
-      <p className="relative text-sm text-slate-500 leading-relaxed font-medium">{description}</p>
+      <h3 className="relative text-base font-black text-foreground mb-2.5 tracking-tight">{title}</h3>
+      <p className="relative text-sm text-muted-foreground leading-relaxed font-medium">{description}</p>
       
       {/* Hover border glow */}
       <div className="absolute inset-0 rounded-3xl border-2 border-transparent group-hover:border-indigo-100 transition-all duration-300 pointer-events-none" />
@@ -198,12 +198,12 @@ function TestimonialCard({ quote, name, role, school, avatar, rating = 5, delay 
       </div>
       <p className="text-sm text-slate-600 leading-relaxed font-medium mb-6 italic">"{quote}"</p>
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-indigo-100">
+        <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-primary/10">
           <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatar}`} alt={name} className="w-full h-full" />
         </div>
         <div>
-          <div className="text-sm font-black text-slate-900">{name}</div>
-          <div className="text-[11px] text-slate-400 font-semibold">{role} · {school}</div>
+          <div className="text-sm font-black text-foreground">{name}</div>
+          <div className="text-[11px] text-muted-foreground font-semibold">{role} · {school}</div>
         </div>
       </div>
     </motion.div>
@@ -224,8 +224,8 @@ function PricingCard({ tier, price, description, features, highlighted = false, 
       className={cn(
         "relative p-8 rounded-3xl border transition-all duration-300",
         highlighted
-          ? "bg-indigo-600 border-indigo-500 shadow-2xl shadow-indigo-200 text-white"
-          : "bg-white border-slate-100 shadow-sm hover:shadow-xl hover:shadow-indigo-50/30 text-slate-900"
+          ? "bg-primary border-primary shadow-2xl shadow-primary/20 text-primary-foreground"
+          : "bg-card border-border shadow-sm hover:shadow-xl hover:shadow-primary/5 text-foreground"
       )}
     >
       {highlighted && (
@@ -260,8 +260,8 @@ function PricingCard({ tier, price, description, features, highlighted = false, 
         className={cn(
           "flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl text-sm font-black transition-all duration-200 hover:-translate-y-0.5",
           highlighted
-            ? "bg-white text-indigo-600 hover:bg-indigo-50 shadow-lg"
-            : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-100"
+            ? "bg-white text-primary hover:bg-secondary shadow-lg"
+            : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/10"
         )}
       >
         Get Started <ArrowRight size={14} />
@@ -300,7 +300,7 @@ function DashboardMockup() {
       </div>
 
       {/* Dashboard body */}
-      <div className="bg-slate-50 aspect-[16/10] flex">
+      <div className="bg-secondary aspect-[16/10] flex">
         {/* Sidebar */}
         <div className="w-16 bg-indigo-600 flex flex-col items-center py-4 gap-4">
           <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
@@ -500,7 +500,7 @@ export default function Home() {
       </div>
 
       {/* Desktop Homepage */}
-      <div className="hidden md:block min-h-screen bg-white selection:bg-indigo-100 selection:text-indigo-900">
+      <div className="hidden md:block min-h-screen bg-background selection:bg-primary/10 selection:text-primary">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800;9..40,900&family=DM+Serif+Display:ital@0;1&display=swap');
         * { font-family: 'DM Sans', sans-serif; }
@@ -619,7 +619,7 @@ export default function Home() {
                 initial="hidden"
                 animate="visible"
                 custom={0.1}
-                className="text-5xl lg:text-6xl xl:text-7xl font-black text-slate-900 leading-[1.03] tracking-tight mb-8"
+                className="text-5xl lg:text-6xl xl:text-7xl font-black text-foreground leading-[1.03] tracking-tight mb-8"
               >
                 The Modern
                  School ERP 
@@ -1350,7 +1350,7 @@ export default function Home() {
       </section>
 
       {/* ── FOOTER ────────────────────────────────────────────────────────── */}
-      <footer className="bg-slate-50 text-slate-500 border-t border-slate-200">
+      <footer className="bg-secondary text-muted-foreground border-t border-border">
         <div className="max-w-7xl mx-auto px-6 py-20">
           <div className="grid md:grid-cols-5 gap-12 mb-16">
             {/* Brand col */}
