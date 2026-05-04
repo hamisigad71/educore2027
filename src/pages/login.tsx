@@ -515,7 +515,11 @@ export default function Login() {
 
             {/* ── Brand Footer ── */}
             <div className="mt-8 flex flex-col items-center gap-1.5 opacity-25">
-              <LogoIcon size={20} />
+              <img 
+                src="/logo.png" 
+                alt="EduCore" 
+                className="h-5 w-auto object-contain" 
+              />
               <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-slate-500">
                 EduCore Ecosystem · v1.2.0
               </p>
