@@ -43,6 +43,18 @@ import PortalResults from "@/primaryschool/src/pages/parent-and-student-portal/r
 import PortalFees from "@/primaryschool/src/pages/parent-and-student-portal/fees";
 import PortalAttendance from "@/primaryschool/src/pages/parent-and-student-portal/attendance";
 import PortalProfile from "@/primaryschool/src/pages/parent-and-student-portal/profile";
+import PortalResources from "@/primaryschool/src/pages/parent-and-student-portal/resources";
+import PortalReports from "@/primaryschool/src/pages/parent-and-student-portal/reports";
+import PortalNotices from "@/primaryschool/src/pages/parent-and-student-portal/notices";
+import PortalCalendar from "@/primaryschool/src/pages/parent-and-student-portal/calendar";
+import PortalMessages from "@/primaryschool/src/pages/parent-and-student-portal/messages";
+import { PortalPlaceholder } from "@/components/portal/PortalPlaceholder";
+import PortalTransport from "./primaryschool/src/pages/parent-and-student-portal/transport";
+import PortalConduct from "./primaryschool/src/pages/parent-and-student-portal/conduct";
+import PortalMeals from "./primaryschool/src/pages/parent-and-student-portal/meals";
+import PortalActivities from "./primaryschool/src/pages/parent-and-student-portal/activities";
+import PortalVault from "./primaryschool/src/pages/parent-and-student-portal/vault";
+import PortalStore from "./primaryschool/src/pages/parent-and-student-portal/store";
 
 // Staff
 import StaffLayout from "@/primaryschool/src/pages/staff/layout";
@@ -207,6 +219,18 @@ function AppRoutes() {
         <Route path="fees" element={<HSPortalFees />} />
         <Route path="attendance" element={<HSPortalAttendance />} />
         <Route path="profile" element={<HSPortalProfile />} />
+        {/* New Pages */}
+        <Route path="resources" element={<PortalPlaceholder title="Learning Hub" />} />
+        <Route path="reports" element={<PortalPlaceholder title="Termly Reports" />} />
+        <Route path="calendar" element={<PortalPlaceholder title="School Calendar" />} />
+        <Route path="notices" element={<PortalPlaceholder title="Notice Board" />} />
+        <Route path="messages" element={<PortalPlaceholder title="Teacher Chat" />} />
+        <Route path="transport" element={<PortalPlaceholder title="Transport Tracking" />} />
+        <Route path="conduct" element={<PortalPlaceholder title="Conduct Log" />} />
+        <Route path="meals" element={<PortalPlaceholder title="Meal Planner" />} />
+        <Route path="activities" element={<PortalPlaceholder title="Co-curricular" />} />
+        <Route path="vault" element={<PortalPlaceholder title="Document Vault" />} />
+        <Route path="store" element={<PortalPlaceholder title="Uniform Store" />} />
       </Route>
 
       <Route path="/highschool/staff" element={<RequireAuth role="staff"><HSStaffLayout /></RequireAuth>}>
@@ -312,6 +336,18 @@ function AppRoutes() {
         <Route path="fees" element={<PortalFees />} />
         <Route path="attendance" element={<PortalAttendance />} />
         <Route path="profile" element={<PortalProfile />} />
+        {/* New Pages */}
+        <Route path="resources" element={<PortalResources />} />
+        <Route path="reports" element={<PortalReports />} />
+        <Route path="calendar" element={<PortalCalendar />} />
+        <Route path="notices" element={<PortalNotices />} />
+        <Route path="messages" element={<PortalMessages />} />
+        <Route path="transport" element={<PortalTransport />} />
+        <Route path="conduct" element={<PortalConduct />} />
+        <Route path="meals" element={<PortalMeals />} />
+        <Route path="activities" element={<PortalActivities />} />
+        <Route path="vault" element={<PortalVault />} />
+        <Route path="store" element={<PortalStore />} />
       </Route>
 
       {/* Staff Portal */}

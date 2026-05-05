@@ -281,7 +281,7 @@ export default function PortalResults() {
                   <h4 className="text-xl font-black text-slate-900 tracking-tight mb-2">Achievement Milestones</h4>
                   <p className="text-sm text-slate-500 font-medium">Earned badges for consistent effort and academic excellence.</p>
                </div>
-               <Badge className="bg-slate-900 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 h-auto">6 Badges Total</Badge>
+               <Badge className="bg-indigo-600 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 h-auto ring-2 ring-white">6 Badges Total</Badge>
             </div>
             
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -330,7 +330,7 @@ export default function PortalResults() {
                   </div>
                </div>
                <div className="shrink-0 flex flex-col gap-2">
-                  <Button className="bg-slate-900 hover:bg-black text-white font-black text-[11px] h-11 px-8 rounded-2xl gap-2 shadow-xl shadow-slate-200 uppercase tracking-widest">
+                  <Button className="bg-indigo-600 hover:bg-black text-white font-black text-[11px] h-11 px-8 rounded-2xl gap-2 shadow-xl shadow-indigo-100 uppercase tracking-widest border-0">
                     Teacher Chat <ArrowRight size={14} />
                   </Button>
                </div>

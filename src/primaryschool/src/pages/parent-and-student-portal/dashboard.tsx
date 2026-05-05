@@ -24,6 +24,8 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { PaymentFlow } from "./components/PaymentFlow";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -69,53 +71,127 @@ function CircularProgress({
   );
 }
 
-// ─── Stat Card ────────────────────────────────────────────────────────────────
+// ─── Sparkline ────────────────────────────────────────────────────────────────
+function Sparkline({ color = "#818cf8" }: { color?: string }) {
+  return (
+    <div className="absolute inset-x-0 bottom-0 h-12 overflow-hidden pointer-events-none opacity-40">
+      <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 40">
+        <motion.path
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ duration: 2, ease: "easeInOut" }}
+          d="M0 35 Q 10 30, 20 32 T 40 25 T 60 28 T 80 20 T 100 22 L 100 40 L 0 40 Z"
+          fill={`url(#gradient-${color.replace("#", "")})`}
+          stroke={color}
+          strokeWidth="1.5"
+        />
+        <defs>
+          <linearGradient id={`gradient-${color.replace("#", "")}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  );
+}
+
+// ─── StatCard ─────────────────────────────────────────────────────────────────
 
 function StatCard({
   label, value, subText, icon: Icon,
-  iconBg, iconColor, progress, progressColor, trend,
+  iconBg = "bg-white", iconColor = "text-foreground",
+  progress, progressColor, trend,
+  variant = "light",
+  onClick,
 }: {
-  label: string; value: string | number; subText: string;
-  icon: React.ElementType; iconBg: string; iconColor: string;
+  label: string; value: string | number; subText?: string; icon: any;
+  iconBg?: string; iconColor?: string;
   progress?: number; progressColor?: string;
   trend?: { val: string; up: boolean };
+  variant?: "light" | "darkBlue";
+  onClick?: () => void;
 }) {
+  const isDark = variant === "darkBlue";
+  
   return (
-    <Card className="shadow-sm border-border bg-card group hover:border-primary/50 hover:shadow-md transition-all overflow-hidden relative">
-      <CardContent className="p-3.5 sm:p-6 flex flex-col sm:block items-center text-center sm:text-left">
-        <div className="flex flex-col sm:flex-row items-center justify-between mb-3 sm:mb-4 w-full gap-2 sm:gap-0">
-          <div className={cn("h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl flex items-center justify-center border shrink-0", iconBg)}>
-            <Icon size={14} className={cn("sm:w-[17px] sm:h-[17px]", iconColor)} />
-          </div>
-          {trend && (
-            <span className={cn(
-              "flex items-center gap-1 text-[9px] sm:text-[10px] font-semibold rounded-full px-1.5 sm:px-2 py-0.5 border shrink-0",
-              trend.up
-                ? "text-emerald-600 bg-emerald-50 border-emerald-200 shadow-sm shadow-emerald-100/50"
-                : "text-rose-600 bg-rose-50 border-rose-200"
-            )}>
-              {trend.up ? <TrendingUp size={9} /> : <TrendingDown size={9} />}
-              {trend.val}
-            </span>
-          )}
-        </div>
-        <div className="w-full">
-          <p className="text-lg sm:text-2xl font-bold text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">
-            {value}
-          </p>
-          <p className="text-[11px] sm:text-[13px] text-muted-foreground mt-1.5 font-medium truncate">{label}</p>
-          <p className="text-[9px] sm:text-[10px] text-muted-foreground/70 mt-0.5 uppercase tracking-wider truncate opacity-70">{subText}</p>
-        </div>
-        {progress !== undefined && (
-          <div className="mt-3 sm:mt-4 w-full">
-            <Progress
-              value={progress}
-              className={cn("h-1.5 bg-slate-100", progressColor ?? "[&>div]:bg-indigo-500 shadow-inner")}
-            />
-          </div>
+    <motion.div
+      whileHover={{ y: -5, scale: 1.01 }}
+      onClick={onClick}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      className={cn("h-full", onClick && "cursor-pointer")}
+    >
+      <Card className={cn(
+        "h-full relative overflow-hidden group transition-all duration-500 rounded-[28px]",
+        isDark 
+          ? "border-white/10 bg-indigo-700 shadow-[0_20px_50px_-12px_rgba(67,56,202,0.4)]"
+          : "border-slate-100 bg-white shadow-[0_10px_30px_-5px_rgba(0,0,0,0.03)]"
+      )}>
+        {/* Grain Overlay (Dark Mode Only) */}
+        {isDark && (
+          <div className="absolute inset-0 opacity-[0.08] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
         )}
-      </CardContent>
-    </Card>
+
+        <CardContent className={cn("p-5 h-full flex flex-col relative z-10", isDark ? "text-white" : "text-slate-900")}>
+          {/* Header row */}
+          <div className="flex items-center justify-between mb-auto">
+            <p className={cn(
+              "text-[10px] sm:text-[11px] font-medium uppercase tracking-widest opacity-60",
+              isDark ? "text-slate-300" : "text-slate-500"
+            )}>
+              {isDark ? `TODAY'S ${label.split(" ")[0]}` : label}
+            </p>
+            <div className={cn(
+              "h-8 w-8 rounded-full flex items-center justify-center transition-transform duration-500 group-hover:scale-110",
+              isDark ? "bg-white/10 text-white" : iconBg + " " + iconColor
+            )}>
+              <Icon size={isDark ? 14 : 18} />
+            </div>
+          </div>
+
+          {/* Value Section */}
+          <div className="mt-4 mb-8">
+            <p className={cn(
+              "text-2xl sm:text-3xl font-medium tracking-tight",
+              isDark ? "text-white" : "text-slate-900"
+            )}>
+              {value}
+            </p>
+          </div>
+
+          {/* Bottom row / Sparkline area */}
+          <div className="flex items-end justify-between relative">
+            {trend && (
+              <span className={cn(
+                "flex items-center gap-1.5 text-[10px] font-medium rounded-full px-2.5 py-1 transition-all",
+                trend.up
+                  ? (isDark ? "text-emerald-400 bg-emerald-500/20" : "text-emerald-600 bg-emerald-50")
+                  : (isDark ? "text-rose-400 bg-rose-500/20" : "text-rose-600 bg-rose-50")
+              )}>
+                {trend.up ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                {trend.val}
+                <span className="opacity-50 font-normal ml-0.5">vs yesterday</span>
+              </span>
+            )}
+            
+            {!isDark && progress !== undefined && (
+              <p className="text-[10px] text-slate-400 font-medium italic opacity-70 mb-1">{subText}</p>
+            )}
+          </div>
+
+          {isDark && <Sparkline color="#a2a9ff" />}
+          
+          {!isDark && progress !== undefined && (
+            <div className="mt-3 w-full">
+              <Progress
+                value={progress}
+                className={cn("h-1.5 bg-slate-50 [&>div]:bg-indigo-600 shadow-none", progressColor)}
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
 
@@ -123,6 +199,7 @@ function StatCard({
 
 export default function PortalDashboard() {
   const navigate = useNavigate();
+  const [payOpen, setPayOpen] = React.useState(false);
   const student = studentsSeed[0];
   const fees = feesSeed.filter((f) => f.studentId === student.id);
   const paid = fees.reduce((s, f) => s + f.amount, 0);
@@ -134,80 +211,77 @@ export default function PortalDashboard() {
   const feesCleared = student.balance === 0;
 
   return (
-    <div className="space-y-6">
+    <>
+      <div className="space-y-6">
 
-      {/* ── Welcome Banner ──────────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-[24px] bg-card border border-border/60 p-6 sm:p-8 text-foreground shadow-sm">
-        {/* Modern decorative patterns */}
-        <div className="absolute top-0 right-0 h-full w-1/3 opacity-[0.03] pointer-events-none"
-          style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234338ca' fill-opacity='1'%3E%3Cpath d='M0 0h20L0 20z'/%3E%3C/g%3E%3C/svg%3E\")" }}
+      {/* ── Welcome Banner (Glass3D) ──────────────────────────────────────────── */}
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="relative overflow-hidden rounded-[40px] bg-white/70 backdrop-blur-3xl border border-white/50 p-6 sm:p-10 text-foreground shadow-[0_20px_50px_rgba(0,0,0,0.04),0_0_1px_rgba(255,255,255,1)_inset]"
+      >
+        {/* Grain Overlay */}
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+        
+        {/* Drifting Orbs */}
+        <motion.div
+          className="absolute rounded-full bg-indigo-500/5 blur-[100px] pointer-events-none"
+          style={{ width: 400, height: 400, top: "-10%", right: "-10%" }}
+          animate={{ x: [0, 40, 0], y: [0, 30, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         />
-        <div className="absolute -top-24 -left-24 w-64 h-64 rounded-full bg-indigo-50/40 pointer-events-none blur-3xl" />
-        <div className="absolute -bottom-16 right-1/4 w-48 h-48 rounded-full bg-violet-50/50 pointer-events-none blur-2xl" />
+        <motion.div
+          className="absolute rounded-full bg-violet-500/5 blur-[80px] pointer-events-none"
+          style={{ width: 300, height: 300, bottom: "-10%", left: "10%" }}
+          animate={{ x: [0, -30, 0], y: [0, -20, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        />
 
-        <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
-          {/* Avatar + high-end status ring */}
-          <div className="relative shrink-0">
-            <div className="p-1 px-1.5 rounded-full bg-white shadow-xl shadow-indigo-100/50 ring-1 ring-slate-100">
-              <Avatar className="h-20 w-20 sm:h-24 sm:w-24 border-2 border-white">
+        <div className="relative z-10 flex flex-col items-center text-center py-4">
+          {/* Centered Avatar + status ring */}
+          <div className="relative mb-8">
+            <div className="p-1 rounded-full bg-white shadow-2xl shadow-indigo-100 ring-1 ring-slate-100">
+              <Avatar className="h-24 w-24 sm:h-28 sm:w-28 border-[6px] border-white shadow-inner">
                 <AvatarImage src={student.photo} className="object-cover" />
-                <AvatarFallback className="text-2xl font-bold text-indigo-700 bg-indigo-50">
+                <AvatarFallback className="text-3xl font-medium text-indigo-600 bg-indigo-50/50">
                   {student.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
                 </AvatarFallback>
               </Avatar>
             </div>
-            <div className="absolute bottom-1 right-2 h-5 w-5 rounded-full bg-emerald-500 border-[3px] border-white shadow-lg flex items-center justify-center">
-              <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+            <div className="absolute bottom-1 right-1 h-6 w-6 rounded-full bg-emerald-500 border-[4px] border-white shadow-lg flex items-center justify-center">
+              <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
             </div>
           </div>
 
-          {/* Info context */}
-          <div className="flex-1 text-center md:text-left pt-1">
-            <div className="inline-flex items-center gap-2 mb-3">
-              <span className="h-[1px] w-4 bg-indigo-200 hidden md:block" />
-              <p className="text-indigo-600 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.25em]">
-                Student Portal
-              </p>
-            </div>
-            <h2 className="text-[28px] sm:text-[34px] font-bold text-foreground tracking-tight leading-tight mb-4">
-              Hello, <span className="text-primary">{student.name.split(" ")[0]}</span> 👋
+          {/* Centered Info */}
+          <div className="space-y-4 max-w-2xl">
+            <p className="text-indigo-600 text-[11px] sm:text-[12px] font-medium uppercase tracking-[0.3em] mb-2">
+              Student Portal
+            </p>
+            <h2 className="text-[36px] sm:text-[48px] font-medium text-slate-900 tracking-tighter leading-tight">
+              Hello, <span className="text-indigo-600">{student.name.split(" ")[0]}</span> 👋
             </h2>
             
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5">
-              <Badge variant="secondary" className="bg-slate-50 text-slate-500 border border-slate-100 h-6 px-3 text-[10px] font-bold uppercase tracking-widest shadow-sm">
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
+              <Badge variant="secondary" className="bg-white text-slate-500 border border-slate-100 h-9 px-5 rounded-full text-[11px] font-medium uppercase tracking-widest shadow-sm">
                 {student.klass}
               </Badge>
-              <Badge variant="secondary" className="bg-slate-50 text-slate-500 border border-slate-100 h-6 px-3 text-[10px] font-bold uppercase tracking-widest shadow-sm">
+              <Badge variant="secondary" className="bg-white text-slate-500 border border-slate-100 h-9 px-5 rounded-full text-[11px] font-medium uppercase tracking-widest shadow-sm">
                 ID: {student.admission}
               </Badge>
-              <Badge className="bg-emerald-50 text-emerald-700 border-emerald-100 border h-6 px-3 text-[10px] font-bold uppercase tracking-widest shadow-sm">
+              <Badge className="bg-[#00c07f] hover:bg-[#00c07f] text-white border-none h-9 px-6 rounded-full text-[11px] font-medium uppercase tracking-widest shadow-lg shadow-emerald-100">
                 Active Enrollment
               </Badge>
             </div>
           </div>
-
-          {/* Performance Insight (Desktop Only) */}
-          <div className="hidden lg:flex flex-col items-center justify-center gap-1.5 bg-slate-50/50 rounded-2xl p-4 border border-slate-100/50 shrink-0 self-center">
-            <CircularProgress value={avgScore} size={64} stroke={5} color="#4F46E5">
-              <span className="text-sm font-bold text-slate-800">{avgScore}%</span>
-            </CircularProgress>
-            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Score Avg</p>
-          </div>
-
-          {/* Quick Connect (Desktop Only) */}
-          <div className="hidden md:flex lg:flex-col gap-2 shrink-0 self-center">
-            <Button size="sm"
-              onClick={() => navigate("/parent-and-student-portal/results")}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200 text-[11px] font-bold h-9 gap-2 px-6 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]">
-              View Results <ArrowUpRight size={14} />
-            </Button>
-          </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Stats Grid ──────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
         <StatCard
+          variant="darkBlue"
           label="Attendance Rate" value={`${student.attendance}%`} subText="Present this term"
           icon={Calendar} iconBg="bg-slate-50 border-slate-100" iconColor="text-indigo-600"
           progress={student.attendance} progressColor="[&>div]:bg-indigo-600"
@@ -226,51 +300,55 @@ export default function PortalDashboard() {
         <StatCard
           label="Fees Status"
           value={feesCleared ? "Cleared" : currency(student.balance)}
-          subText={`Paid: ${currency(paid)}`}
+          subText={feesCleared ? "No balance" : "Pay Now"}
           icon={CreditCard}
           iconBg="bg-slate-50 border-slate-100"
           iconColor={feesCleared ? "text-indigo-600" : "text-slate-600"}
           progress={Math.round((paid / (paid + student.balance)) * 100)}
           progressColor="[&>div]:bg-indigo-600"
+          onClick={!feesCleared ? () => setPayOpen(true) : undefined}
         />
       </div>
 
       {/* ── Main Grid ───────────────────────────────────────────────── */}
       <div className="grid gap-5 lg:grid-cols-3">
 
-        {/* Academic Results Table */}
-        <Card className="lg:col-span-2 shadow-sm border-slate-200/80">
-          <CardHeader className="p-0">
-            <div className="flex items-center justify-between px-6 pt-5 pb-4">
+        {/* Academic Results Table (Glass3D) */}
+        <Card className="lg:col-span-2 shadow-2xl border-slate-100 bg-white/80 backdrop-blur-xl overflow-hidden group relative">
+          {/* Grain Overlay */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+          
+          <CardHeader className="p-0 relative z-10">
+            <div className="flex items-center justify-between px-6 pt-6 pb-5">
               <div>
-                <CardTitle className="text-base font-semibold text-slate-900">Academic Performance</CardTitle>
-                <CardDescription className="text-sm text-slate-500 mt-0.5">Term 2 · Unit Assessments</CardDescription>
+                <CardTitle className="text-lg font-medium text-slate-900 tracking-tight">Academic Performance</CardTitle>
+                <CardDescription className="text-xs text-indigo-600 font-medium uppercase tracking-widest mt-1">Term 2 · Live Insights</CardDescription>
               </div>
               <div className="flex items-center gap-2">
                 {topSubject && (
-                  <div className="hidden sm:flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">
-                    <Star size={11} className="text-amber-500" />
-                    <span className="text-[10px] font-semibold text-amber-700">Top: {topSubject.subject}</span>
+                  <div className="hidden sm:flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-1.5 shadow-sm">
+                    <Star size={12} className="text-amber-500 fill-amber-500" />
+                    <span className="text-[10px] font-medium text-indigo-700 tracking-tight whitespace-nowrap">Elite: {topSubject.subject}</span>
                   </div>
                 )}
                 <Button variant="ghost" size="sm"
                   onClick={() => navigate("/parent-and-student-portal/results")}
-                  className="text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 h-8 gap-1">
-                  View all <ChevronRight size={12} />
+                  className="text-[11px] font-medium text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 h-9 gap-1.5 border border-transparent hover:border-indigo-100 rounded-xl transition-all">
+                  Full Analytics <ChevronRight size={13} />
                 </Button>
               </div>
             </div>
-            <Separator />
+            <Separator className="bg-slate-100" />
           </CardHeader>
           <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent border-b border-slate-100">
-                  <TableHead className="pl-6 text-[10px] font-semibold uppercase tracking-wider text-slate-400 py-3">Subject</TableHead>
-                  <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 py-3">Score</TableHead>
-                  <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 py-3">Grade</TableHead>
-                  <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 py-3">Progress</TableHead>
-                  <TableHead className="pr-6 text-[10px] font-semibold uppercase tracking-wider text-slate-400 py-3 text-right">Status</TableHead>
+                  <TableHead className="pl-6 text-[10px] font-medium uppercase tracking-wider text-slate-400 py-3">Subject</TableHead>
+                  <TableHead className="text-[10px] font-medium uppercase tracking-wider text-slate-400 py-3">Score</TableHead>
+                  <TableHead className="text-[10px] font-medium uppercase tracking-wider text-slate-400 py-3">Grade</TableHead>
+                  <TableHead className="text-[10px] font-medium uppercase tracking-wider text-slate-400 py-3">Progress</TableHead>
+                  <TableHead className="pr-6 text-[10px] font-medium uppercase tracking-wider text-slate-400 py-3 text-right">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -295,7 +373,7 @@ export default function PortalDashboard() {
                         <span className="text-xs text-slate-400">/100</span>
                       </TableCell>
                       <TableCell className="py-4">
-                        <Badge variant="outline" className={cn("text-[11px] font-semibold border px-2", grade.cls)}>
+                        <Badge variant="outline" className={cn("text-[11px] font-medium border px-2", grade.cls)}>
                           {grade.label}
                         </Badge>
                       </TableCell>
@@ -311,7 +389,7 @@ export default function PortalDashboard() {
                         </div>
                       </TableCell>
                       <TableCell className="pr-6 py-4 text-right">
-                        <span className={cn("text-[11px] font-semibold", perf.color)}>
+                        <span className={cn("text-[11px] font-medium", perf.color)}>
                           {perf.text}
                         </span>
                       </TableCell>
@@ -335,86 +413,100 @@ export default function PortalDashboard() {
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-[11px] text-slate-400 font-medium">Overall avg:</span>
-                <span className="text-sm font-semibold text-indigo-600">{avgScore}%</span>
+                <span className="text-sm font-medium text-indigo-600">{avgScore}%</span>
               </div>
             </div>
 
             <Separator />
 
-            {/* Relocated Sections */}
+            {/* Relocated Sections (Glass3D Harmonized) */}
             <div className="grid md:grid-cols-2 gap-0 border-t border-slate-100">
-              {/* School Notices Section */}
-              <div className="p-5 border-r border-slate-100">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">School Notices</p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">Latest announcements</p>
+              {/* School Notices Section (Glass3D) */}
+              <div className="p-6 border-r border-slate-100 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-5">
+                    <div>
+                      <p className="text-[13px] font-medium text-slate-900 tracking-tight">School Notices</p>
+                      <p className="text-[10px] text-indigo-600 font-medium uppercase tracking-widest mt-0.5">Live Updates</p>
+                    </div>
+                    <div className="relative h-8 w-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center shadow-sm">
+                      <Bell size={14} className="text-indigo-600" />
+                      <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-indigo-500 border-2 border-white shadow-sm animate-pulse" />
+                    </div>
                   </div>
-                  <div className="relative">
-                    <Bell size={14} className="text-slate-400" />
-                    <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-rose-500 border-2 border-white" />
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  {student.balance > 0 && (
-                    <div className="flex gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                      <AlertCircle size={12} className="text-slate-400 shrink-0 mt-0.5" />
+                  <div className="space-y-4">
+                    {student.balance > 0 && (
+                      <motion.div 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex gap-3 p-3.5 rounded-2xl bg-rose-50/50 border border-rose-100 shadow-sm"
+                      >
+                        <AlertCircle size={14} className="text-rose-500 shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <p className="text-[11px] font-medium text-rose-900 uppercase tracking-tight">Finance Alert</p>
+                          <p className="text-[10px] text-rose-700 mt-1 leading-relaxed">
+                            Outstanding balance: {currency(student.balance)}
+                          </p>
+                          <Button 
+                            onClick={() => setPayOpen(true)}
+                            variant="link" 
+                            className="p-0 h-auto text-[10px] font-medium text-rose-600 uppercase tracking-wider mt-2 hover:no-underline hover:text-rose-700"
+                          >
+                            Pay Balance →
+                          </Button>
+                        </div>
+                      </motion.div>
+                    )}
+                    <div className="flex gap-3 p-3.5 rounded-2xl bg-white border border-slate-100 shadow-sm group/item hover:border-indigo-200 transition-colors">
+                      <Calendar size={14} className="text-indigo-600 shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-[11px] font-semibold text-slate-900 border-l-2 border-indigo-500 pl-2">Fee Balance Due</p>
-                        <p className="text-[10px] text-slate-500 mt-1 leading-relaxed pl-2">
-                          {currency(student.balance)} remaining.
+                        <p className="text-[11px] font-medium text-slate-900 uppercase tracking-tight">PTA General Meeting</p>
+                        <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">
+                          Sat · 09:00 AM · Main Hall
                         </p>
                       </div>
                     </div>
-                  )}
-                  <div className="flex gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                    <Calendar size={12} className="text-indigo-500 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-[11px] font-semibold text-indigo-900">PTA General Meeting</p>
-                      <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">
-                        Saturday, 9:00 AM · Main Hall
-                      </p>
-                    </div>
+                    <Button variant="ghost" size="sm"
+                      className="w-full text-[11px] font-medium text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 border border-transparent hover:border-indigo-100 gap-2 h-9 rounded-xl transition-all">
+                      Archive <ChevronRight size={13} />
+                    </Button>
                   </div>
-                  <Button variant="ghost" size="sm"
-                    className="w-full text-[10px] text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 gap-1 h-7">
-                    All Notices <ChevronRight size={10} />
-                  </Button>
                 </div>
               </div>
 
-              {/* Quick Access Section */}
-              <div className="p-6 bg-white">
-                <div className="flex items-center justify-between mb-5 px-1">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400">Quick Access</p>
-                  <div className="h-1 w-8 bg-indigo-100 rounded-full" />
+              {/* Quick Access Section (Glass3D) */}
+              <div className="p-6 bg-slate-50/30 relative">
+                <div className="flex items-center justify-between mb-6 px-1">
+                  <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">Environment</p>
+                  <div className="h-1 w-6 bg-indigo-200 rounded-full" />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3.5">
                   {[
-                    { label: "Results", icon: Trophy, color: "text-indigo-600", bg: "bg-indigo-50", border: "hover:border-indigo-200", shadow: "hover:shadow-indigo-50", href: "/parent-and-student-portal/results" },
-                    { label: "Attendance", icon: ClipboardList, color: "text-emerald-600", bg: "bg-emerald-50", border: "hover:border-emerald-200", shadow: "hover:shadow-emerald-50", href: "/parent-and-student-portal/attendance" },
-                    { label: "Fees", icon: CreditCard, color: "text-amber-600", bg: "bg-amber-50", border: "hover:border-amber-200", shadow: "hover:shadow-amber-50", href: "/parent-and-student-portal/fees" },
-                    { label: "Profile", icon: GraduationCap, color: "text-purple-600", bg: "bg-purple-50", border: "hover:border-purple-200", shadow: "hover:shadow-purple-50", href: "/parent-and-student-portal/profile" },
-                  ].map((l) => (
-                    <button key={l.href}
+                    { label: "Results", icon: Trophy, color: "text-indigo-600", bg: "bg-white", border: "hover:border-indigo-200", shadow: "hover:shadow-indigo-100", href: "/parent-and-student-portal/results" },
+                    { label: "Attendance", icon: ClipboardList, color: "text-emerald-600", bg: "bg-white", border: "hover:border-emerald-200", shadow: "hover:shadow-emerald-100", href: "/parent-and-student-portal/attendance" },
+                    { label: "Fees", icon: CreditCard, color: "text-amber-600", bg: "bg-white", border: "hover:border-amber-200", shadow: "hover:shadow-amber-100", href: "/parent-and-student-portal/fees" },
+                    { label: "Profile", icon: GraduationCap, color: "text-purple-600", bg: "bg-white", border: "hover:border-purple-200", shadow: "hover:shadow-purple-100", href: "/parent-and-student-portal/profile" },
+                  ].map((l, i) => (
+                    <motion.button 
+                      key={l.href}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.1 + i * 0.05 }}
+                      whileHover={{ y: -4, transition: { type: "spring", stiffness: 400, damping: 25 } }}
+                      whileTap={{ scale: 0.96 }}
                       onClick={() => navigate(l.href)}
                       className={cn(
-                        "flex flex-col items-start gap-3 w-full p-4 rounded-2xl transition-all duration-300",
-                        "border border-slate-100 bg-white group text-left",
-                        "hover:shadow-lg hover:-translate-y-1",
-                        l.border, l.shadow
+                        "flex flex-col items-center gap-3 w-full p-4 rounded-[22px] transition-all duration-300",
+                        "border border-slate-100 shadow-sm group text-center",
+                        l.bg, l.border, l.shadow
                       )}
                     >
-                      <div className={cn("h-9 w-9 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110", l.bg)}>
-                        <l.icon size={16} className={l.color} />
+                      <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border border-slate-100 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-sm", l.bg)}>
+                        <l.icon size={17} className={l.color} />
                       </div>
-                      <div className="space-y-0.5">
-                        <span className="text-[13px] font-bold text-slate-800 group-hover:text-slate-900 block">{l.label}</span>
-                        <span className="text-[9px] text-slate-400 font-medium flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          View details <ChevronRight size={8} />
-                        </span>
-                      </div>
-                    </button>
+                      <span className="text-[12px] font-medium text-slate-900 tracking-tight block">{l.label}</span>
+                    </motion.button>
                   ))}
                 </div>
               </div>
@@ -426,48 +518,52 @@ export default function PortalDashboard() {
         {/* Right column */}
         <div className="space-y-5">
 
-          {/* Marketing Card */}
-          <Card className="shadow-sm border-slate-200/80 overflow-hidden group">
-            <CardHeader className="p-0">
-               <div className="flex items-center justify-between px-5 pt-5 pb-4 bg-gradient-to-r from-amber-50 to-bg-card">
+          {/* Marketing Card (Glass3D) */}
+          <Card className="shadow-2xl border-slate-100 bg-white/80 backdrop-blur-xl overflow-hidden group relative">
+            {/* Grain Overlay */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+            
+            <CardHeader className="p-0 relative z-10">
+               <div className="flex items-center justify-between px-5 pt-6 pb-5 bg-gradient-to-r from-indigo-50 to-transparent">
                 <div>
-                  <CardTitle className="text-base font-bold text-slate-900">Partner Features</CardTitle>
-                  <CardDescription className="text-xs text-amber-600 font-medium">Exclusive offers for EduCore parents</CardDescription>
+                  <CardTitle className="text-[15px] font-medium text-slate-900 tracking-tight">Partner Features</CardTitle>
+                  <CardDescription className="text-[10px] text-indigo-600 font-medium uppercase tracking-widest mt-0.5">Exclusive Marketplace</CardDescription>
                 </div>
-                <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
-                  <Star size={14} className="fill-amber-600" />
+                <div className="h-9 w-9 rounded-xl bg-white border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-sm">
+                  <Star size={16} className="fill-indigo-600" />
                 </div>
               </div>
-              <Separator />
+              <Separator className="bg-slate-100" />
             </CardHeader>
             <CardContent className="p-0 relative">
               <div className="w-full bg-slate-100 relative overflow-hidden border-b border-slate-100">
                 <img 
-                  src="/wap2.png" 
+                  src="/wapp1.png" 
                   alt="Partner Promotion" 
                   className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                  <p className="text-white text-[10px] font-bold uppercase tracking-wider mb-1">New Partner Deal</p>
+                  <p className="text-white text-[10px] font-medium uppercase tracking-wider mb-1">New Partner Deal</p>
                   <p className="text-white/80 text-[9px] font-medium leading-tight">Click to explore exclusive savings on school supplies and more.</p>
                 </div>
               </div>
-              <div className="p-4 bg-slate-50/50">
-                <Button className="w-full h-9 bg-slate-900 hover:bg-black text-white text-[11px] font-bold rounded-xl gap-2 shadow-lg shadow-slate-200 transition-all active:scale-95">
-                  Learn More <ArrowUpRight size={14} />
+              <div className="p-5 bg-gradient-to-b from-transparent to-slate-50/50">
+                <Button className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white text-[12px] font-medium uppercase tracking-wider rounded-[18px] gap-2 shadow-xl shadow-indigo-100 transition-all active:scale-95">
+                  Explore Hub <ArrowUpRight size={16} />
                 </Button>
               </div>
             </CardContent>
-          </Card>
-
-
-
-
+          </Card>  
 
         </div>
       </div>
     </div>
+    
+    <PaymentFlow 
+      open={payOpen} 
+      onOpenChange={setPayOpen} 
+      studentName={student.name} 
+    />
+    </>
   );
 }
-
- 

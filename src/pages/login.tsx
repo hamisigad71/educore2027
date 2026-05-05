@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth, Role } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { LogoFull, LogoIcon } from "@/components/Logo";
 import Loader, { ButtonLoader } from "@/components/ui/loader";
 
@@ -8,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 import {
@@ -38,8 +39,8 @@ const roles: RoleConfig[] = [
     label: "Administrator",
     desc: "Full system access & reports",
     icon: <ShieldCheck size={17} />,
-    iconBg: "bg-indigo-50",
-    iconColor: "text-indigo-600",
+    iconBg: "bg-blue-50",
+    iconColor: "text-blue-600",
   },
   {
     role: "teacher",
@@ -172,32 +173,41 @@ export default function Login() {
       <div className="login-root min-h-screen flex bg-slate-50">
 
         {/* ── LEFT BRAND PANEL ──────────────────────────────────────── */}
-        <aside className="hidden lg:flex w-[460px] min-w-[460px] bg-slate-950 flex-col p-12 relative overflow-hidden h-full">
+        {/*
+          DESKTOP CHANGE 1: Reduced panel width from w-[460px] min-w-[460px]
+          to w-[400px] min-w-[400px] — was dominating too much of the viewport
+          (~36% on 1280px). Now sits at ~31%, giving the form side more room.
+        */}
+        <aside className="hidden lg:flex w-[400px] min-w-[400px] bg-slate-950 flex-col p-12 relative overflow-hidden">
           {/* Subtle Branded Background orbs */}
-          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-indigo-600/10 pointer-events-none blur-3xl" />
+          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-blue-600/10 pointer-events-none blur-3xl" />
           <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-violet-600/8 pointer-events-none blur-3xl" />
 
-          {/* Logo - Direct Implementation for Stability */}
-          <div className="relative z-10 mb-8 h-16 w-fit">
-             <img 
-               src="/draklogo.png" 
-               alt="EduCore" 
-               className="h-full w-auto object-contain drop-shadow-xl" 
-             />
+          {/*
+            DESKTOP CHANGE 2: Edge-to-Edge Hero Branding
+            Removed negative margins and gradient overlays to maximize image clarity.
+            The image now spans the full width of the side panel for maximum impact.
+          */}
+          <div className="relative z-10 -mx-12 -mt-12 mb-10 overflow-hidden border-b border-white/10 group">
+            <img
+              src="/login-hero.png"
+              alt="EduCore Branding"
+              className="w-full h-auto object-contain transition-transform duration-1000 group-hover:scale-[1.02]"
+            />
           </div>
 
           {/* Headline - Centered Stack */}
-          <div className="flex-1 flex flex-col justify-center relative z-10 max-w-[360px]">
-            <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-6 w-fit">
-              <Sparkles className="size-3 text-indigo-400" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-300">
+          <div className="flex-1 flex flex-col justify-center relative z-10 max-w-[340px]">
+            <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6 w-fit">
+              <Sparkles className="size-3 text-blue-400" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-300">
                 Kenya's #1 School Platform
               </span>
             </div>
 
             <h1 className="serif-hero text-[34px] text-white leading-[1.1] mb-5 tracking-tight">
               Manage your school<br />
-              <span className="text-indigo-200 italic">
+              <span className="text-blue-200 italic">
                 with absolute clarity.
               </span>
             </h1>
@@ -228,7 +238,7 @@ export default function Login() {
                     "{testimonial.quote}"
                   </p>
                   <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-[11px] font-bold text-white shadow-lg shadow-indigo-900/50">
+                    <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-[11px] font-bold text-white shadow-lg shadow-blue-900/50">
                       {testimonial.initials}
                     </div>
                     <div>
@@ -260,15 +270,63 @@ export default function Login() {
         {/* ══════════════════════════════════════════
             RIGHT FORM PANEL
         ══════════════════════════════════════════ */}
-        <main className="flex-1 flex items-center justify-center p-6 sm:p-10 overflow-y-auto">
-          <div className="w-full max-w-[420px]">
+        <main className="flex-1 flex flex-col items-center lg:justify-center overflow-y-auto bg-white lg:bg-slate-50/50">
+          
+          {/* Marketing Image - True Full Width on Mobile */}
+          <div className="lg:hidden w-full overflow-hidden rounded-b-[40px] shadow-sm shadow-blue-100/10 bg-white">
+            <img 
+              src="/wwp1.png" 
+              alt="EduCore Features" 
+              className="w-full h-auto block" 
+            />
+          </div>
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.98, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12 relative overflow-hidden"
+          >
+            {/* ── Background Orbs (Glass3D Atmos) ── */}
+            <motion.div
+              className="absolute rounded-full bg-blue-500/5 blur-[120px] pointer-events-none"
+              style={{ width: 400, height: 400, top: "20%", left: "10%" }}
+              animate={{ x: [0, 40, 0], y: [0, 30, 0] }}
+              transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute rounded-full bg-violet-500/5 blur-[100px] pointer-events-none"
+              style={{ width: 300, height: 300, bottom: "20%", right: "10%" }}
+              animate={{ x: [0, -30, 0], y: [0, -40, 0] }}
+              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            />
+            <motion.div
+              className="absolute rounded-full bg-blue-500/5 blur-[80px] pointer-events-none"
+              style={{ width: 250, height: 250, top: "50%", left: "60%" }}
+              animate={{ x: [0, 20, 0], y: [0, -20, 0] }}
+              transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            />
+
+            {/*
+              DESKTOP CHANGE 3: Reduced lg padding from lg:p-12 to lg:p-8
+              on the card so the full form fits without scrolling on a standard
+              1366×768 laptop screen.
+            */}
+            <Card className="w-full max-w-[480px] relative z-10 border border-white/50 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08),0_0_1px_rgba(255,255,255,1)_inset] bg-white/70 backdrop-blur-3xl rounded-[40px] transition-all duration-1000 overflow-hidden">
+              {/* Grain/Noise Overlay */}
+              <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+              
+              <CardContent className="p-7 sm:p-10 lg:p-8 relative z-20">
+                <div className="w-full">
 
             {/* Mobile logo */}
-            <div className="flex lg:hidden justify-center mb-8 h-12">
-              <img 
-                src="/draklogo.png" 
+            <div className="flex lg:hidden justify-center mb-10">
+              <motion.img 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                src="/loader,logo.png" 
                 alt="EduCore" 
-                className="h-full w-auto object-contain" 
+                className="h-19 w-auto object-contain brightness-110" 
               />
             </div>
 
@@ -276,7 +334,7 @@ export default function Login() {
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.18em] mb-2">
               Environment
             </p>
-            <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-2xl mb-8">
+            <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-2xl mb-8 border border-slate-200/50">
               {(["primary", "highschool"] as const).map((p) => (
                 <button
                   key={p}
@@ -285,14 +343,14 @@ export default function Login() {
                   className={cn(
                     "flex items-center justify-center gap-2 h-10 rounded-xl text-[12.5px] font-semibold transition-all duration-200",
                     portal === p
-                      ? "bg-white text-indigo-700 shadow-sm border border-slate-200/70 font-bold"
+                      ? "bg-white text-blue-700 shadow-sm border border-slate-200/70 font-bold"
                       : "text-slate-500 hover:text-slate-700"
                   )}
                 >
                   {p === "primary" ? (
-                    <School size={14} className={portal === p ? "text-indigo-600" : "text-slate-400"} />
+                    <School size={14} className={portal === p ? "text-blue-600" : "text-slate-400"} />
                   ) : (
-                    <GraduationCap size={14} className={portal === p ? "text-indigo-600" : "text-slate-400"} />
+                    <GraduationCap size={14} className={portal === p ? "text-blue-600" : "text-slate-400"} />
                   )}
                   {p === "primary" ? "Primary" : "High School"}
                 </button>
@@ -300,86 +358,104 @@ export default function Login() {
             </div>
 
             {/* ── Greeting ── */}
-            <div className="mb-8">
-              <h2 className="text-[26px] font-black text-slate-900 tracking-tight leading-tight mb-1">
+            <div className="mb-8 text-center sm:text-left">
+              <h2 className="text-[32px] font-black text-slate-900 tracking-tighter leading-[1.1] mb-2">
                 Welcome back
               </h2>
-              <p className="text-[13px] text-slate-400 font-medium">
-                Authentication required to access your dashboard.
+              <p className="text-[14px] text-slate-500 font-medium tracking-tight">
+                Authentication required for secure gateway access.
               </p>
             </div>
 
             {/* ── Role Selector ── */}
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.18em] mb-3">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
               Select Your Role
             </p>
-            <div className="grid grid-cols-2 gap-2.5 mb-6">
-              {roles.map((r) => (
-                <button
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              {roles.map((r, idx) => (
+                <motion.button
                   key={r.role}
                   type="button"
                   onClick={() => setSelected(r.role)}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + idx * 0.08, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  whileHover={{ y: -6, transition: { type: "spring", stiffness: 400, damping: 25 } }}
+                  whileTap={{ scale: 0.97 }}
                   className={cn(
-                    "relative rounded-2xl p-4 text-left border bg-white transition-all duration-200 group",
+                    /*
+                      DESKTOP CHANGE 4: Reduced role card border-radius from
+                      rounded-[28px] to rounded-2xl (24px). At smaller card
+                      sizes the 28px radius was collapsing into a pill shape.
+                    */
+                    "relative rounded-2xl p-5 text-left border transition-all duration-500 group overflow-hidden",
                     selected === r.role
-                      ? "border-indigo-300 bg-indigo-50/40 shadow-[0_0_0_3px_rgba(99,102,241,0.08)]"
-                      : "border-slate-100 hover:border-slate-200 hover:bg-slate-50/60"
+                      ? "border-blue-500/40 bg-white shadow-[0_12px_24px_-8px_rgba(99,102,241,0.15)] ring-1 ring-blue-500/10"
+                      : "border-slate-100 bg-slate-50/30 hover:border-blue-200 hover:bg-white"
                   )}
                 >
-                  {selected === r.role && (
-                    <div className="absolute top-3 right-3 h-[18px] w-[18px] rounded-full bg-indigo-600 flex items-center justify-center">
-                      <Check size={10} className="text-white" strokeWidth={3} />
-                    </div>
-                  )}
+                  <AnimatePresence>
+                    {selected === r.role && (
+                      <motion.div 
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        className="absolute top-4 right-4 h-5 w-5 rounded-full bg-blue-600 flex items-center justify-center ring-4 ring-blue-50"
+                      >
+                        <Check size={11} className="text-white" strokeWidth={3} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                   <div
                     className={cn(
-                      "w-9 h-9 rounded-xl flex items-center justify-center mb-3",
+                      "w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-transform duration-500",
                       r.iconBg,
-                      r.iconColor
+                      r.iconColor,
+                      selected === r.role && "scale-110"
                     )}
                   >
                     {r.icon}
                   </div>
-                  <p className="text-[12.5px] font-bold text-slate-900 mb-0.5 leading-tight">
+                  <p className="text-[13px] font-bold text-slate-900 mb-1 leading-tight">
                     {r.label}
                   </p>
-                  <p className="text-[10px] text-slate-400 font-medium leading-snug">
+                  <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
                     {r.desc}
                   </p>
-                </button>
+                </motion.button>
               ))}
             </div>
 
             {/* ── Staff Department ── */}
             {selected === "staff" && (
-              <div className="mb-6 animate-in fade-in slide-in-from-top-2 duration-300">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.18em] mb-3">
-                  Departmental Context
+              <div className="mb-8 animate-in fade-in slide-in-from-top-3 duration-500">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.18em] mb-4">
+                  Departmental Access
                 </p>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2.5">
                   {deptRoles.map((d) => (
                     <button
                       key={d.id}
                       type="button"
                       onClick={() => setStaffRole(d.id)}
                       className={cn(
-                        "flex items-center gap-2.5 p-3 rounded-xl border text-left transition-all duration-200",
+                        "flex items-center gap-3 p-3.5 rounded-[18px] border text-left transition-all duration-300",
                         staffRole === d.id
-                          ? "bg-indigo-600 border-indigo-600 text-white"
-                          : "bg-white border-slate-100 hover:border-slate-200 text-slate-600"
+                          ? "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-200"
+                          : "bg-white border-slate-200/60 hover:border-blue-200 text-slate-600"
                       )}
                     >
                       <div
                         className={cn(
-                          "h-7 w-7 rounded-lg flex items-center justify-center flex-shrink-0",
+                          "h-8 w-8 rounded-xl flex items-center justify-center flex-shrink-0",
                           staffRole === d.id
                             ? "bg-white/20 text-white"
                             : "bg-slate-50 text-slate-400"
                         )}
                       >
-                        <d.icon size={14} />
+                        <d.icon size={15} />
                       </div>
-                      <span className="text-[11px] font-bold leading-tight">
+                      <span className="text-[11.5px] font-bold leading-tight">
                         {d.label}
                       </span>
                     </button>
@@ -389,13 +465,13 @@ export default function Login() {
             )}
 
             {/* Divider */}
-            <div className="h-px bg-slate-100 mb-6" />
+            <div className="h-px bg-gradient-to-r from-transparent via-slate-100 to-transparent mb-6" />
 
             {/* ── Credentials ── */}
-            <div className="space-y-4 mb-5">
-              <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
-                  Identity
+            <div className="space-y-5 mb-6">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">
+                  System Identity
                 </Label>
                 <Input
                   type="email"
@@ -404,107 +480,118 @@ export default function Login() {
                   readOnly={!!selected}
                   key={selected}
                   className={cn(
-                    "h-11 px-4 text-[13.5px] border-slate-200 rounded-xl transition-all",
-                    "focus-visible:ring-2 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400",
-                    selected && "bg-slate-50 font-semibold text-indigo-800 border-indigo-100"
+                    "h-12 px-5 text-[14px] border-slate-200 rounded-[18px] transition-all duration-300",
+                    "focus-visible:ring-[6px] focus-visible:ring-blue-500/10 focus-visible:border-blue-400",
+                    selected && "bg-slate-50/80 font-semibold text-blue-900 border-blue-100/50"
                   )}
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
-                  Security Key
+              <div className="space-y-2">
+                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">
+                  Access Key
                 </Label>
-                <div className="relative">
+                <div className="relative group">
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     defaultValue={selected ? "demo1234" : ""}
                     key={`pwd-${selected}`}
-                    className="h-11 px-4 text-[13.5px] border-slate-200 rounded-xl focus-visible:ring-2 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400 transition-all"
+                    className="h-11 px-5 text-[14px] border-slate-200 rounded-[16px] focus-visible:ring-[6px] focus-visible:ring-blue-500/10 focus-visible:border-blue-400 transition-all duration-300"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-indigo-500 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-blue-500 transition-colors"
                   >
-                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
               </div>
             </div>
 
             {/* ── Remember / Forgot ── */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-2.5">
+            <div className="flex items-center justify-between mb-6 px-1">
+              <div className="flex items-center gap-3">
                 <Checkbox
                   id="remember"
                   checked={rememberMe}
                   onCheckedChange={(v) => setRememberMe(!!v)}
-                  className="size-4 rounded-md border-slate-200 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600"
+                  className="size-4.5 rounded-lg border-slate-200 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 transition-all duration-300"
                 />
                 <Label
                   htmlFor="remember"
-                  className="text-[12px] text-slate-500 font-semibold cursor-pointer hover:text-slate-700 transition-colors"
+                  className="text-[13px] text-slate-500 font-semibold cursor-pointer hover:text-slate-700 transition-colors"
                 >
-                  Persistent session
+                  Trust this device
                 </Label>
               </div>
               <a
                 href="#"
-                className="text-[12px] text-indigo-600 font-bold hover:text-indigo-700 transition-colors"
+                className="text-[13px] text-blue-600 font-bold hover:text-blue-700 transition-colors"
               >
-                Reset Password
+                Forgot access key?
               </a>
             </div>
 
             {/* ── CTA Button ── */}
-            <Button
-              onClick={handleLogin}
-              disabled={!selected || loading}
-              className={cn(
-                "relative w-full h-12 rounded-2xl text-[14px] font-black tracking-tight transition-all duration-200 group",
-                selected && !loading
-                  ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200"
-                  : "bg-slate-100 text-slate-300 cursor-not-allowed shadow-none"
-              )}
+            <motion.div
+              whileHover={{ scale: 1.015 }}
+              whileTap={{ scale: 0.97 }}
+              className="mt-2"
             >
-              <span className="flex items-center justify-center gap-2">
-                {loading ? (
-                  <>
-                    <ButtonLoader className="mr-1" />
-                    Establishing Connection…
-                  </>
-                ) : selected ? (
-                  <>
-                    Initialize {selectedConfig?.label} Session
-                    <ArrowRight
-                      size={16}
-                      className="group-hover:translate-x-0.5 transition-transform"
-                    />
-                  </>
-                ) : (
-                  "Identity Undefined"
+              <Button
+                onClick={handleLogin}
+                disabled={!selected || loading}
+                className={cn(
+                  "relative w-full h-14 rounded-[22px] text-[15px] font-black tracking-tight transition-all duration-500 group overflow-hidden",
+                  selected && !loading
+                    ? "bg-blue-600 hover:bg-blue-700 text-white shadow-[0_20px_40px_-12px_rgba(79,70,229,0.3)]"
+                    : "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none"
                 )}
-              </span>
-            </Button>
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
+                <span className="relative flex items-center justify-center gap-2.5">
+                  {loading ? (
+                    <>
+                      <ButtonLoader className="mr-2" />
+                      Synchronizing Environment…
+                    </>
+                  ) : selected ? (
+                    <>
+                      Initialize {selectedConfig?.label}
+                      <ArrowRight
+                        size={18}
+                        className="group-hover:translate-x-1 transition-transform duration-300"
+                      />
+                    </>
+                  ) : (
+                    "Select Role to Continue"
+                  )}
+                </span>
+              </Button>
+            </motion.div>
 
-            {/* ── Dev Hint ── */}
-            {selected && (
-              <div className="mt-5 rounded-2xl bg-indigo-50/60 border border-indigo-100 p-4 animate-in slide-in-from-bottom-1 duration-300">
-                <p className="text-[9.5px] font-black text-indigo-300 uppercase tracking-[0.2em] text-center mb-3">
-                  Development Access
+            {/*
+              DESKTOP CHANGE 5: Quick Access hint is now gated behind
+              process.env.NODE_ENV === "development" so demo credentials
+              are never exposed in production builds.
+            */}
+            {selected && process.env.NODE_ENV === "development" && (
+              <div className="mt-6 rounded-[22px] bg-slate-50/50 border border-slate-100 p-5 animate-in slide-in-from-bottom-2 duration-500">
+                <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.25em] text-center mb-4">
+                  Quick Access
                 </p>
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   {[
                     { key: "ID", val: emailValue },
-                    { key: "SEC", val: "demo1234" },
+                    { key: "KEY", val: "demo1234" },
                   ].map((row) => (
                     <div key={row.key} className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold text-indigo-400">
+                      <span className="text-[10px] font-bold text-slate-400">
                         {row.key}
                       </span>
-                      <code className="text-[11px] font-bold text-indigo-800 bg-white/70 px-2.5 py-1 rounded-lg border border-indigo-100">
+                      <code className="text-[11.5px] font-bold text-blue-700 bg-white px-3 py-1.5 rounded-xl border border-slate-100 shadow-sm">
                         {row.val}
                       </code>
                     </div>
@@ -514,17 +601,20 @@ export default function Login() {
             )}
 
             {/* ── Brand Footer ── */}
-            <div className="mt-8 flex flex-col items-center gap-1.5 opacity-25">
+            <div className="mt-12 flex flex-col items-center gap-2 opacity-30">
               <img 
                 src="/logo.png" 
                 alt="EduCore" 
-                className="h-5 w-auto object-contain" 
+                className="h-6 w-auto object-contain grayscale" 
               />
-              <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-slate-500">
-                EduCore Ecosystem · v1.2.0
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+                Secure Authentication Gateway
               </p>
             </div>
-          </div>
+            </div>
+            </CardContent>
+          </Card>
+          </motion.div>
         </main>
 
         {/* ── Full-screen Loader ── */}

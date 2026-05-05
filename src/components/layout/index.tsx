@@ -38,7 +38,8 @@ import {
   UserPlus, Archive, Package,
   Wrench, Bus, ShieldAlert,
   Bed, Scale, Library,
-  FileText, BadgeDollarSign, MapPin, Building2
+  FileText, BadgeDollarSign, MapPin, Building2,
+  Utensils, Coffee
 } from "lucide-react";
 
 export { Topbar } from "./Topbar";
@@ -154,18 +155,44 @@ const portalNav: NavGroup[] = [
     items: [
       { to: "/parent-and-student-portal/results",    label: "Results",         icon: BarChart3       },
       { to: "/parent-and-student-portal/attendance", label: "Attendance",      icon: CalendarDays    },
+      { to: "/parent-and-student-portal/resources",  label: "Learning Hub",    icon: Library         },
+      { to: "/parent-and-student-portal/reports",    label: "Termly Reports",  icon: FileText        },
+    ],
+  },
+  {
+    groupLabel: "Communication",
+    items: [
+      { to: "/parent-and-student-portal/calendar",   label: "School Calendar", icon: CalendarClock   },
+      { to: "/parent-and-student-portal/notices",    label: "Notice Board",    icon: Bell            },
+      { to: "/parent-and-student-portal/messages",   label: "Teacher Chat",    icon: Users           },
     ],
   },
   {
     groupLabel: "Finance",
     items: [
-      { to: "/parent-and-student-portal/fees", label: "Fees & Payments", icon: Wallet, badge: "Bal", badgeVariant: "warning" },
+      { to: "/parent-and-student-portal/fees",       label: "Fees & Payments", icon: Wallet, badge: "Bal", badgeVariant: "warning" },
+    ],
+  },
+  {
+    groupLabel: "Logistics & Welfare",
+    items: [
+      { to: "/parent-and-student-portal/transport",  label: "Transport",       icon: Bus             },
+      { to: "/parent-and-student-portal/conduct",    label: "Conduct Log",     icon: Shield          },
+      {to: "/parent-and-student-portal/meals",      label: "Meal Planner",    icon: Utensils        },
+      { to: "/parent-and-student-portal/activities", label: "Co-curricular",   icon: Zap             },
+    ],
+  },
+  {
+    groupLabel: "Administrative",
+    items: [
+      { to: "/parent-and-student-portal/vault",      label: "Document Vault",  icon: Archive         },
+      { to: "/parent-and-student-portal/store",      label: "Uniform Store",   icon: ShoppingBag     },
     ],
   },
   {
     groupLabel: "Account",
     items: [
-      { to: "/parent-and-student-portal/profile", label: "Profile", icon: User },
+      { to: "/parent-and-student-portal/profile",    label: "Profile",         icon: User            },
     ],
   },
 ];
