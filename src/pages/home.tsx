@@ -270,131 +270,37 @@ function PricingCard({ tier, price, description, features, highlighted = false, 
   );
 }
 
-function IntegrationBadge({ name, icon: Icon, color }: { name: string; icon: any; color: string }) {
+function IntegrationBadge({ name, icon: Icon, color, image }: { name: string; icon?: any; color?: string; image?: string }) {
   return (
     <div className={cn(
-      "flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-white border border-slate-100 shadow-sm",
+      "flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-white border border-slate-100 shadow-sm shrink-0",
       "hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-default"
     )}>
-      <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center", color)}>
-        <Icon size={16} className="text-white" />
+      <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center overflow-hidden", !image && color)}>
+        {image ? (
+          <img src={image} alt={name} className="w-full h-full object-contain p-1.5" />
+        ) : (
+          <Icon size={16} className="text-white" />
+        )}
       </div>
-      <span className="text-sm font-bold text-slate-700">{name}</span>
+      <span className="text-sm font-bold text-slate-700 whitespace-nowrap">{name}</span>
     </div>
   );
 }
 
 function DashboardMockup() {
   return (
-    <div className="relative rounded-[1.75rem] overflow-hidden border-8 border-slate-900 shadow-2xl bg-slate-900">
-      {/* Window chrome */}
-      <div className="bg-slate-800 h-9 flex items-center px-4 gap-2">
-        <div className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-        <div className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
-        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
-        <div className="flex-1 mx-4">
-          <div className="bg-slate-700 rounded-md h-4 w-48 mx-auto flex items-center justify-center">
-            <div className="text-[9px] text-slate-400 font-mono">app.educore.co.ke/dashboard</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Dashboard body */}
-      <div className="bg-secondary aspect-[16/10] flex">
-        {/* Sidebar */}
-        <div className="w-16 bg-indigo-600 flex flex-col items-center py-4 gap-4">
-          <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
-            <GraduationCap size={14} className="text-white" />
-          </div>
-          {[LayoutDashboard, Users, Calendar, BarChart3, Wallet, BookOpen].map((Icon, i) => (
-            <div key={i} className={cn(
-              "w-8 h-8 rounded-xl flex items-center justify-center transition-colors",
-              i === 0 ? "bg-white/30" : "hover:bg-white/10"
-            )}>
-              <Icon size={12} className="text-white/80" />
-            </div>
-          ))}
-        </div>
-
-        {/* Main content */}
-        <div className="flex-1 p-4 overflow-hidden">
-          {/* Top bar */}
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <div className="text-[10px] font-black text-slate-900">Good morning, Principal Kamau 👋</div>
-              <div className="text-[8px] text-slate-400 font-medium">Tuesday, 14 Jan 2026 · Nairobi, Kenya</div>
-            </div>
-            <div className="flex gap-1.5">
-              <div className="w-6 h-6 rounded-lg bg-white border border-slate-100 flex items-center justify-center">
-                <Bell size={10} className="text-slate-500" />
-              </div>
-              <div className="w-6 h-6 rounded-full overflow-hidden border-2 border-indigo-200">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=principal" alt="" className="w-full h-full" />
-              </div>
-            </div>
-          </div>
-
-          {/* Stats row */}
-          <div className="grid grid-cols-4 gap-2 mb-4">
-            {[
-              { label: "Students", value: "1,842", icon: Users, color: "bg-indigo-500" },
-              { label: "Attendance", value: "94.2%", icon: CheckCircle2, color: "bg-emerald-500" },
-              { label: "Fee Collected", value: "KES 2.4M", icon: Wallet, color: "bg-amber-500" },
-              { label: "Teachers", value: "87", icon: Award, color: "bg-violet-500" },
-            ].map((stat) => (
-              <div key={stat.label} className="bg-white rounded-xl p-2.5 border border-slate-100 shadow-sm">
-                <div className={cn("w-5 h-5 rounded-lg flex items-center justify-center mb-1.5", stat.color)}>
-                  <stat.icon size={9} className="text-white" />
-                </div>
-                <div className="text-[9px] font-black text-slate-900">{stat.value}</div>
-                <div className="text-[7px] text-slate-400 font-semibold">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Content grid */}
-          <div className="grid grid-cols-5 gap-2">
-            {/* Chart area */}
-            <div className="col-span-3 bg-white rounded-xl p-3 border border-slate-100 shadow-sm">
-              <div className="text-[9px] font-black text-slate-900 mb-2">Term Performance Overview</div>
-              <div className="flex items-end gap-1 h-16">
-                {[65, 80, 72, 90, 85, 78, 92, 88, 95].map((h, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center justify-end gap-0.5">
-                    <div
-                      className={cn("w-full rounded-sm transition-all", i === 8 ? "bg-indigo-600" : "bg-indigo-200")}
-                      style={{ height: `${h}%` }}
-                    />
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-between mt-1">
-                {["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9"].map((l) => (
-                  <div key={l} className="text-[6px] text-slate-300 font-bold flex-1 text-center">{l}</div>
-                ))}
-              </div>
-            </div>
-
-            {/* Recent activity */}
-            <div className="col-span-2 bg-white rounded-xl p-3 border border-slate-100 shadow-sm">
-              <div className="text-[9px] font-black text-slate-900 mb-2">Recent Activity</div>
-              <div className="space-y-2">
-                {[
-                  { msg: "Fee payment received", sub: "John Mwangi - Form 3B", color: "bg-emerald-500" },
-                  { msg: "Attendance marked", sub: "Mrs. Akinyi - Form 2A", color: "bg-indigo-500" },
-                  { msg: "New result uploaded", sub: "Mr. Oduor - Physics", color: "bg-violet-500" },
-                ].map((item) => (
-                  <div key={item.msg} className="flex items-start gap-1.5">
-                    <div className={cn("w-1 h-1 rounded-full mt-1 shrink-0", item.color)} />
-                    <div>
-                      <div className="text-[7.5px] font-bold text-slate-700">{item.msg}</div>
-                      <div className="text-[6.5px] text-slate-400">{item.sub}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="relative rounded-[2rem] overflow-hidden border border-slate-200/60 shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] bg-white p-2 md:p-3">
+      <div className="relative rounded-[1.5rem] overflow-hidden group bg-slate-50 border border-slate-100">
+        <img 
+          src="/waap1.png" 
+          alt="EduCore Dashboard" 
+          className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.05]"
+        />
+        
+        {/* Subtle glass and gradient overlays for premium feel */}
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-[1.5rem]" />
       </div>
     </div>
   );
@@ -1102,26 +1008,31 @@ export default function Home() {
               <p className="text-slate-400 font-medium">Native connections to Kenya's leading payment and communication platforms.</p>
             </motion.div>
           </div>
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="flex flex-wrap justify-center gap-4"
-          >
-            {[
-              { name: "M-Pesa", icon: Wallet, color: "bg-green-500" },
-              { name: "Airtel Money", icon: Smartphone, color: "bg-red-500" },
-              { name: "Pesapal", icon: CreditCard, color: "bg-indigo-500" },
-              { name: "Google Workspace", icon: Globe, color: "bg-sky-500" },
-              { name: "Equity Bank", icon: Building2, color: "bg-red-700" },
-              { name: "Flutterwave", icon: Zap, color: "bg-amber-500" },
-              { name: "Africa's Talking", icon: MessageSquare, color: "bg-violet-500" },
-              { name: "KRA eTims", icon: FileText, color: "bg-emerald-600" },
-            ].map((item) => (
-              <IntegrationBadge key={item.name} name={item.name} icon={item.icon} color={item.color} />
-            ))}
-          </motion.div>
+          <div className="relative overflow-hidden before:absolute before:left-0 before:top-0 before:z-10 before:h-full before:w-20 before:bg-gradient-to-r before:from-slate-50 before:to-transparent after:absolute after:right-0 after:top-0 after:z-10 after:h-full after:w-20 after:bg-gradient-to-l after:after:from-slate-50 after:to-transparent">
+            <div className="flex gap-4 animate-[marquee_25s_linear_infinite]" style={{ width: "max-content" }}>
+              {[
+                { name: "M-Pesa", image: "/logo-mpesa.png" },
+                { name: "Airtel Money", image: "/logo-airtel.png" },
+                { name: "Pesapal", image: "/logo-pesapal.png" },
+                { name: "Google Workspace", image: "/logo-google.png" },
+                { name: "Equity Bank", image: "/logo-equity.png" },
+                { name: "Flutterwave", image: "/logo-flutterwave.png" },
+                { name: "Africa's Talking", image: "/logo-africa.png" },
+                { name: "KRA eTims", image: "/logo-kra.png" },
+                // Duplicate for seamless loop
+                { name: "M-Pesa", image: "/logo-mpesa.png" },
+                { name: "Airtel Money", image: "/logo-airtel.png" },
+                { name: "Pesapal", image: "/logo-pesapal.png" },
+                { name: "Google Workspace", image: "/logo-google.png" },
+                { name: "Equity Bank", image: "/logo-equity.png" },
+                { name: "Flutterwave", image: "/logo-flutterwave.png" },
+                { name: "Africa's Talking", image: "/logo-africa.png" },
+                { name: "KRA eTims", image: "/logo-kra.png" },
+              ].map((item, idx) => (
+                <IntegrationBadge key={`${item.name}-${idx}`} name={item.name} image={item.image} />
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 

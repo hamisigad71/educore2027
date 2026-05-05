@@ -37,7 +37,8 @@ import {
   ArrowUpRight, AlertCircle, CheckCircle2,
   Calendar, TrendingUp, Wallet, Receipt,
   FileText, Info, Smartphone, Building2,
-  ShieldCheck, Clock, ChevronRight
+  ShieldCheck, Clock, ChevronRight,
+  Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -383,7 +384,7 @@ export default function PortalFees() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
+ 
       {/* Transaction Detail Dialog */}
       <Dialog open={!!detailFee} onOpenChange={() => setDetailFee(null)}>
         <DialogContent className="sm:max-w-sm">
