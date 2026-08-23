@@ -20,14 +20,14 @@ const TimetablePage = () => {
   const hours = ["08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM"];
 
   const schedule: Record<string, any> = {
-    "Mon-08:00 AM": { subject: "Science", class: "6A", room: "Lab 2", color: "bg-emerald-50 text-emerald-700 border-emerald-100" },
-    "Mon-10:00 AM": { subject: "Science", class: "6B", room: "Lab 2", color: "bg-emerald-50 text-emerald-700 border-emerald-100" },
-    "Tue-09:00 AM": { subject: "Math", class: "7A", room: "Room 104", color: "bg-indigo-50 text-indigo-700 border-indigo-100" },
-    "Tue-11:00 AM": { subject: "Math", class: "7B", room: "Room 105", color: "bg-indigo-50 text-indigo-700 border-indigo-100" },
-    "Wed-08:00 AM": { subject: "Science", class: "6A", room: "Lab 2", color: "bg-emerald-50 text-emerald-700 border-emerald-100" },
-    "Wed-01:00 PM": { subject: "Club", class: "Enviro", room: "Garden", color: "bg-amber-50 text-amber-700 border-amber-100" },
-    "Thu-10:00 AM": { subject: "Math", class: "7A", room: "Room 104", color: "bg-indigo-50 text-indigo-700 border-indigo-100" },
-    "Fri-09:00 AM": { subject: "Science", class: "6B", room: "Lab 2", color: "bg-emerald-50 text-emerald-700 border-emerald-100" },
+    "Mon-08:00 AM": { subject: "Science", class: "6A", room: "Lab 2", color: "bg-emerald-50/90 text-emerald-900 border-emerald-200/60 border-l-[4px] border-l-emerald-500" },
+    "Mon-10:00 AM": { subject: "Science", class: "6B", room: "Lab 2", color: "bg-emerald-50/90 text-emerald-900 border-emerald-200/60 border-l-[4px] border-l-emerald-500" },
+    "Tue-09:00 AM": { subject: "Math", class: "7A", room: "Room 104", color: "bg-indigo-50/90 text-indigo-900 border-indigo-200/60 border-l-[4px] border-l-indigo-500" },
+    "Tue-11:00 AM": { subject: "Math", class: "7B", room: "Room 105", color: "bg-indigo-50/90 text-indigo-900 border-indigo-200/60 border-l-[4px] border-l-indigo-500" },
+    "Wed-08:00 AM": { subject: "Science", class: "6A", room: "Lab 2", color: "bg-emerald-50/90 text-emerald-900 border-emerald-200/60 border-l-[4px] border-l-emerald-500" },
+    "Wed-01:00 PM": { subject: "Club", class: "Enviro", room: "Garden", color: "bg-amber-50/90 text-amber-900 border-amber-200/60 border-l-[4px] border-l-amber-500" },
+    "Thu-10:00 AM": { subject: "Math", class: "7A", room: "Room 104", color: "bg-indigo-50/90 text-indigo-900 border-indigo-200/60 border-l-[4px] border-l-indigo-500" },
+    "Fri-09:00 AM": { subject: "Science", class: "6B", room: "Lab 2", color: "bg-emerald-50/90 text-emerald-900 border-emerald-200/60 border-l-[4px] border-l-emerald-500" },
   };
 
   return (
@@ -70,18 +70,18 @@ const TimetablePage = () => {
       </div>
 
       {/* Timetable Grid */}
-      <Card className="border-slate-100 overflow-hidden shadow-sm">
+      <Card className="border-slate-200 overflow-hidden shadow-sm">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
+            <table className="w-full border-collapse bg-white">
               <thead>
-                <tr className="bg-slate-50/50">
-                  <th className="py-4 px-6 border-b border-slate-100 text-left w-24">
+                <tr>
+                  <th className="py-4 px-6 border-b border-r border-slate-200 bg-slate-50/80 text-left w-24">
                     <Clock size={16} className="text-slate-400 mx-auto" />
                   </th>
                   {days.map(day => (
-                    <th key={day} className="py-4 px-4 border-b border-slate-100 text-center min-w-[140px]">
-                      <span className="text-xs font-bold uppercase tracking-widest text-slate-400">{day}</span>
+                    <th key={day} className="py-4 px-4 border-b border-slate-200 bg-slate-50/80 text-center min-w-[160px]">
+                      <span className="text-xs font-black uppercase tracking-widest text-slate-500">{day}</span>
                     </th>
                   ))}
                 </tr>
@@ -89,34 +89,32 @@ const TimetablePage = () => {
               <tbody>
                 {hours.map(hour => (
                   <tr key={hour} className="group">
-                    <td className="py-6 px-4 border-r border-b border-slate-100 text-center">
-                      <span className="text-[11px] font-bold text-slate-400 whitespace-nowrap">{hour}</span>
+                    <td className="py-6 px-4 border-r border-b border-slate-200 bg-slate-50/30 text-center align-top pt-8">
+                      <span className="text-[11px] font-bold text-slate-500 whitespace-nowrap">{hour}</span>
                     </td>
                     {days.map(day => {
                       const session = schedule[`${day}-${hour}`];
                       return (
-                        <td key={day} className="p-2 border-r border-b border-slate-100 align-top group-hover:bg-slate-50/30 transition-colors">
+                        <td key={day} className="p-2.5 border-b border-r border-slate-100 last:border-r-0 align-top group-hover:bg-slate-50/50 transition-colors h-[120px]">
                           {session ? (
                             <div className={cn(
-                              "p-3 rounded-xl border border-transparent hover:border-current hover:shadow-sm transition-all duration-200 cursor-pointer",
+                              "h-full p-3.5 rounded-xl border hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col justify-between",
                               session.color
                             )}>
-                              <div className="flex flex-col gap-1.5">
-                                <span className="text-xs font-bold leading-none">{session.subject}</span>
-                                <div className="flex items-center justify-between mt-1">
-                                  <div className="flex items-center gap-1 opacity-70">
-                                    <Users size={10} />
-                                    <span className="text-[10px] font-bold">{session.class}</span>
-                                  </div>
-                                  <div className="flex items-center gap-1 opacity-70">
-                                    <MapPin size={10} />
-                                    <span className="text-[10px] font-bold">{session.room}</span>
-                                  </div>
+                              <div>
+                                <span className="text-sm font-black leading-tight block mb-1.5">{session.subject}</span>
+                                <div className="flex items-center gap-1.5 opacity-80 mb-2">
+                                  <Users size={12} />
+                                  <span className="text-xs font-bold">{session.class}</span>
                                 </div>
+                              </div>
+                              <div className="flex items-center gap-1.5 opacity-80 mt-auto bg-black/5 w-fit px-2 py-1 rounded-md">
+                                <MapPin size={12} />
+                                <span className="text-[11px] font-bold">{session.room}</span>
                               </div>
                             </div>
                           ) : (
-                            <div className="min-h-[60px]" />
+                            <div className="w-full h-full min-h-[100px]" />
                           )}
                         </td>
                       );
@@ -147,18 +145,15 @@ const TimetablePage = () => {
           </CardContent>
         </Card>
         
-        <div className="flex flex-col justify-center gap-2">
-           <div className="flex items-center gap-3 p-3 rounded-xl bg-indigo-50/40 border border-indigo-100/50">
-             <div className="h-2 w-2 rounded-full bg-indigo-600" />
-             <span className="text-xs font-bold text-slate-700">Mathematics Dept</span>
+        <div className="flex flex-col justify-center gap-3">
+           <div className="flex items-center gap-3 p-3.5 rounded-xl bg-indigo-50/40 border border-indigo-200/60 border-l-[4px] border-l-indigo-500 shadow-sm">
+             <span className="text-sm font-bold text-indigo-900">Mathematics Dept</span>
            </div>
-           <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50/40 border border-emerald-100/50">
-             <div className="h-2 w-2 rounded-full bg-emerald-600" />
-             <span className="text-xs font-bold text-slate-700">Science Dept</span>
+           <div className="flex items-center gap-3 p-3.5 rounded-xl bg-emerald-50/40 border border-emerald-200/60 border-l-[4px] border-l-emerald-500 shadow-sm">
+             <span className="text-sm font-bold text-emerald-900">Science Dept</span>
            </div>
-           <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-50/40 border border-amber-100/50">
-             <div className="h-2 w-2 rounded-full bg-amber-600" />
-             <span className="text-xs font-bold text-slate-700">Extra-Curricular Tasks</span>
+           <div className="flex items-center gap-3 p-3.5 rounded-xl bg-amber-50/40 border border-amber-200/60 border-l-[4px] border-l-amber-500 shadow-sm">
+             <span className="text-sm font-bold text-amber-900">Extra-Curricular Tasks</span>
            </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Sparkles, Construction } from "lucide-react";
+import { Rocket, Construction } from "lucide-react";
 
 interface PortalPlaceholderProps {
   title: string;
@@ -26,7 +26,7 @@ export function PortalPlaceholder({ title }: PortalPlaceholderProps) {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-4 whitespace-nowrap">
-              <Sparkles className="size-3.5 text-indigo-400" />
+              <Rocket className="size-3.5 text-indigo-400" />
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-300">New Feature</span>
             </div>
             <h1 className="text-3xl lg:text-4xl font-medium tracking-tight mb-3">

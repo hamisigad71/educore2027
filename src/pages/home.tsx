@@ -136,7 +136,7 @@ function FeatureCard({ icon: Icon, title, description, color = "indigo", delay =
       custom={delay}
       whileHover={{ y: -6 }}
       className={cn(
-        "relative p-7 rounded-3xl bg-card border border-border/50 shadow-sm group",
+        "relative p-7 rounded-3xl bg-card border border-slate-200 shadow-sm group",
         "transition-all duration-300 hover:shadow-2xl hover:border-transparent cursor-default overflow-hidden",
         c.glow
       )}
@@ -189,7 +189,7 @@ function TestimonialCard({ quote, name, role, school, avatar, rating = 5, delay 
       whileInView="visible"
       viewport={{ once: true }}
       custom={delay}
-      className="w-[85vw] sm:w-[60vw] md:w-auto shrink-0 snap-center p-8 rounded-3xl bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-indigo-50/30 transition-all duration-300 hover:-translate-y-1"
+      className="w-[85vw] sm:w-[60vw] md:w-auto shrink-0 snap-center p-8 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-indigo-50/30 transition-all duration-300 hover:-translate-y-1"
     >
       <div className="flex gap-1 mb-5">
         {Array.from({ length: rating }).map((_, i) => (
@@ -273,17 +273,17 @@ function PricingCard({ tier, price, description, features, highlighted = false, 
 function IntegrationBadge({ name, icon: Icon, color, image }: { name: string; icon?: any; color?: string; image?: string }) {
   return (
     <div className={cn(
-      "flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-white border border-slate-100 shadow-sm shrink-0",
-      "hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-default"
+      "flex items-center gap-3 px-5 py-3 rounded-2xl bg-white border border-slate-200/60 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] shrink-0",
+      "hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 cursor-default"
     )}>
-      <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center overflow-hidden", !image && color)}>
+      <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden shadow-inner", !image && color)}>
         {image ? (
-          <img src={image} alt={name} className="w-full h-full object-contain p-1.5" />
+          <img src={image} alt={name} className="w-full h-full object-contain p-2" />
         ) : (
-          <Icon size={16} className="text-white" />
+          Icon && <Icon size={20} className="text-white drop-shadow-sm" />
         )}
       </div>
-      <span className="text-sm font-bold text-slate-700 whitespace-nowrap">{name}</span>
+      <span className="text-[15px] font-bold text-slate-700 tracking-tight whitespace-nowrap">{name}</span>
     </div>
   );
 }
@@ -291,7 +291,7 @@ function IntegrationBadge({ name, icon: Icon, color, image }: { name: string; ic
 function DashboardMockup() {
   return (
     <div className="relative rounded-[2rem] overflow-hidden border border-slate-200/60 shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] bg-white p-2 md:p-3">
-      <div className="relative rounded-[1.5rem] overflow-hidden group bg-slate-50 border border-slate-100">
+      <div className="relative rounded-[1.5rem] overflow-hidden group bg-slate-50 border border-slate-200">
         <img 
           src="/waap1.png" 
           alt="EduCore Dashboard" 
@@ -422,7 +422,7 @@ export default function Home() {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
           isScrolled
-            ? "bg-white/90 backdrop-blur-2xl shadow-sm shadow-indigo-50/50 border-b border-slate-100/80"
+            ? "bg-white/90 backdrop-blur-2xl shadow-sm shadow-indigo-50/50 border-b border-slate-200/80"
             : "bg-transparent"
         )}
         initial={{ y: -80 }}
@@ -476,7 +476,7 @@ export default function Home() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-white/95 backdrop-blur-xl border-t border-slate-100 px-6 py-6 space-y-4 overflow-hidden"
+              className="md:hidden bg-white/95 backdrop-blur-xl border-t border-slate-200 px-6 py-6 space-y-4 overflow-hidden"
             >
               {["#features", "#portals", "#testimonials", "#pricing", "#faq"].map((href) => (
                 <a
@@ -605,7 +605,7 @@ export default function Home() {
               <motion.div
                 animate={{ y: [0, -12, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -top-6 -left-8 hidden lg:block bg-white p-4 rounded-2xl shadow-2xl border border-slate-100"
+                className="absolute -top-6 -left-8 hidden lg:block bg-white p-4 rounded-2xl shadow-2xl border border-slate-200"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
@@ -622,7 +622,7 @@ export default function Home() {
               <motion.div
                 animate={{ y: [0, 12, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute -bottom-6 -right-8 hidden lg:block bg-white p-4 rounded-2xl shadow-2xl border border-slate-100"
+                className="absolute -bottom-6 -right-8 hidden lg:block bg-white p-4 rounded-2xl shadow-2xl border border-slate-200"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center">
@@ -639,7 +639,7 @@ export default function Home() {
               <motion.div
                 animate={{ x: [0, -8, 0] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-                className="absolute top-1/2 -translate-y-1/2 -right-10 hidden xl:block bg-white p-3 rounded-xl shadow-xl border border-slate-100"
+                className="absolute top-1/2 -translate-y-1/2 -right-10 hidden xl:block bg-white p-3 rounded-xl shadow-xl border border-slate-200"
               >
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center">
@@ -667,7 +667,7 @@ export default function Home() {
       </section>
 
       {/* ── MARQUEE / PARTNER LOGOS ────────────────────────────────────────── */}
-      <section className="py-14 border-y border-slate-100 bg-slate-50/50 overflow-hidden">
+      <section className="py-14 border-y border-slate-200 bg-slate-50/50 overflow-hidden">
         <div className="mb-6 text-center text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">
           Trusted by leading institutions
         </div>
@@ -680,7 +680,7 @@ export default function Home() {
               "Alliance High School", "Starehe Boys Centre", "Kenya High School",
               "Strathmore School", "Limuru Girls", "Mang'u High School",
             ].map((name, i) => (
-              <div key={i} className="flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-white border border-slate-100 shadow-sm shrink-0">
+              <div key={i} className="flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-white border border-slate-200 shadow-sm shrink-0">
                 <GraduationCap size={14} className="text-indigo-400" />
                 <span className="text-sm font-bold text-slate-400 whitespace-nowrap">{name}</span>
               </div>
@@ -879,8 +879,8 @@ export default function Home() {
 
             <motion.div variants={fadeRight} initial="hidden" whileInView="visible" viewport={{ once: true }}>
               <div className="relative">
-                <div className="rounded-[2rem] overflow-hidden bg-gradient-to-br from-emerald-50 to-indigo-50 p-8 border border-slate-100 shadow-2xl">
-                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-4">
+                <div className="rounded-[2rem] overflow-hidden bg-gradient-to-br from-emerald-50 to-indigo-50 p-8 border border-slate-200 shadow-2xl">
+                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-4">
                     <div className="flex items-center justify-between mb-4">
                       <div>
                         <div className="text-xs font-black text-slate-900">Fee Collection</div>
@@ -904,7 +904,7 @@ export default function Home() {
                       { name: "Amina Sheikh", form: "2C", amount: "KES 18,000", status: "Paid", time: "14 min ago" },
                       { name: "Brian Mutua", form: "3B", amount: "KES 12,000", status: "Partial", time: "1 hr ago" },
                     ].map((item) => (
-                      <div key={item.name} className="flex items-center justify-between bg-white rounded-xl px-4 py-3 border border-slate-100">
+                      <div key={item.name} className="flex items-center justify-between bg-white rounded-xl px-4 py-3 border border-slate-200">
                         <div className="flex items-center gap-2.5">
                           <div className="w-7 h-7 rounded-full overflow-hidden bg-slate-100">
                             <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${item.name}`} alt={item.name} />
@@ -930,9 +930,9 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <motion.div variants={fadeRight} initial="hidden" whileInView="visible" viewport={{ once: true }} className="order-2 lg:order-1">
               <div className="relative">
-                <div className="rounded-[2rem] overflow-hidden bg-gradient-to-br from-indigo-50 to-violet-50 p-8 border border-slate-100 shadow-2xl">
+                <div className="rounded-[2rem] overflow-hidden bg-gradient-to-br from-indigo-50 to-violet-50 p-8 border border-slate-200 shadow-2xl">
                   {/* Attendance widget */}
-                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-4">
+                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-4">
                     <div className="flex items-center justify-between mb-5">
                       <div>
                         <div className="text-xs font-black text-slate-900">Attendance — Form 3B</div>
@@ -1009,27 +1009,27 @@ export default function Home() {
             </motion.div>
           </div>
           <div className="relative overflow-hidden before:absolute before:left-0 before:top-0 before:z-10 before:h-full before:w-20 before:bg-gradient-to-r before:from-slate-50 before:to-transparent after:absolute after:right-0 after:top-0 after:z-10 after:h-full after:w-20 after:bg-gradient-to-l after:after:from-slate-50 after:to-transparent">
-            <div className="flex gap-4 animate-[marquee_25s_linear_infinite]" style={{ width: "max-content" }}>
+            <div className="flex gap-5 animate-[marquee_35s_linear_infinite]" style={{ width: "max-content", padding: "10px 0" }}>
               {[
-                { name: "M-Pesa", image: "/logo-mpesa.png" },
-                { name: "Airtel Money", image: "/logo-airtel.png" },
-                { name: "Pesapal", image: "/logo-pesapal.png" },
-                { name: "Google Workspace", image: "/logo-google.png" },
-                { name: "Equity Bank", image: "/logo-equity.png" },
-                { name: "Flutterwave", image: "/logo-flutterwave.png" },
-                { name: "Africa's Talking", image: "/logo-africa.png" },
-                { name: "KRA eTims", image: "/logo-kra.png" },
+                { name: "M-Pesa", icon: Smartphone, color: "bg-[#4CAF50]" },
+                { name: "Airtel Money", icon: Smartphone, color: "bg-[#F44336]" },
+                { name: "Pesapal", icon: CreditCard, color: "bg-[#1E88E5]" },
+                { name: "Google Workspace", icon: LayoutDashboard, color: "bg-[#FBBC05]" },
+                { name: "Equity Bank", icon: Building2, color: "bg-[#A0522D]" },
+                { name: "Flutterwave", icon: Globe, color: "bg-[#F5A623]" },
+                { name: "Africa's Talking", icon: MessageSquare, color: "bg-[#F57C00]" },
+                { name: "KRA eTims", icon: FileText, color: "bg-slate-800" },
                 // Duplicate for seamless loop
-                { name: "M-Pesa", image: "/logo-mpesa.png" },
-                { name: "Airtel Money", image: "/logo-airtel.png" },
-                { name: "Pesapal", image: "/logo-pesapal.png" },
-                { name: "Google Workspace", image: "/logo-google.png" },
-                { name: "Equity Bank", image: "/logo-equity.png" },
-                { name: "Flutterwave", image: "/logo-flutterwave.png" },
-                { name: "Africa's Talking", image: "/logo-africa.png" },
-                { name: "KRA eTims", image: "/logo-kra.png" },
+                { name: "M-Pesa", icon: Smartphone, color: "bg-[#4CAF50]" },
+                { name: "Airtel Money", icon: Smartphone, color: "bg-[#F44336]" },
+                { name: "Pesapal", icon: CreditCard, color: "bg-[#1E88E5]" },
+                { name: "Google Workspace", icon: LayoutDashboard, color: "bg-[#FBBC05]" },
+                { name: "Equity Bank", icon: Building2, color: "bg-[#A0522D]" },
+                { name: "Flutterwave", icon: Globe, color: "bg-[#F5A623]" },
+                { name: "Africa's Talking", icon: MessageSquare, color: "bg-[#F57C00]" },
+                { name: "KRA eTims", icon: FileText, color: "bg-slate-800" },
               ].map((item, idx) => (
-                <IntegrationBadge key={`${item.name}-${idx}`} name={item.name} image={item.image} />
+                <IntegrationBadge key={`${item.name}-${idx}`} name={item.name} icon={item.icon} color={item.color} />
               ))}
             </div>
           </div>
@@ -1171,7 +1171,7 @@ export default function Home() {
               >
                 <button
                   onClick={() => setActiveFaq(activeFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between p-6 rounded-2xl bg-white border border-slate-100 shadow-sm hover:border-indigo-100 hover:shadow-md transition-all text-left group"
+                  className="w-full flex items-center justify-between p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-indigo-100 hover:shadow-md transition-all text-left group"
                 >
                   <span className="text-sm font-black text-slate-900 pr-4">{faq.q}</span>
                   <div className={cn(

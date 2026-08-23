@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { 
   Trophy, Music, Palette, Code, 
   MapPin, Calendar,
-  Star, ChevronRight, Plus, Sparkles,
+  Star, ChevronRight, Plus, Award,
   Search, Filter, Users
 } from "lucide-react";
 
@@ -120,7 +120,7 @@ export default function PortalActivities() {
          {/* Achievements / Highlights */}
          <div className="w-full lg:w-80 space-y-6">
             <Card className="border-indigo-100 bg-gradient-to-br from-indigo-600 to-indigo-800 text-white rounded-[32px] overflow-hidden p-8 shadow-2xl shadow-indigo-200/40">
-               <Sparkles className="size-8 text-indigo-200 mb-6" />
+               <Award className="size-8 text-indigo-200 mb-6" />
                <h4 className="text-xl font-medium tracking-tight mb-4">Achievements</h4>
                <div className="space-y-6">
                   {[

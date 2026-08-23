@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { 
   Settings, Building2, Bell, 
   ShieldCheck, Globe, CreditCard,
-  Save, Trash2, Sliders, Sparkles
+  Save, Trash2, Sliders, Settings2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -84,7 +84,7 @@ export default function AdminSettings() {
 
               <div className="space-y-6">
                  <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                    <Sparkles size={14} className="text-indigo-500" /> System Preferences
+                    <Settings2 size={14} className="text-indigo-500" /> System Preferences
                  </h4>
                  <div className="grid gap-4">
                     {[

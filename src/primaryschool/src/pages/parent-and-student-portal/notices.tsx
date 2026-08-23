@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { 
   Bell, Mail, Megaphone,
   ChevronRight, 
-  AlertCircle, Sparkles, Pin
+  AlertCircle, BellRing, Pin
 } from "lucide-react";
 
 const NOTICES = [
@@ -149,7 +149,7 @@ export default function PortalNotices() {
                </p>
             </div>
             <Button className="bg-white text-indigo-600 hover:bg-slate-100 h-12 px-8 rounded-2xl font-bold text-xs uppercase tracking-widest shadow-xl shadow-black/10">
-               <Sparkles className="size-4 mr-2" /> Allow Notifications
+               <BellRing className="size-4 mr-2" /> Allow Notifications
             </Button>
          </div>
       </div>

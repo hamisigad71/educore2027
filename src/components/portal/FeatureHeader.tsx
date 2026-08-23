@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Sparkles } from "lucide-react";
+import { Rocket } from "lucide-react";
 
 interface FeatureHeaderProps {
   title: string;
@@ -46,7 +46,7 @@ export function FeatureHeader({
           )}
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 mb-4 whitespace-nowrap">
-              <Sparkles className="size-3.5 text-indigo-200" />
+              <Rocket className="size-3.5 text-indigo-200" />
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-100">{badge}</span>
             </div>
             <h1 className="text-3xl lg:text-4xl font-medium tracking-tight mb-3">

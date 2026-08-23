@@ -16,7 +16,7 @@ import {
   Users, Eye, EyeOff, ArrowRight, BookOpen, GraduationCap,
   Wrench, TrendingUp, Globe, Star, ShieldCheck, School,
   Landmark, Stethoscope, Activity, Shield, Package,
-  UtensilsCrossed, FileText, UserCog, Sparkles, Check,
+  UtensilsCrossed, FileText, UserCog, Crown, Check,
   Home,
 } from "lucide-react";
 
@@ -39,8 +39,8 @@ const roles: RoleConfig[] = [
     label: "Administrator",
     desc: "Full system access & reports",
     icon: <ShieldCheck size={17} />,
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-600",
+    iconBg: "bg-indigo-50",
+    iconColor: "text-indigo-700",
   },
   {
     role: "teacher",
@@ -178,17 +178,17 @@ export default function Login() {
           to w-[400px] min-w-[400px] — was dominating too much of the viewport
           (~36% on 1280px). Now sits at ~31%, giving the form side more room.
         */}
-        <aside className="hidden lg:flex w-[400px] min-w-[400px] bg-slate-950 flex-col p-12 relative overflow-hidden">
+        <aside className="hidden lg:flex w-[400px] min-w-[400px] bg-primary flex-col p-12 relative overflow-hidden">
           {/* Subtle Branded Background orbs */}
-          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-blue-600/10 pointer-events-none blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-violet-600/8 pointer-events-none blur-3xl" />
+          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-emerald-500/15 pointer-events-none blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-amber-500/10 pointer-events-none blur-3xl" />
 
           {/*
             DESKTOP CHANGE 2: Edge-to-Edge Hero Branding
             Removed negative margins and gradient overlays to maximize image clarity.
             The image now spans the full width of the side panel for maximum impact.
           */}
-          <div className="relative z-10 -mx-12 -mt-12 mb-10 overflow-hidden border-b border-white/10 group">
+          <div className="relative z-10 -mx-12 -mt-12 mb-10 overflow-hidden border-b border-indigo-300/10 group">
             <img
               src="/login-hero.png"
               alt="EduCore Branding"
@@ -198,52 +198,52 @@ export default function Login() {
 
           {/* Headline - Centered Stack */}
           <div className="flex-1 flex flex-col justify-center relative z-10 max-w-[340px]">
-            <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6 w-fit">
-              <Sparkles className="size-3 text-blue-400" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-300">
+            <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6 w-fit">
+              <Crown className="size-3 text-amber-400" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-300">
                 Kenya's #1 School Platform
               </span>
             </div>
 
             <h1 className="serif-hero text-[34px] text-white leading-[1.1] mb-5 tracking-tight">
               Manage your school<br />
-              <span className="text-blue-200 italic">
+              <span className="text-emerald-300 italic">
                 with absolute clarity.
               </span>
             </h1>
             
-            <p className="text-[14px] text-slate-400 leading-relaxed font-medium mb-8">
+            <p className="text-[14px] text-indigo-300/80 leading-relaxed font-medium mb-8">
               A unified ecosystem for administrators, teachers, parents and staff — engineered for excellence in Kenyan education.
             </p>
 
             {/* Stats - Grid Architecture */}
-            <div className="grid grid-cols-3 gap-6 pt-6 border-t border-white/10 mb-10">
+            <div className="grid grid-cols-3 gap-6 pt-6 border-t border-indigo-300/10 mb-10">
               {stats.map((s) => (
                 <div key={s.label}>
                    <p className="text-2xl font-black text-white tracking-tighter">{s.value}</p>
-                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1.5">{s.label}</p>
+                   <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mt-1.5">{s.label}</p>
                 </div>
               ))}
             </div>
 
             {/* Premium Testimonial Card */}
-            <Card className="bg-white/[0.03] border-white/7 backdrop-blur-md rounded-[24px] overflow-hidden">
+            <Card className="bg-white/[0.03] border-white/5 backdrop-blur-md rounded-[24px] overflow-hidden">
                 <CardContent className="p-6">
                   <div className="flex gap-1 mb-4">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} size={12} className="text-amber-400 fill-amber-400" />
                     ))}
                   </div>
-                  <p className="text-[13px] text-slate-200 leading-relaxed font-medium italic mb-5">
+                  <p className="text-[13px] text-indigo-100 leading-relaxed font-medium italic mb-5">
                     "{testimonial.quote}"
                   </p>
                   <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-[11px] font-bold text-white shadow-lg shadow-blue-900/50">
+                    <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-600 flex items-center justify-center text-[11px] font-bold text-white shadow-lg shadow-indigo-950/50">
                       {testimonial.initials}
                     </div>
                     <div>
                       <p className="text-[12px] font-bold text-white leading-tight">{testimonial.name}</p>
-                      <p className="text-[10px] text-slate-500 font-medium">{testimonial.role}</p>
+                      <p className="text-[10px] text-indigo-400 font-medium">{testimonial.role}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -251,17 +251,17 @@ export default function Login() {
           </div>
 
           {/* Footer - Anchored to bottom */}
-          <div className="relative z-10 mt-12 pt-6 border-t border-white/5 flex items-center justify-between opacity-60">
+          <div className="relative z-10 mt-12 pt-6 border-t border-indigo-300/10 flex items-center justify-between opacity-60">
             <div className="flex items-center gap-2">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
               </span>
-              <span className="text-[10px] text-slate-500 font-bold">
+              <span className="text-[10px] text-indigo-300 font-bold">
                 System Operational
               </span>
             </div>
-            <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">
+            <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">
               v1.2.0-PRO · 🇰🇪
             </span>
           </div>
@@ -273,7 +273,7 @@ export default function Login() {
         <main className="flex-1 flex flex-col items-center lg:justify-center overflow-y-auto bg-white lg:bg-slate-50/50">
           
           {/* Marketing Image - True Full Width on Mobile */}
-          <div className="lg:hidden w-full overflow-hidden rounded-b-[40px] shadow-sm shadow-blue-100/10 bg-white">
+          <div className="lg:hidden w-full overflow-hidden rounded-b-[40px] shadow-sm shadow-slate-200 bg-white">
             <img 
               src="/wwp1.png" 
               alt="EduCore Features" 
@@ -289,19 +289,19 @@ export default function Login() {
           >
             {/* ── Background Orbs (Glass3D Atmos) ── */}
             <motion.div
-              className="absolute rounded-full bg-blue-500/5 blur-[120px] pointer-events-none"
+              className="absolute rounded-full bg-emerald-500/5 blur-[120px] pointer-events-none"
               style={{ width: 400, height: 400, top: "20%", left: "10%" }}
               animate={{ x: [0, 40, 0], y: [0, 30, 0] }}
               transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.div
-              className="absolute rounded-full bg-violet-500/5 blur-[100px] pointer-events-none"
+              className="absolute rounded-full bg-amber-500/5 blur-[100px] pointer-events-none"
               style={{ width: 300, height: 300, bottom: "20%", right: "10%" }}
               animate={{ x: [0, -30, 0], y: [0, -40, 0] }}
               transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
             />
             <motion.div
-              className="absolute rounded-full bg-blue-500/5 blur-[80px] pointer-events-none"
+              className="absolute rounded-full bg-indigo-500/5 blur-[80px] pointer-events-none"
               style={{ width: 250, height: 250, top: "50%", left: "60%" }}
               animate={{ x: [0, 20, 0], y: [0, -20, 0] }}
               transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 2 }}
@@ -343,14 +343,14 @@ export default function Login() {
                   className={cn(
                     "flex items-center justify-center gap-2 h-10 rounded-xl text-[12.5px] font-semibold transition-all duration-200",
                     portal === p
-                      ? "bg-white text-blue-700 shadow-sm border border-slate-200/70 font-bold"
+                      ? "bg-white text-primary shadow-sm border border-slate-200/70 font-bold"
                       : "text-slate-500 hover:text-slate-700"
                   )}
                 >
                   {p === "primary" ? (
-                    <School size={14} className={portal === p ? "text-blue-600" : "text-slate-400"} />
+                    <School size={14} className={portal === p ? "text-primary" : "text-slate-400"} />
                   ) : (
-                    <GraduationCap size={14} className={portal === p ? "text-blue-600" : "text-slate-400"} />
+                    <GraduationCap size={14} className={portal === p ? "text-primary" : "text-slate-400"} />
                   )}
                   {p === "primary" ? "Primary" : "High School"}
                 </button>
@@ -390,8 +390,8 @@ export default function Login() {
                     */
                     "relative rounded-2xl p-5 text-left border transition-all duration-500 group overflow-hidden",
                     selected === r.role
-                      ? "border-blue-500/40 bg-white shadow-[0_12px_24px_-8px_rgba(99,102,241,0.15)] ring-1 ring-blue-500/10"
-                      : "border-slate-100 bg-slate-50/30 hover:border-blue-200 hover:bg-white"
+                      ? "border-primary/40 bg-white shadow-[0_12px_24px_-8px_rgba(10,37,64,0.15)] ring-1 ring-primary/10"
+                      : "border-slate-100 bg-slate-50/30 hover:border-primary/30 hover:bg-white"
                   )}
                 >
                   <AnimatePresence>
@@ -400,7 +400,7 @@ export default function Login() {
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
-                        className="absolute top-4 right-4 h-5 w-5 rounded-full bg-blue-600 flex items-center justify-center ring-4 ring-blue-50"
+                        className="absolute top-4 right-4 h-5 w-5 rounded-full bg-primary flex items-center justify-center ring-4 ring-indigo-50"
                       >
                         <Check size={11} className="text-white" strokeWidth={3} />
                       </motion.div>
@@ -441,8 +441,8 @@ export default function Login() {
                       className={cn(
                         "flex items-center gap-3 p-3.5 rounded-[18px] border text-left transition-all duration-300",
                         staffRole === d.id
-                          ? "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-200"
-                          : "bg-white border-slate-200/60 hover:border-blue-200 text-slate-600"
+                          ? "bg-primary border-primary text-white shadow-lg shadow-slate-300"
+                          : "bg-white border-slate-200/60 hover:border-primary/30 text-slate-600"
                       )}
                     >
                       <div
@@ -481,8 +481,8 @@ export default function Login() {
                   key={selected}
                   className={cn(
                     "h-12 px-5 text-[14px] border-slate-200 rounded-[18px] transition-all duration-300",
-                    "focus-visible:ring-[6px] focus-visible:ring-blue-500/10 focus-visible:border-blue-400",
-                    selected && "bg-slate-50/80 font-semibold text-blue-900 border-blue-100/50"
+                    "focus-visible:ring-[6px] focus-visible:ring-primary/10 focus-visible:border-primary/40",
+                    selected && "bg-slate-50/80 font-semibold text-primary border-indigo-200/50"
                   )}
                 />
               </div>
@@ -497,12 +497,12 @@ export default function Login() {
                     placeholder="••••••••"
                     defaultValue={selected ? "demo1234" : ""}
                     key={`pwd-${selected}`}
-                    className="h-11 px-5 text-[14px] border-slate-200 rounded-[16px] focus-visible:ring-[6px] focus-visible:ring-blue-500/10 focus-visible:border-blue-400 transition-all duration-300"
+                    className="h-11 px-5 text-[14px] border-slate-200 rounded-[16px] focus-visible:ring-[6px] focus-visible:ring-primary/10 focus-visible:border-primary/40 transition-all duration-300"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-blue-500 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-primary transition-colors"
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -517,7 +517,7 @@ export default function Login() {
                   id="remember"
                   checked={rememberMe}
                   onCheckedChange={(v) => setRememberMe(!!v)}
-                  className="size-4.5 rounded-lg border-slate-200 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 transition-all duration-300"
+                  className="size-4.5 rounded-lg border-slate-200 data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all duration-300"
                 />
                 <Label
                   htmlFor="remember"
@@ -528,7 +528,7 @@ export default function Login() {
               </div>
               <a
                 href="#"
-                className="text-[13px] text-blue-600 font-bold hover:text-blue-700 transition-colors"
+                className="text-[13px] text-primary font-bold hover:text-indigo-800 transition-colors"
               >
                 Forgot access key?
               </a>
@@ -546,7 +546,7 @@ export default function Login() {
                 className={cn(
                   "relative w-full h-14 rounded-[22px] text-[15px] font-black tracking-tight transition-all duration-500 group overflow-hidden",
                   selected && !loading
-                    ? "bg-blue-600 hover:bg-blue-700 text-white shadow-[0_20px_40px_-12px_rgba(79,70,229,0.3)]"
+                    ? "bg-primary hover:bg-[var(--primary)]/90 text-white shadow-[0_20px_40px_-12px_rgba(10,37,64,0.3)]"
                     : "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none"
                 )}
               >
@@ -591,7 +591,7 @@ export default function Login() {
                       <span className="text-[10px] font-bold text-slate-400">
                         {row.key}
                       </span>
-                      <code className="text-[11.5px] font-bold text-blue-700 bg-white px-3 py-1.5 rounded-xl border border-slate-100 shadow-sm">
+                      <code className="text-[11.5px] font-bold text-primary bg-white px-3 py-1.5 rounded-xl border border-slate-100 shadow-sm">
                         {row.val}
                       </code>
                     </div>

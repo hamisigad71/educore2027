@@ -19,9 +19,9 @@ import {
 import {
   Trophy, Calendar, CreditCard, Layers,
   Bell, ChevronRight, TrendingUp, TrendingDown,
-  BookOpen, ClipboardList,
+  BookOpen, ClipboardList, CheckCircle2,
   AlertCircle, GraduationCap, Star,
-  ArrowUpRight,
+  ArrowUpRight, Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -238,41 +238,92 @@ export default function PortalDashboard() {
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         />
 
-        <div className="relative z-10 flex flex-col items-center text-center py-4">
-          {/* Centered Avatar + status ring */}
-          <div className="relative mb-8">
-            <div className="p-1 rounded-full bg-white shadow-2xl shadow-indigo-100 ring-1 ring-slate-100">
-              <Avatar className="h-24 w-24 sm:h-28 sm:w-28 border-[6px] border-white shadow-inner">
-                <AvatarImage src={student.photo} className="object-cover" />
-                <AvatarFallback className="text-3xl font-medium text-indigo-600 bg-indigo-50/50">
-                  {student.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
-                </AvatarFallback>
-              </Avatar>
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center py-2">
+          {/* Left Column: Avatar + Welcome text + Badges */}
+          <div className="lg:col-span-8 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6">
+            {/* Centered Avatar + status ring */}
+            <div className="relative shrink-0">
+              <div className="p-1 rounded-full bg-white shadow-2xl shadow-indigo-150 ring-1 ring-slate-100">
+                <Avatar className="h-24 w-24 sm:h-28 sm:w-28 border-[6px] border-white shadow-inner">
+                  <AvatarImage src={student.photo} className="object-cover" />
+                  <AvatarFallback className="text-3xl font-medium text-indigo-650 bg-indigo-50/50">
+                    {student.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              <div className="absolute bottom-1 right-1.5 h-6 w-6 rounded-full bg-emerald-500 border-[4px] border-white shadow-lg flex items-center justify-center">
+                <span className="h-2.5 w-2.5 rounded-full bg-white animate-pulse" />
+              </div>
             </div>
-            <div className="absolute bottom-1 right-1 h-6 w-6 rounded-full bg-emerald-500 border-[4px] border-white shadow-lg flex items-center justify-center">
-              <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
+
+            {/* Info */}
+            <div className="space-y-3">
+              <div className="flex flex-col sm:items-start items-center gap-1.5">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Student Portal</span>
+                </div>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-[1.15] mt-1">
+                  Hello, <span className="text-indigo-600 font-extrabold">{student.name.split(" ")[0]}</span> 👋
+                </h2>
+              </div>
+              <p className="text-sm text-slate-500 max-w-xl font-medium leading-relaxed">
+                Welcome back to your school portal! Explore your subjects, live academic dashboard grades, attendance tracking, and latest school announcements below.
+              </p>
+              
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-2">
+                <Badge variant="secondary" className="bg-white hover:bg-white text-slate-600 border border-slate-100 h-8 px-4 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 transition-colors">
+                  <BookOpen size={11} className="text-indigo-500" />
+                  {student.klass}
+                </Badge>
+                <Badge variant="secondary" className="bg-white hover:bg-white text-slate-600 border border-slate-100 h-8 px-4 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 transition-colors">
+                  <GraduationCap size={11} className="text-indigo-500" />
+                  ID: {student.admission}
+                </Badge>
+                <Badge className="bg-[#00c07f] hover:bg-[#00c07f] text-white border-none h-8 px-4 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-md shadow-emerald-100 flex items-center gap-1.5 transition-all">
+                  <CheckCircle2 size={11} className="text-white" />
+                  Active Enrollment
+                </Badge>
+              </div>
             </div>
           </div>
 
-          {/* Centered Info */}
-          <div className="space-y-4 max-w-2xl">
-            <p className="text-indigo-600 text-[11px] sm:text-[12px] font-medium uppercase tracking-[0.3em] mb-2">
-              Student Portal
-            </p>
-            <h2 className="text-[36px] sm:text-[48px] font-medium text-slate-900 tracking-tighter leading-tight">
-              Hello, <span className="text-indigo-600">{student.name.split(" ")[0]}</span> 👋
-            </h2>
-            
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
-              <Badge variant="secondary" className="bg-white text-slate-500 border border-slate-100 h-9 px-5 rounded-full text-[11px] font-medium uppercase tracking-widest shadow-sm">
-                {student.klass}
-              </Badge>
-              <Badge variant="secondary" className="bg-white text-slate-500 border border-slate-100 h-9 px-5 rounded-full text-[11px] font-medium uppercase tracking-widest shadow-sm">
-                ID: {student.admission}
-              </Badge>
-              <Badge className="bg-[#00c07f] hover:bg-[#00c07f] text-white border-none h-9 px-6 rounded-full text-[11px] font-medium uppercase tracking-widest shadow-lg shadow-emerald-100">
-                Active Enrollment
-              </Badge>
+          {/* Right Column: Term Progress Widget */}
+          <div className="lg:col-span-4 w-full">
+            <div className="bg-white/40 backdrop-blur-xl border border-white/60 p-5 rounded-3xl shadow-[0_10px_35px_-5px_rgba(0,0,0,0.03)] space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-650 border border-indigo-100 shadow-sm">
+                    <Calendar size={14} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Session Info</h4>
+                    <p className="text-[10px] text-slate-400 font-medium">Term 2 Progress</p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold text-indigo-650 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
+                  Week 8/12
+                </span>
+              </div>
+              
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center text-[10px] font-bold text-slate-500">
+                  <span>Term Completion</span>
+                  <span className="text-slate-700">65%</span>
+                </div>
+                <Progress value={65} className="h-1.5 bg-slate-100 [&>div]:bg-gradient-to-r [&>div]:from-indigo-500 [&>div]:to-indigo-650" />
+              </div>
+
+              <div className="pt-3 flex items-center justify-between border-t border-slate-200/40">
+                <div className="flex items-center gap-1.5">
+                  <Clock size={12} className="text-slate-400" />
+                  <span className="text-[10px] text-slate-500 font-medium">Daily Schedule Status:</span>
+                </div>
+                <span className="text-[10px] font-bold text-emerald-650 bg-emerald-50 px-2 py-0.5 rounded-md">On Track</span>
+              </div>
             </div>
           </div>
         </div>
