@@ -28,9 +28,9 @@ const roleProfiles: Record<Exclude<Role, null>, AuthUser> = {
       "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=200",
   },
   teacher: {
-    name: "Mrs. Jane Wambui",
+    name: "Mrs. Loveth Wambui",
     role: "teacher",
-    email: "jane.wambui@shule.go.ke",
+    email: "Loveth.wambui@shule.go.ke",
     photo:
       "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200",
   },

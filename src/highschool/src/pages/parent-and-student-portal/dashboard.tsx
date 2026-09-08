@@ -196,7 +196,7 @@ export default function PortalDashboard() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="relative overflow-hidden rounded-[40px] bg-white/70 backdrop-blur-3xl border border-white/50 p-6 sm:p-10 text-slate-900 shadow-[0_20px_50px_rgba(0,0,0,0.04),0_0_1px_rgba(255,255,255,1)_inset]"
+        className="relative overflow-hidden rounded-[40px] bg-white/70 backdrop-blur-3xl border-2 border-slate-200 sm:border sm:border-white/50 p-6 sm:p-10 text-slate-900 shadow-[0_20px_50px_rgba(0,0,0,0.04),0_0_1px_rgba(255,255,255,1)_inset]"
       >
         {/* Grain Overlay */}
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
@@ -215,7 +215,7 @@ export default function PortalDashboard() {
 
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Left Column: Avatar + Welcome text + Badges */}
-          <div className="lg:col-span-8 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6">
+          <div className="lg:col-span-8 flex flex-col sm:flex-row items-start text-left gap-6">
             {/* Avatar + Status */}
             <div className="relative shrink-0">
               <div className="p-1 px-[5px] rounded-full bg-white/90 backdrop-blur-xl shadow-xl shadow-indigo-100/50 ring-1 ring-black/5">
@@ -233,7 +233,7 @@ export default function PortalDashboard() {
 
             {/* Identity */}
             <div className="space-y-3">
-              <div className="flex flex-col sm:items-start items-center gap-1.5">
+              <div className="flex flex-col items-start gap-1.5">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
@@ -249,7 +249,7 @@ export default function PortalDashboard() {
                 Welcome back to your dashboard. You are all set for today. Below is a summary of your academic achievements, attendance, and latest school announcements.
               </p>
               
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-2">
+              <div className="flex flex-wrap items-center justify-start gap-2 pt-2">
                 <div className="bg-white/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-slate-100 shadow-sm flex items-center gap-2 text-slate-600 hover:border-indigo-150 transition-colors">
                   <BookOpen size={12} className="text-indigo-500" />
                   <span className="text-[11px] font-semibold uppercase tracking-wider">{student.klass}</span>

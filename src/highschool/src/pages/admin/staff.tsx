@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 const mockStaff = [
   { id: "STF-001", name: "David Ochieng", role: "Head of Operations", department: "Operations", performance: 92, tasksCompleted: 45, status: "Active" },
-  { id: "STF-002", name: "Jane Gitau", role: "Chief Bursar", department: "Bursar", performance: 98, tasksCompleted: 112, status: "Active" },
+  { id: "STF-002", name: "Loveth Gitau", role: "Chief Bursar", department: "Bursar", performance: 98, tasksCompleted: 112, status: "Active" },
   { id: "STF-003", name: "Vincent Kariuki", role: "IT Administrator", department: "Inventory & Labs", performance: 76, tasksCompleted: 28, status: "Active" },
   { id: "STF-004", name: "Mercy Wanjala", role: "Librarian", department: "Library", performance: 88, tasksCompleted: 64, status: "Active" },
   { id: "STF-005", name: "Dr. Evans Korir", role: "School Nurse", department: "Sanatorium", performance: 95, tasksCompleted: 215, status: "Active" },

@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 const mockStaff = [
   { id: "STF-001", name: "David Ochieng", role: "Head of Operations", department: "Operations", performance: 92, tasksCompleted: 45, status: "Active" },
-  { id: "STF-002", name: "Jane Gitau", role: "Chief Bursar", department: "Bursar", performance: 98, tasksCompleted: 112, status: "Active" },
+  { id: "STF-002", name: "Loveth Gitau", role: "Chief Bursar", department: "Bursar", performance: 98, tasksCompleted: 112, status: "Active" },
 ];
 
 export default function AdminStaffManagement() {

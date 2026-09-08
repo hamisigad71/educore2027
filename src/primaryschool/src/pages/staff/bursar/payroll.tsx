@@ -13,7 +13,7 @@ const payrollList = [
   { name: "Mr. Kevin Otieno", role: "Class Teacher – Grade 5B", salary: 35000, status: "Paid", month: "Apr 2025" },
   { name: "Ms. Faith Achieng", role: "Deputy Head Teacher", salary: 52000, status: "Pending", month: "Apr 2025" },
   { name: "Mr. Samuel Kamau", role: "Support Staff", salary: 18000, status: "Paid", month: "Apr 2025" },
-  { name: "Mrs. Jane Mwangi", role: "Secretary", salary: 25000, status: "Pending", month: "Apr 2025" },
+  { name: "Mrs. Loveth Mwangi", role: "Secretary", salary: 25000, status: "Pending", month: "Apr 2025" },
 ];
 
 export default function BursarPayroll() {

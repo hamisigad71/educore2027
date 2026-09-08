@@ -6,7 +6,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-    --background: #F8FAFC;
+    --background: #E2E8F0;
     --foreground: #0F172A;
     --card: #FFFFFF;
     --card-foreground: #0F172A;
@@ -30,7 +30,7 @@
     --chart-4: #E2E8F0;
     --chart-5: #0A2540; /* Navy Dark */
     --radius: 0.625rem;
-    --sidebar: #F8FAFC;
+    --sidebar: #E2E8F0;
     --sidebar-foreground: #0F172A;
     --sidebar-primary: #0A2540;
     --sidebar-primary-foreground: #FFFFFF;

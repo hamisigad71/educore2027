@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 export default function BursarPayroll() {
   const staff = [
     { name: "John Doe", role: "Principal", base: 120000, deductions: 24000, net: 96000, status: "Paid" },
-    { name: "Jane Smith", role: "Sr. Teacher", base: 85000, deductions: 15000, net: 70000, status: "Paid" },
+    { name: "Loveth Smith", role: "Sr. Teacher", base: 85000, deductions: 15000, net: 70000, status: "Paid" },
     { name: "Kevin Njoroge", role: "Bursar", base: 75000, deductions: 12000, net: 63000, status: "Processing" },
     { name: "Mary Atieno", role: "Nurse", base: 65000, deductions: 10000, net: 55000, status: "Pending" },
     { name: "Collins Juma", role: "Driver", base: 35000, deductions: 5000, net: 30000, status: "Pending" },

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 import { useState, useEffect, useRef } from "react";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import Loader from "@/components/ui/loader";
+import ChatbotWidget from "@/components/ui/ChatbotWidget";
 
 // Pages
 import Home from "@/pages/home";
@@ -491,6 +492,7 @@ export default function App() {
           `}</style>
           <NavigationLoader />
           <AppRoutes />
+          <ChatbotWidget />
         </div>
       </AuthProvider>
     </BrowserRouter>

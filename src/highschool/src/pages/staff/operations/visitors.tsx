@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 const mockVisitors = [
   { id: "VST-001", name: "David Ochieng", idNumber: "23456789", host: "Principal's Office", purpose: "Admissions Interview", timeIn: "10:15 AM", timeOut: "-", status: "On Campus" },
-  { id: "VST-002", name: "Jane Gitau", idNumber: "12345678", host: "Ms. Wanjiku (Chemistry)", purpose: "Parent-Teacher Meeting", timeIn: "08:30 AM", timeOut: "09:45 AM", status: "Signed Out" },
+  { id: "VST-002", name: "Loveth Gitau", idNumber: "12345678", host: "Ms. Wanjiku (Chemistry)", purpose: "Parent-Teacher Meeting", timeIn: "08:30 AM", timeOut: "09:45 AM", status: "Signed Out" },
   { id: "VST-003", name: "Technician - Safaricom", idNumber: "98765432", host: "IT Department", purpose: "Network Repair", timeIn: "11:00 AM", timeOut: "-", status: "On Campus" },
 ];
 

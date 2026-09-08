@@ -83,8 +83,8 @@ const kenyanNames = [
 
 export const teachersSeed: Teacher[] = [
   {
-    id: "t1", name: "Mrs. Jane Wambui", subject: "Mathematics",
-    email: "jane.wambui@shule.go.ke", phone: "+254712345678",
+    id: "t1", name: "Mrs. Loveth Wambui", subject: "Mathematics",
+    email: "Loveth.wambui@shule.go.ke", phone: "+254712345678",
     classes: ["Grade 5A", "Grade 6B"],
     photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200",
   },

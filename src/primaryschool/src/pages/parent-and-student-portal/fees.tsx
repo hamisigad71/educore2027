@@ -41,6 +41,7 @@ import {
   Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PaymentFlow } from "./components/PaymentFlow";
 
 const TERM_BREAKDOWN = [
   { label: "Tuition Fee",    amount: 20000, icon: FileText,   color: "text-indigo-600",  bg: "bg-indigo-50 border-indigo-100" },
@@ -300,90 +301,11 @@ export default function PortalFees() {
       </div>
 
       {/* Make Payment Dialog */}
-      <Dialog open={payOpen} onOpenChange={setPayOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-base font-semibold">Make a Payment</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-5 py-2">
-            {/* Balance reminder */}
-            {!isCleared && (
-              <div className="rounded-xl bg-amber-50 border border-amber-100 p-3 flex items-center gap-3">
-                <AlertCircle size={15} className="text-amber-600 shrink-0" />
-                <p className="text-xs text-amber-700 font-medium">
-                  Outstanding balance: <span className="font-bold">{currency(student.balance)}</span>
-                </p>
-              </div>
-            )}
-
-            {/* Method selector */}
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold text-slate-600">Payment Method</Label>
-              <div className="grid grid-cols-3 gap-2">
-                {PAYMENT_METHODS.map(m => (
-                  <button
-                    key={m.value}
-                    onClick={() => setPayMethod(m.value)}
-                    className={cn(
-                      "flex flex-col items-center gap-1.5 p-3 rounded-xl border text-center transition-all",
-                      payMethod === m.value
-                        ? "border-indigo-400 bg-indigo-50 shadow-sm"
-                        : "border-slate-200 bg-white hover:border-slate-300"
-                    )}
-                  >
-                    <div className={cn("h-8 w-8 rounded-lg border flex items-center justify-center", m.bg)}>
-                      <m.icon size={15} className={m.color} />
-                    </div>
-                    <span className="text-[10px] font-semibold text-slate-600 leading-tight">{m.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-slate-600">Amount (KES) <span className="text-rose-500">*</span></Label>
-              <Input
-                type="number"
-                value={payAmount}
-                onChange={e => setPayAmount(e.target.value)}
-                placeholder="e.g. 10000"
-                className="text-sm font-mono"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-slate-600">Reference / Transaction ID</Label>
-              <Input
-                value={payRef}
-                onChange={e => setPayRef(e.target.value)}
-                placeholder="Optional — e.g. M-Pesa code"
-                className="text-sm font-mono"
-              />
-            </div>
-
-            <div className="rounded-xl bg-slate-50 border border-slate-100 p-3 flex items-start gap-2">
-              <ShieldCheck size={13} className="text-emerald-500 mt-0.5 shrink-0" />
-              <p className="text-[11px] text-slate-500 leading-relaxed">
-                Payments are processed securely. A receipt will be emailed to your registered address upon confirmation.
-              </p>
-            </div>
-          </div>
-          <DialogFooter className="gap-2">
-            <DialogClose render={<Button variant="outline" size="sm" className="text-xs" />}>Cancel</DialogClose>
-            <Button
-              size="sm"
-              onClick={handlePay}
-              disabled={submitting}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold gap-1.5"
-            >
-              {submitting
-                ? <><Clock size={12} className="animate-spin" /> Processing…</>
-                : <><CreditCard size={12} /> Confirm Payment</>
-              }
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <PaymentFlow 
+        open={payOpen} 
+        onOpenChange={setPayOpen} 
+        studentName={student.name || "Student"}
+      />
  
       {/* Transaction Detail Dialog */}
       <Dialog open={!!detailFee} onOpenChange={() => setDetailFee(null)}>

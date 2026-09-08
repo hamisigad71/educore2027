@@ -79,12 +79,19 @@ export default function TeacherDashboard() {
   const avgPerf = Math.round(myStudents.reduce((t, s) => t + s.performance, 0) / (myStudents.length || 1));
   const avgAtt = Math.round(myStudents.reduce((t, s) => t + s.attendance, 0) / (myStudents.length || 1));
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good Morning";
+    if (hour < 17) return "Good Afternoon";
+    return "Good Evening";
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader 
         variant="banner"
         title={`Hello, ${user?.name?.split(" ")[1] ?? "Teacher"} 👋`} 
-        subtitle="Good Morning" 
+        subtitle={getGreeting()} 
       />
 
       {/* Stats Grid */}

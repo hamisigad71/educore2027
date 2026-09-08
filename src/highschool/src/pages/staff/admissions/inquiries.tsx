@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 const mockInquiries = [
   { id: "INQ-901", parent: "Mrs. Odhiambo", contact: "0712 XXX 456", child: "Brian Odhiambo", interest: "Form 1 Admissions", channel: "Phone", status: "Follow-up", date: "Oct 26, 10:45 AM" },
-  { id: "INQ-902", parent: "Mr. Kimani", contact: "kimani@gmail.com", child: "Jane Kimani", interest: "Fees Structure", channel: "Email", status: "Resolved", date: "Oct 25, 02:15 PM" },
+  { id: "INQ-902", parent: "Mr. Kimani", contact: "kimani@gmail.com", child: "Loveth Kimani", interest: "Fees Structure", channel: "Email", status: "Resolved", date: "Oct 25, 02:15 PM" },
   { id: "INQ-903", parent: "Sarah Juma", contact: "Walk-in", child: "Peter Juma", interest: "School Tour", channel: "In-Person", status: "Pending", date: "Oct 26, 09:00 AM" },
 ];
 
