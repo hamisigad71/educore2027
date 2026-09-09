@@ -513,12 +513,6 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             {/* Left content */}
             <motion.div style={{ y: heroY }}>
-              <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0}>
-                <Badge className="bg-indigo-50 border-indigo-100 text-indigo-600 mb-8">
-                  <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
-                  Trusted by 1,500+ Kenyan Schools
-                </Badge>
-              </motion.div>
 
               <motion.h1
                 variants={fadeUp}
