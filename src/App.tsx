@@ -7,6 +7,7 @@ import ChatbotWidget from "@/components/ui/ChatbotWidget";
 // Pages
 import Home from "@/pages/home";
 import Login from "@/pages/login";
+import OnboardingVideo from "@/pages/onboarding-video";
 
 // Admin
 import AdminLayout from "@/primaryschool/src/pages/admin/layout";
@@ -291,6 +292,9 @@ function AppRoutes() {
         <Route path="notices" element={<HSStaffNotices />} />
         <Route path="profile" element={<HSStaffProfile />} />
       </Route>
+
+      {/* Onboarding Video (shown after account creation) */}
+      <Route path="/onboarding" element={<OnboardingVideo />} />
 
       {/* Login */}
       <Route path="/login" element={user ? (

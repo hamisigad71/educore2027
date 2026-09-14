@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Login from "./login";
+import WelcomeScreen from "./welcome";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { 
   ShieldCheck, 
@@ -33,6 +34,7 @@ import {
   Lock,
   PieChart,
   ChevronRight,
+  ChevronLeft,
   Mail,
   Phone,
   MapPin,
@@ -189,7 +191,7 @@ function TestimonialCard({ quote, name, role, school, avatar, rating = 5, delay 
       whileInView="visible"
       viewport={{ once: true }}
       custom={delay}
-      className="w-[85vw] sm:w-[60vw] md:w-auto shrink-0 snap-center p-8 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-indigo-50/30 transition-all duration-300 hover:-translate-y-1"
+      className="w-[85vw] sm:w-[50vw] md:w-[400px] lg:w-[450px] shrink-0 snap-center p-8 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-indigo-50/30 transition-all duration-300 hover:-translate-y-1"
     >
       <div className="flex gap-1 mb-5">
         {Array.from({ length: rating }).map((_, i) => (
@@ -199,7 +201,7 @@ function TestimonialCard({ quote, name, role, school, avatar, rating = 5, delay 
       <p className="text-sm text-slate-600 leading-relaxed font-medium mb-6 italic">"{quote}"</p>
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-primary/10">
-          <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatar}`} alt={name} className="w-full h-full" />
+          <img src={`https://i.pravatar.cc/150?u=${avatar}`} alt={name} className="w-full h-full object-cover" />
         </div>
         <div>
           <div className="text-sm font-black text-foreground">{name}</div>
@@ -210,8 +212,8 @@ function TestimonialCard({ quote, name, role, school, avatar, rating = 5, delay 
   );
 }
 
-function PricingCard({ tier, price, description, features, highlighted = false, delay = 0 }: {
-  tier: string; price: string; description: string; features: string[]; highlighted?: boolean; delay?: number;
+function PricingCard({ tier, price, monthlyFee, description, features, highlighted = false, delay = 0 }: {
+  tier: string; price: string; monthlyFee?: string; description: string; features: string[]; highlighted?: boolean; delay?: number;
 }) {
   return (
     <motion.div
@@ -236,9 +238,17 @@ function PricingCard({ tier, price, description, features, highlighted = false, 
       <div className={cn("text-xs font-black uppercase tracking-[0.2em] mb-2", highlighted ? "text-indigo-200" : "text-indigo-600")}>
         {tier}
       </div>
-      <div className="flex items-baseline gap-1 mb-2">
-        <span className="text-4xl font-black">{price}</span>
-        {price !== "Custom" && <span className={cn("text-sm font-bold", highlighted ? "text-indigo-200" : "text-slate-400")}>/term</span>}
+      <div className="flex flex-col mb-4 gap-1">
+        <div className="flex items-baseline gap-1">
+          <span className="text-4xl font-black">{price}</span>
+          <span className={cn("text-xs font-bold uppercase tracking-wider", highlighted ? "text-indigo-200" : "text-slate-400")}>Setup Fee</span>
+        </div>
+        {monthlyFee && (
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl font-black">{monthlyFee}</span>
+            <span className={cn("text-sm font-semibold", highlighted ? "text-indigo-200" : "text-slate-400")}>/month access</span>
+          </div>
+        )}
       </div>
       <p className={cn("text-sm font-medium mb-8 leading-relaxed", highlighted ? "text-indigo-100" : "text-slate-500")}>
         {description}
@@ -381,6 +391,20 @@ export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  
+  const testimonialScrollRef = useRef<HTMLDivElement>(null);
+  const scrollTestimonial = (direction: 'left' | 'right') => {
+    if (testimonialScrollRef.current) {
+      const { current } = testimonialScrollRef;
+      const scrollAmount = window.innerWidth > 768 ? 465 : 320;
+      if (direction === 'left') {
+        current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      } else {
+        current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      }
+    }
+  };
+
   const { scrollY } = useScroll();
   const heroY = useTransform(scrollY, [0, 500], [0, 100]);
   const heroBgY = useTransform(scrollY, [0, 500], [0, 60]);
@@ -400,10 +424,8 @@ export default function Home() {
 
   return (
     <>
-      {/* Mobile Login View */}
-      <div className="md:hidden block">
-        <Login />
-      </div>
+      {/* Mobile Welcome Screen */}
+      <WelcomeScreen />
 
       {/* Desktop Homepage */}
       <div className="hidden md:block min-h-screen bg-background selection:bg-primary/10 selection:text-primary">
@@ -1033,18 +1055,35 @@ export default function Home() {
       {/* ── TESTIMONIALS ──────────────────────────────────────────────────── */}
       <section id="testimonials" className="py-28">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-xl mx-auto mb-20">
+          <div className="flex flex-col md:flex-row md:items-end justify-between max-w-xl md:max-w-none mx-auto mb-16 gap-6 text-center md:text-left">
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
               <Badge className="bg-amber-50 border-amber-100 text-amber-700 mb-5">
                 <Star size={10} className="fill-current" /> Testimonials
               </Badge>
-              <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-5">
-                Loved by school leaders<br /><GradientText>across Kenya.</GradientText>
+              <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
+                Loved by school leaders<br className="hidden md:block"/><GradientText>across Kenya.</GradientText>
               </h2>
+            </motion.div>
+            
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="flex items-center justify-center md:justify-end gap-3 pb-2">
+              <button 
+                onClick={() => scrollTestimonial('left')} 
+                className="w-12 h-12 rounded-full border border-slate-200 bg-white shadow-sm flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:border-indigo-200 hover:scale-105 active:scale-95 transition-all"
+                aria-label="Previous Testimonial"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button 
+                onClick={() => scrollTestimonial('right')} 
+                className="w-12 h-12 rounded-full border border-slate-200 bg-white shadow-sm flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:border-indigo-200 hover:scale-105 active:scale-95 transition-all"
+                aria-label="Next Testimonial"
+              >
+                <ChevronRight size={20} />
+              </button>
             </motion.div>
           </div>
 
-          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-7 overflow-x-auto snap-x snap-mandatory pb-8 md:pb-0 -mx-6 px-6 md:mx-0 md:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div ref={testimonialScrollRef} className="flex gap-5 md:gap-7 overflow-x-auto snap-x snap-mandatory pb-8 md:pb-4 -mx-6 px-6 md:mx-0 md:px-0 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <TestimonialCard
               quote="EduCore transformed how we collect fees. M-Pesa reconciliation that used to take our bursar 3 days now happens instantly. Incredible."
               name="Mr. Samuel Kamau"
@@ -1116,23 +1155,23 @@ export default function Home() {
             <PricingCard
               tier="Starter"
               price="KES 35k"
-              description="Perfect for small primary schools just getting started with digital management."
-              features={["Up to 500 students", "Fee management", "Attendance tracking", "Parent portal", "Email support"]}
+              description="Essential digitization for small-to-mid privately owned schools."
+              features={["Up to 800 students", "Fee & Attendance tracking", "Basic PDF report cards", "Standard Parent Portal", "Standard Email support"]}
               delay={0}
             />
             <PricingCard
               tier="Professional"
               price="KES 72k"
-              description="The complete EduCore suite for growing secondary schools and academies."
-              features={["Up to 2,000 students", "All Starter features", "M-Pesa integration", "SMS notifications", "Analytics dashboard", "Priority support"]}
+              description="Automation and advanced communication for mid-to-large academies."
+              features={["Up to 2,500 students", "All Starter features", "Automated M-Pesa tracking", "SMS integration & blasts", "KNEC Advanced Analytics", "Priority WhatsApp support"]}
               highlighted
               delay={0.1}
             />
             <PricingCard
               tier="Enterprise"
               price="Custom"
-              description="For large institutions, multi-campus groups, and county school boards."
-              features={["Unlimited students", "Multi-campus management", "Custom integrations", "Dedicated success manager", "SLA guarantee", "On-site training"]}
+              description="For multi-branch institutions, county boards, and elite international schools."
+              features={["Unlimited students & campuses", "Custom white-label Mobile App", "Biometrics integration", "Custom accounting API", "Dedicated Account Manager", "On-site staff training"]}
               delay={0.2}
             />
           </div>
