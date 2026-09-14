@@ -1110,7 +1110,6 @@ export default function Login() {
             ]}
           />
         )}
-        )}
 
         {/* ── Onboarding Video Overlay ── */}
         <AnimatePresence>
