@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { PageHeader } from "@/components/layout";
-import { studentsSeed, classesSeed, currency, Student } from "../../data/mockData";
+import { getStudentsList, StudentItem, createStudentAccount, createParentAccount } from "@/lib/api";
+import { currency } from "../../data/mockData";
 
 // shadcn/ui
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,7 @@ import { cn } from "@/lib/utils";
 import {
   Users, CheckCircle2, AlertCircle, LayoutGrid,
   Search, Download, Plus, Pencil, Trash2, MoreHorizontal,
-  Mail, Phone, ChevronRight, TrendingUp,
+  Mail, Phone, ChevronRight, TrendingUp, Loader2,
 } from "lucide-react";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -68,14 +69,29 @@ function StatCard({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AdminStudents() {
-  const [students, setStudents] = useState<Student[]>(studentsSeed);
+  const [students, setStudents] = useState<StudentItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [klassFilter, setKlassFilter] = useState("All");
-  const [modal, setModal] = useState<{ open: boolean; data?: Student }>({ open: false });
+  const [modal, setModal] = useState<{ open: boolean; data?: StudentItem }>({ open: false });
   const { toast } = useToast();
 
+  useEffect(() => {
+    async function loadStudents() {
+      try {
+        const list = await getStudentsList();
+        setStudents(list);
+      } catch (err) {
+        console.error("Error loading students:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadStudents();
+  }, []);
+
   const classes = useMemo(
-    () => Array.from(new Set(students.map((s) => s.klass))),
+    () => Array.from(new Set(students.map((s) => s.className).filter(Boolean))),
     [students]
   );
 
@@ -83,37 +99,99 @@ export default function AdminStudents() {
     () =>
       students.filter(
         (s) =>
-          (klassFilter === "All" || s.klass === klassFilter) &&
-          [s.name, s.admission].some((v) =>
+          (klassFilter === "All" || s.className === klassFilter) &&
+          [s.name, s.admission_number].some((v) =>
             v.toLowerCase().includes(q.toLowerCase())
           )
       ),
     [students, q, klassFilter]
   );
 
-  function handleSave() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    admissionNumber: "",
+    className: "Form 3 West",
+    kcpeMarks: "350",
+    parentName: "",
+    parentEmail: "",
+    parentPhone: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSave() {
     if (modal.data) {
       toast({ title: "Student updated", description: "Changes saved successfully." });
+      setModal({ open: false });
     } else {
-      const newS: Student = {
-        id: `s${Date.now()}`,
-        admission: `ADM/2025/${String(students.length + 1).padStart(3, "0")}`,
-        name: "New Student",
-        klass: "Form 5A",
-        parent: "Parent Name",
-        phone: "+254700000000",
-        balance: 0,
-        attendance: 95,
-        performance: 72,
-        photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200",
-      };
-      setStudents((p) => [newS, ...p]);
-      toast({ title: "Student enrolled", description: `${newS.name} successfully registered.` });
+      try {
+        setSubmitting(true);
+        const firstName = formData.firstName || "New";
+        const lastName = formData.lastName || "Student";
+        const email = formData.email || `adm${Date.now().toString().slice(-4)}@school.ac.ke`;
+        const admissionNumber = formData.admissionNumber || `ADM/2026/${String(students.length + 1).padStart(3, "0")}`;
+
+        const res = await createStudentAccount({
+          email,
+          firstName,
+          lastName,
+          admissionNumber,
+          kcpeMarks: Number(formData.kcpeMarks) || 350,
+          className: formData.className,
+        });
+
+        // Also invite parent if email provided
+        if (formData.parentEmail) {
+          try {
+            await createParentAccount({
+              email: formData.parentEmail,
+              firstName: formData.parentName.split(" ")[0] || "Parent",
+              lastName: formData.parentName.split(" ").slice(1).join(" ") || "Guardian",
+              phone: formData.parentPhone,
+              studentId: res.userId,
+            });
+          } catch (pe) {
+            console.warn("Parent invite warning:", pe);
+          }
+        }
+
+        const newS: StudentItem = {
+          id: res.userId,
+          admission_number: admissionNumber,
+          name: `${firstName} ${lastName}`,
+          email,
+          className: formData.className,
+          kcpeMarks: Number(formData.kcpeMarks) || 350,
+          feeStatus: "paid",
+          totalBilled: 45000,
+          totalPaid: 45000,
+          balance: 0,
+          parent_name: formData.parentName || "Parent Name",
+          parent_phone: formData.parentPhone || "+254700000000",
+          attendance_rate: 100,
+          status: "active",
+        };
+
+        setStudents((p) => [newS, ...p]);
+        toast({
+          title: "Student Enrolled & Auth Created 🎉",
+          description: `Credentials set for ${firstName} (${email}). Temp Password: ${res.tempPassword}`,
+        });
+        setModal({ open: false });
+      } catch (err: any) {
+        toast({
+          variant: "destructive",
+          title: "Enrollment Failed",
+          description: err.message || "Failed to create student account in Supabase.",
+        });
+      } finally {
+        setSubmitting(false);
+      }
     }
-    setModal({ open: false });
   }
 
-  function handleDelete(s: Student) {
+  function handleDelete(s: StudentItem) {
     setStudents((p) => p.filter((x) => x.id !== s.id));
     toast({ title: "Student removed", description: `${s.name} deleted from records.` });
   }
@@ -200,7 +278,7 @@ export default function AdminStudents() {
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent border-b border-slate-100">
-                    {["Student", "ID", "Class", "Parent Info", "Feel Status", "Attendance", ""].map((h, i) => (
+                    {["Student", "ID", "Class", "Parent Info", "Fee Status", "Attendance", ""].map((h, i) => (
                       <TableHead
                         key={i}
                         className={cn(
@@ -218,35 +296,34 @@ export default function AdminStudents() {
                       <TableCell className="pl-6 py-4">
                         <div className="flex items-center gap-3">
                           <Avatar className="h-10 w-10 ring-2 ring-slate-100 shadow-sm">
-                            <AvatarImage src={s.photo} alt={s.name} className="object-cover" />
                             <AvatarFallback className="bg-indigo-50 text-indigo-700 text-xs font-semibold">
                               {initials(s.name)}
                             </AvatarFallback>
                           </Avatar>
                           <div>
                             <p className="text-sm font-semibold text-slate-900 leading-tight">{s.name}</p>
-                            <p className="text-[11px] text-emerald-600 font-medium mt-0.5">Performance: {s.performance}%</p>
+                            <p className="text-[11px] text-emerald-600 font-medium mt-0.5">Status: {s.status}</p>
                           </div>
                         </div>
                       </TableCell>
 
                       <TableCell className="py-4">
                         <code className="text-[11px] font-mono text-slate-500 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded">
-                          {s.admission}
+                          {s.admission_number}
                         </code>
                       </TableCell>
 
                       <TableCell className="py-4">
                         <Badge variant="outline" className="text-[11px] font-medium border-indigo-100 text-indigo-700 bg-indigo-50">
-                          {s.klass}
+                          {s.className || "Unassigned"}
                         </Badge>
                       </TableCell>
 
                       <TableCell className="py-4">
                         <div className="space-y-1">
-                          <p className="text-xs font-medium text-slate-700">{s.parent}</p>
+                          <p className="text-xs font-medium text-slate-700">{s.parent_name || "N/A"}</p>
                           <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
-                            <Phone size={10} /> {s.phone}
+                            <Phone size={10} /> {s.parent_phone || "N/A"}
                           </div>
                         </div>
                       </TableCell>
@@ -266,11 +343,11 @@ export default function AdminStudents() {
                       <TableCell className="py-4">
                         <div className="w-24 space-y-1.5">
                           <div className="flex items-center justify-between text-[10px]">
-                            <span className="text-slate-400 font-medium">{s.attendance}%</span>
+                            <span className="text-slate-400 font-medium">{s.attendance_rate ?? 95}%</span>
                           </div>
-                          <Progress value={s.attendance} className={cn("h-1 bg-slate-100", 
-                            s.attendance >= 90 ? "[&>div]:bg-emerald-500" :
-                            s.attendance >= 75 ? "[&>div]:bg-indigo-500" :
+                          <Progress value={s.attendance_rate ?? 95} className={cn("h-1 bg-slate-100", 
+                            (s.attendance_rate ?? 95) >= 90 ? "[&>div]:bg-emerald-500" :
+                            (s.attendance_rate ?? 95) >= 75 ? "[&>div]:bg-indigo-500" :
                             "[&>div]:bg-rose-500"
                           )} />
                         </div>
@@ -331,16 +408,45 @@ export default function AdminStudents() {
           <div className="px-6 py-5 space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label className="text-xs">Full Name *</Label>
-                <Input defaultValue={modal.data?.name ?? ""} placeholder="Amani Otieno" className="h-9 text-sm" />
+                <Label className="text-xs">First Name *</Label>
+                <Input
+                  value={formData.firstName}
+                  onChange={(e) => setFormData((p) => ({ ...p, firstName: e.target.value }))}
+                  placeholder="e.g. Amani"
+                  className="h-9 text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Last Name *</Label>
+                <Input
+                  value={formData.lastName}
+                  onChange={(e) => setFormData((p) => ({ ...p, lastName: e.target.value }))}
+                  placeholder="e.g. Otieno"
+                  className="h-9 text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Student Email (Auth login)</Label>
+                <Input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
+                  placeholder="student@school.ac.ke"
+                  className="h-9 text-sm"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Admission ID *</Label>
-                <Input defaultValue={modal.data?.admission ?? ""} className="h-9 text-sm font-mono" />
+                <Input
+                  value={formData.admissionNumber}
+                  onChange={(e) => setFormData((p) => ({ ...p, admissionNumber: e.target.value }))}
+                  placeholder="ADM/2026/001"
+                  className="h-9 text-sm font-mono"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Class *</Label>
-                <Select defaultValue={modal.data?.klass ?? "Form 5A"}>
+                <Select value={formData.className} onValueChange={(v) => setFormData((p) => ({ ...p, className: v || "Form 3 West" }))}>
                   <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {classes.map(k => <SelectItem key={k} value={k}>{k}</SelectItem>)}
@@ -348,16 +454,35 @@ export default function AdminStudents() {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs">Parent/Guardian *</Label>
-                <Input defaultValue={modal.data?.parent ?? ""} className="h-9 text-sm" />
+                <Label className="text-xs">KCPE Marks</Label>
+                <Input
+                  type="number"
+                  value={formData.kcpeMarks}
+                  onChange={(e) => setFormData((p) => ({ ...p, kcpeMarks: e.target.value }))}
+                  className="h-9 text-sm"
+                />
+              </div>
+              <div className="space-y-1.5 sm:col-span-2 pt-2 border-t border-slate-100">
+                <p className="text-xs font-semibold text-slate-700">Parent / Guardian Details & Invite</p>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs">Phone *</Label>
-                <Input defaultValue={modal.data?.phone ?? "+254"} className="h-9 text-sm font-mono" />
+                <Label className="text-xs">Parent Full Name</Label>
+                <Input
+                  value={formData.parentName}
+                  onChange={(e) => setFormData((p) => ({ ...p, parentName: e.target.value }))}
+                  placeholder="e.g. Grace Otieno"
+                  className="h-9 text-sm"
+                />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs">Fee Balance (KES)</Label>
-                <Input type="number" defaultValue={modal.data?.balance ?? 0} className="h-9 text-sm" />
+                <Label className="text-xs">Parent Email (Invites Portal)</Label>
+                <Input
+                  type="email"
+                  value={formData.parentEmail}
+                  onChange={(e) => setFormData((p) => ({ ...p, parentEmail: e.target.value }))}
+                  placeholder="parent@gmail.com"
+                  className="h-9 text-sm"
+                />
               </div>
             </div>
           </div>
@@ -366,8 +491,8 @@ export default function AdminStudents() {
             <Button variant="outline" size="sm" onClick={() => setModal({ open: false })} className="border-slate-300">
               Cancel
             </Button>
-            <Button size="sm" onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700 shadow-sm">
-              {modal.data ? "Save Changes" : "Enroll Student"}
+            <Button size="sm" onClick={handleSave} disabled={submitting} className="bg-indigo-600 hover:bg-indigo-700 shadow-sm">
+              {submitting ? "Creating Auth..." : modal.data ? "Save Changes" : "Enroll & Create Auth"}
             </Button>
           </DialogFooter>
         </DialogContent>

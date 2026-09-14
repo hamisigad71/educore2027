@@ -1,7 +1,11 @@
 
-import { PageHeader } from "@/components/layout";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { getTeacherProfile, getTeacherStudents, TeacherProfile, StudentItem } from "@/lib/api";
+
 import { teachersSeed, studentsSeed } from "@/primaryschool/src/data/mockData";
+import { PageHeader } from "@/components/layout";
+
 
 // shadcn/ui
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -74,10 +78,29 @@ const TASKS = [
 
 export default function TeacherDashboard() {
   const { user } = useAuth();
-  const teacher = teachersSeed[0]; // mock logged-in teacher
-  const myStudents = studentsSeed.filter((s) => teacher.classes.includes(s.klass));
-  const avgPerf = Math.round(myStudents.reduce((t, s) => t + s.performance, 0) / (myStudents.length || 1));
-  const avgAtt = Math.round(myStudents.reduce((t, s) => t + s.attendance, 0) / (myStudents.length || 1));
+  const [teacherProfile, setTeacherProfile] = useState<TeacherProfile | null>(null);
+  const [myStudents, setMyStudents] = useState<StudentItem[]>([]);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const profile = await getTeacherProfile();
+        if (profile) {
+          setTeacherProfile(profile);
+          const students = await getTeacherStudents(profile.classes);
+          setMyStudents(students);
+        }
+      } catch (e) {
+        console.error('Dashboard load error:', e);
+      }
+    }
+    load();
+  }, []);
+
+  const teacher = teacherProfile ? teacherProfile : teachersSeed[0];
+  const students = myStudents.length > 0 ? myStudents : studentsSeed.filter((s) => teachersSeed[0].classes.includes(s.klass));
+  const avgPerf = students.length > 0 ? Math.round(students.reduce((t: any, s: any) => t + (s.performance || 75), 0) / students.length) : 0;
+  const avgAtt = students.length > 0 ? Math.round(students.reduce((t: any, s: any) => t + (s.attendance_rate || s.attendance || 90), 0) / students.length) : 0;
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -97,10 +120,10 @@ export default function TeacherDashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <TeacherStatCard 
-          label="Assigned Classes" value={teacher.classes.length} subText={teacher.classes.join(", ")}
+          label="Assigned Classes" value={teacher.classes?.length ?? 0} subText={teacher.classes?.join(", ")}
           icon={BookOpen} color="bg-primary/10 text-primary border-primary/20" sparkData={[2, 2, 3, 3, 3]} />
         <TeacherStatCard 
-          label="Total Students" value={myStudents.length} subText="Across all levels"
+          label="Total Students" value={students.length} subText="Across all levels"
           icon={Users} color="bg-chart-1/10 text-chart-1 border-chart-1/20" sparkData={[30, 32, 35, 34, 36]} />
         <TeacherStatCard 
           label="Class Average" value={`${avgPerf}%`} subText="Term performance"

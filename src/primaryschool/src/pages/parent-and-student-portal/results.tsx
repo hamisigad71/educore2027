@@ -1,5 +1,7 @@
+import React from "react";
 import { PageHeader } from "@/components/layout";
 import { marksSeed, studentsSeed } from "@/primaryschool/src/data/mockData";
+import { getParentChildren, getStudentExamResults } from "@/lib/api";
 
 // shadcn/ui
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -23,8 +25,35 @@ import {
 import { cn } from "@/lib/utils";
 
 export default function PortalResults() {
-  const student = studentsSeed[0];
-  const marks = marksSeed.filter((m) => m.studentId === student.id);
+  const [childData, setChildData] = React.useState<any>(null);
+  const [liveMarks, setLiveMarks] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    async function loadData() {
+      try {
+        const children = await getParentChildren();
+        if (children && children.length > 0) {
+          const mainChild = children[0];
+          setChildData(mainChild);
+          const mData = await getStudentExamResults(mainChild.id);
+          setLiveMarks(mData);
+        }
+      } catch (err) {
+        console.error("Failed to load results:", err);
+      }
+    }
+    loadData();
+  }, []);
+
+  const student = childData ? { id: childData.id } : studentsSeed[0];
+  const rawMarks = childData ? liveMarks : marksSeed.filter((m) => m.studentId === student.id);
+  
+  const marks = rawMarks.map(m => ({
+    subject: m.subjectName || m.subject,
+    score: m.marks ?? m.score,
+    grade: m.grade || "U"
+  }));
+
   const avg = marks.length ? Math.round(marks.reduce((t, m) => t + m.score, 0) / marks.length) : 0;
 
   // Grade Distribution Calculation
@@ -33,8 +62,8 @@ export default function PortalResults() {
     return acc;
   }, {});
 
-  const topSubject = [...marks].sort((a, b) => b.score - a.score)[0];
-  const focusSubject = [...marks].sort((a, b) => a.score - b.score)[0];
+  const topSubject = [...marks].sort((a, b) => b.score - a.score)[0] || { subject: "N/A", score: 0 };
+  const focusSubject = [...marks].sort((a, b) => a.score - b.score)[0] || { subject: "N/A", score: 0 };
 
   // Performance trend analysis
 

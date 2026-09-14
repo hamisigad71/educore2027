@@ -26,6 +26,7 @@ import TeacherDashboard from "@/primaryschool/src/pages/teacher/dashboard";
 import TeacherClasses from "@/primaryschool/src/pages/teacher/classes";
 import TeacherStudents from "@/primaryschool/src/pages/teacher/students";
 import TeacherMarks from "@/primaryschool/src/pages/teacher/marks";
+import TeacherUploadMarks from "@/primaryschool/src/pages/teacher/upload-marks";
 import TeacherAttendance from "@/primaryschool/src/pages/teacher/attendance";
 import TeacherProfile from "@/primaryschool/src/pages/teacher/profile";
 import TeacherLessons from "@/primaryschool/src/pages/teacher/lessons";
@@ -102,6 +103,7 @@ import HSTeacherDashboard from "@/highschool/src/pages/teacher/dashboard";
 import HSTeacherClasses from "@/highschool/src/pages/teacher/classes";
 import HSTeacherStudents from "@/highschool/src/pages/teacher/students";
 import HSTeacherMarks from "@/highschool/src/pages/teacher/marks";
+import HSTeacherUploadMarks from "@/highschool/src/pages/teacher/upload-marks";
 import HSTeacherAttendance from "@/highschool/src/pages/teacher/attendance";
 import HSTeacherProfile from "@/highschool/src/pages/teacher/profile";
 import HSTeacherLessons from "@/highschool/src/pages/teacher/lessons";
@@ -200,6 +202,7 @@ function AppRoutes() {
         <Route path="classes" element={<HSTeacherClasses />} />
         <Route path="students" element={<HSTeacherStudents />} />
         <Route path="marks" element={<HSTeacherMarks />} />
+        <Route path="upload-marks" element={<HSTeacherUploadMarks />} />
         <Route path="attendance" element={<HSTeacherAttendance />} />
         <Route path="profile" element={<HSTeacherProfile />} />
         <Route path="lessons" element={<HSTeacherLessons />} />
@@ -317,6 +320,7 @@ function AppRoutes() {
         <Route path="classes" element={<TeacherClasses />} />
         <Route path="students" element={<TeacherStudents />} />
         <Route path="marks" element={<TeacherMarks />} />
+        <Route path="upload-marks" element={<TeacherUploadMarks />} />
         <Route path="attendance" element={<TeacherAttendance />} />
         <Route path="profile" element={<TeacherProfile />} />
         <Route path="lessons" element={<TeacherLessons />} />

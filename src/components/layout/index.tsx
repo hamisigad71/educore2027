@@ -39,7 +39,7 @@ import {
   Wrench, Bus, ShieldAlert,
   Bed, Scale, Library,
   FileText, BadgeDollarSign, MapPin, Building2,
-  Utensils, Coffee
+  Utensils, Coffee, Upload
 } from "lucide-react";
 
 export { Topbar } from "./Topbar";
@@ -117,9 +117,10 @@ const teacherNav: NavGroup[] = [
   {
     groupLabel: "Teaching",
     items: [
-      { to: "/teacher/students",   label: "Students",    icon: GraduationCap },
-      { to: "/teacher/marks",      label: "Enter Marks", icon: ClipboardList },
-      { to: "/teacher/attendance", label: "Attendance",  icon: CalendarDays },
+      { to: "/teacher/students",      label: "Students",      icon: GraduationCap },
+      { to: "/teacher/marks",         label: "Enter Marks",   icon: ClipboardList },
+      { to: "/teacher/upload-marks",  label: "Upload Marks",  icon: Upload, badge: "PDF", badgeVariant: "success" as const },
+      { to: "/teacher/attendance",    label: "Attendance",    icon: CalendarDays },
     ],
   },
   {

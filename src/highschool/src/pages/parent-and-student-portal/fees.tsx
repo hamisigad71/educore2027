@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { PageHeader } from "@/components/layout";
 import { studentsSeed, feesSeed, currency } from "../../data/mockData";
+import { getParentChildren, getStudentFees } from "@/lib/api";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -55,12 +56,40 @@ const PAYMENT_METHODS = [
 ];
 
 export default function PortalFees() {
-  const student = studentsSeed[0];
-  const fees = feesSeed.filter((f) => f.studentId === student.id);
   const { toast } = useToast();
 
-  const paidTotal   = fees.reduce((s, f) => s + f.amount, 0);
-  const totalDue    = paidTotal + student.balance;
+  const [childData, setChildData] = useState<any>(null);
+  const [liveFees, setLiveFees] = useState<any>(null);
+
+  React.useEffect(() => {
+    async function loadData() {
+      try {
+        const children = await getParentChildren();
+        if (children && children.length > 0) {
+          const mainChild = children[0];
+          setChildData(mainChild);
+          const fData = await getStudentFees(mainChild.id);
+          setLiveFees(fData);
+        }
+      } catch (err) {}
+    }
+    loadData();
+  }, []);
+
+  const mockStudent = studentsSeed[0];
+  const student = childData ? {
+    id: childData.id,
+    name: childData.name,
+    admission: childData.admissionNumber,
+    klass: childData.className || "Unassigned",
+    balance: liveFees?.balance || 0,
+  } : mockStudent;
+  
+  const mockFees = feesSeed.filter((f) => f.studentId === mockStudent.id);
+  const fees = childData ? [] : mockFees; // live transactions table can be added later
+  
+  const paidTotal   = childData ? (liveFees?.totalPaid || 0) : mockFees.reduce((s, f) => s + f.amount, 0);
+  const totalDue    = childData ? (liveFees?.totalBilled || 0) : (paidTotal + mockStudent.balance);
   const paidPercent = totalDue === 0 ? 100 : Math.round((paidTotal / totalDue) * 100);
   const isCleared   = student.balance <= 0;
 
@@ -68,7 +97,7 @@ export default function PortalFees() {
   const [payAmount, setPayAmount]   = useState("");
   const [payMethod, setPayMethod]   = useState("mpesa");
   const [payRef, setPayRef]         = useState("");
-  const [detailFee, setDetailFee]   = useState<(typeof fees)[0] | null>(null);
+  const [detailFee, setDetailFee]   = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const handlePay = () => {
@@ -85,8 +114,22 @@ export default function PortalFees() {
     }, 1400);
   };
 
+  const [statementOpen, setStatementOpen] = useState(false);
+
   const downloadReceipt = (fee: typeof fees[0]) => {
-    toast({ title: "Receipt downloaded", description: `Receipt for ${currency(fee.amount)} on ${fee.date}.` });
+    setDetailFee(fee);
+    setTimeout(() => {
+      window.print();
+    }, 300);
+    toast({ title: "Print Dialog Opened 🖨️", description: `Generating official receipt for ${currency(fee.amount)}.` });
+  };
+
+  const handlePrintStatement = () => {
+    setStatementOpen(true);
+    setTimeout(() => {
+      window.print();
+    }, 300);
+    toast({ title: "Fee Statement Ready 📄", description: "Printing official student fee statement." });
   };
 
   return (
@@ -217,7 +260,12 @@ export default function PortalFees() {
               <CardTitle className="text-sm font-semibold">Payment History</CardTitle>
               <CardDescription className="text-xs mt-0.5">Click a row to view receipt details</CardDescription>
             </div>
-            <Button variant="outline" size="sm" className="h-8 text-[11px] font-semibold border-slate-200 gap-1.5 text-slate-600">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handlePrintStatement} 
+              className="h-8 text-[11px] font-semibold border-slate-200 gap-1.5 text-slate-600 hover:text-indigo-600 hover:border-indigo-200"
+            >
               <History size={12} /> Full Statement
             </Button>
           </CardHeader>
@@ -352,6 +400,71 @@ export default function PortalFees() {
               </div>
             );
           })()}
+        </DialogContent>
+      </Dialog>
+
+      {/* Fee Statement Dialog */}
+      <Dialog open={statementOpen} onOpenChange={setStatementOpen}>
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold text-slate-900 flex items-center justify-between">
+              <span>Official Student Fee Statement</span>
+              <Badge variant="outline" className="text-[10px] font-mono">Term 2 · 2025</Badge>
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2 text-xs">
+            <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 grid grid-cols-2 gap-2">
+              <div>
+                <p className="text-[10px] uppercase font-bold text-slate-400">Student Name</p>
+                <p className="font-bold text-slate-900">{student.name}</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase font-bold text-slate-400">Admission No.</p>
+                <p className="font-mono font-bold text-slate-900">{student.admission}</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase font-bold text-slate-400">Class / Grade</p>
+                <p className="font-medium text-slate-700">{student.klass}</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase font-bold text-slate-400">Current Balance</p>
+                <p className="font-mono font-bold text-rose-600">{currency(student.balance)}</p>
+              </div>
+            </div>
+
+            <div className="border rounded-lg overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-slate-50 text-[10px] uppercase">
+                    <TableHead className="py-2 font-bold">Date</TableHead>
+                    <TableHead className="py-2 font-bold">Description</TableHead>
+                    <TableHead className="py-2 font-bold">Method</TableHead>
+                    <TableHead className="py-2 font-bold text-right">Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {fees.map((f, i) => (
+                    <TableRow key={i} className="text-xs">
+                      <TableCell className="py-2 font-mono text-slate-500">{f.date}</TableCell>
+                      <TableCell className="py-2 font-medium">Term Fee Payment</TableCell>
+                      <TableCell className="py-2 font-semibold text-slate-600">{f.method}</TableCell>
+                      <TableCell className="py-2 font-mono font-bold text-right text-slate-900">{currency(f.amount)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center pt-2">
+            <Button variant="outline" size="sm" onClick={() => window.print()} className="gap-1.5 text-xs font-bold">
+              <Download size={13} /> Print PDF Statement
+            </Button>
+            <Button size="sm" onClick={() => setStatementOpen(false)} variant="ghost" className="text-xs">
+              Close
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 

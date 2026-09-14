@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PageHeader } from "@/components/layout";
-import { teachersSeed, studentsSeed } from "@/highschool/src/data/mockData";
+import { teachersSeed } from "@/highschool/src/data/mockData";
+import { getExamResults, ExamResultItem, recordExamResult, calculateKcseGrade } from "@/lib/api";
 
 // shadcn/ui
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -31,8 +32,59 @@ export default function TeacherMarks() {
   const teacher = teachersSeed[0];
   const [klass, setKlass] = useState(teacher.classes[0]);
   const [exam, setExam] = useState("Term 2 - Mid Term");
-  const myStudents = studentsSeed.filter((s) => s.klass === klass);
+  const [liveResults, setLiveResults] = useState<ExamResultItem[]>([]);
+  const [savingId, setSavingId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await getExamResults();
+        setLiveResults(data);
+      } catch (err) {
+        console.error("Marks entry fetch error:", err);
+      }
+    }
+    loadData();
+  }, []);
+
+  async function handleMarkChange(item: ExamResultItem, newMarks: number) {
+    try {
+      setSavingId(item.id);
+      const kcse = calculateKcseGrade(newMarks);
+      
+      // Update local state instantly
+      setLiveResults((prev) =>
+        prev.map((r) =>
+          r.id === item.id
+            ? { ...r, marks: newMarks, grade: kcse.grade, points: kcse.points, remarks: kcse.remarks }
+            : r
+        )
+      );
+
+      // Save to Supabase exam_results table
+      await recordExamResult({
+        studentId: item.id,
+        subject: item.subjectName,
+        marksObtained: newMarks,
+        maxMarks: 100,
+        remarks: kcse.remarks,
+      });
+
+      toast({
+        title: "Marks Saved to Supabase 🎉",
+        description: `${item.studentName} — ${item.subjectName}: ${newMarks}/100 (${kcse.grade})`,
+      });
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Save Failed",
+        description: err.message || "Failed to update exam results.",
+      });
+    } finally {
+      setSavingId(null);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -54,7 +106,7 @@ export default function TeacherMarks() {
         <div className="flex flex-wrap gap-4">
            <div className="space-y-1.5">
             <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Class</p>
-            <Select value={klass} onValueChange={setKlass}>
+            <Select value={klass} onValueChange={(v) => v && setKlass(v)}>
               <SelectTrigger className="w-[160px] h-10 border-slate-200 bg-white shadow-sm">
                 <SelectValue />
               </SelectTrigger>
@@ -65,7 +117,7 @@ export default function TeacherMarks() {
           </div>
           <div className="space-y-1.5">
             <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Examination / Assessment</p>
-            <Select value={exam} onValueChange={setExam}>
+            <Select value={exam} onValueChange={(v) => v && setExam(v)}>
               <SelectTrigger className="w-[220px] h-10 border-slate-200 bg-white shadow-sm">
                 <SelectValue />
               </SelectTrigger>
@@ -92,35 +144,43 @@ export default function TeacherMarks() {
                  <TableHead className="pl-6 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Student</TableHead>
                  <TableHead className="py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Subject</TableHead>
                  <TableHead className="py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Score (%)</TableHead>
-                 <TableHead className="py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 text-center">Form</TableHead>
+                 <TableHead className="py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 text-center">Form Grade</TableHead>
                  <TableHead className="pr-6 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 text-right">Remarks</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {myStudents.map((s) => (
+              {liveResults.map((s) => (
                 <TableRow key={s.id} className="hover:bg-slate-50/50 border-b border-slate-50 transition-colors">
                     <TableCell className="pl-6 py-4">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-9 w-9">
-                          <AvatarImage src={s.photo} alt={s.name} />
                           <AvatarFallback className="text-[10px] font-bold bg-indigo-50 text-indigo-700">
-                            {initials(s.name)}
+                            {initials(s.studentName)}
                           </AvatarFallback>
                         </Avatar>
-                        <p className="text-sm font-semibold text-slate-900 leading-tight">{s.name}</p>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-900 leading-tight">{s.studentName}</p>
+                          <p className="text-[10px] text-slate-400 font-medium">{s.admissionNumber}</p>
+                        </div>
                       </div>
                     </TableCell>
 
                     <TableCell className="py-4">
                        <Badge variant="outline" className="bg-slate-50 text-slate-500 border-0 font-bold text-[10px]">
-                         {teacher.subject}
+                         {s.subjectName}
                        </Badge>
                     </TableCell>
 
                     <TableCell className="py-4">
                        <Input 
                          type="number" 
-                         defaultValue={s.performance}
+                         defaultValue={s.marks}
+                         onBlur={(e) => {
+                           const val = Number(e.target.value);
+                           if (!isNaN(val) && val !== s.marks) {
+                             handleMarkChange(s, val);
+                           }
+                         }}
                          className="h-9 w-20 text-center text-sm font-bold border-slate-200 focus:border-indigo-400" 
                        />
                     </TableCell>
@@ -128,11 +188,11 @@ export default function TeacherMarks() {
                     <TableCell className="py-4 text-center">
                        <span className={cn(
                          "h-8 w-8 inline-flex items-center justify-center rounded-lg font-bold text-xs border",
-                         s.performance >= 80 ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
-                         s.performance >= 60 ? "bg-indigo-50 text-indigo-700 border-indigo-100" :
+                         s.marks >= 80 ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
+                         s.marks >= 60 ? "bg-indigo-50 text-indigo-700 border-indigo-100" :
                          "bg-amber-50 text-amber-700 border-amber-100"
                        )}>
-                         {s.performance >= 80 ? "A" : s.performance >= 70 ? "B" : s.performance >= 60 ? "C" : "D"}
+                         {s.grade}
                        </span>
                     </TableCell>
 
@@ -140,7 +200,7 @@ export default function TeacherMarks() {
                        <div className="flex items-center justify-end gap-2">
                          <input 
                            type="text" 
-                           placeholder="Excellent work..." 
+                           defaultValue={s.remarks}
                            className="h-8 text-[11px] text-right border-0 border-b border-transparent focus:border-indigo-300 outline-none bg-transparent placeholder:text-slate-300 text-slate-600 focus:text-indigo-900"
                          />
                          <ChevronRight size={14} className="text-slate-300" />

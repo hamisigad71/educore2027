@@ -1115,14 +1115,14 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <PricingCard
               tier="Starter"
-              price="KES 15k"
+              price="KES 35k"
               description="Perfect for small primary schools just getting started with digital management."
               features={["Up to 500 students", "Fee management", "Attendance tracking", "Parent portal", "Email support"]}
               delay={0}
             />
             <PricingCard
               tier="Professional"
-              price="KES 35k"
+              price="KES 72k"
               description="The complete EduCore suite for growing secondary schools and academies."
               features={["Up to 2,000 students", "All Starter features", "M-Pesa integration", "SMS notifications", "Analytics dashboard", "Priority support"]}
               highlighted

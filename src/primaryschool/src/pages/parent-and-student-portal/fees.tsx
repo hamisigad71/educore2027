@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { PageHeader } from "@/components/layout";
 import { studentsSeed, feesSeed, currency } from "@/primaryschool/src/data/mockData";
+import { getParentChildren, getStudentFees, getRecentTransactions } from "@/lib/api";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -56,12 +57,44 @@ const PAYMENT_METHODS = [
 ];
 
 export default function PortalFees() {
-  const student = studentsSeed[0];
-  const fees = feesSeed.filter((f) => f.studentId === student.id);
   const { toast } = useToast();
 
-  const paidTotal   = fees.reduce((s, f) => s + f.amount, 0);
-  const totalDue    = paidTotal + student.balance;
+  const [childData, setChildData] = useState<any>(null);
+  const [liveFees, setLiveFees] = useState<any>(null);
+  const [liveTransactions, setLiveTransactions] = useState<any[]>([]);
+
+  React.useEffect(() => {
+    async function loadData() {
+      try {
+        const children = await getParentChildren();
+        if (children && children.length > 0) {
+          const mainChild = children[0];
+          setChildData(mainChild);
+          const fData = await getStudentFees(mainChild.id);
+          setLiveFees(fData);
+          const txs = await getRecentTransactions();
+          setLiveTransactions(txs.filter((t: any) => t.admissionNumber === mainChild.admissionNumber));
+        }
+      } catch (err) {}
+    }
+    loadData();
+  }, []);
+
+  const student = childData ? {
+    id: childData.id,
+    name: childData.name,
+    balance: liveFees?.balance || 0,
+  } : studentsSeed[0];
+
+  const paidTotal = childData ? (liveFees?.totalPaid || 0) : feesSeed.filter((f) => f.studentId === student.id).reduce((s, f) => s + f.amount, 0);
+  const totalDue = childData ? (liveFees?.totalBilled || 0) : (paidTotal + student.balance);
+  const rawFeesMock = feesSeed.filter((f) => f.studentId === student.id);
+  const fees = childData ? liveTransactions.map((t) => ({
+    amount: t.amount,
+    method: t.paymentMethod,
+    date: new Date(t.paidAt).toLocaleDateString(),
+  })) : rawFeesMock;
+
   const paidPercent = totalDue === 0 ? 100 : Math.round((paidTotal / totalDue) * 100);
   const isCleared   = student.balance <= 0;
 

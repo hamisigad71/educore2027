@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PageHeader } from "@/components/layout";
-import { feesSeed, currency } from "../../../data/mockData";
+import { getRecentTransactions, RecentTransactionItem, getDashboardStats, DashboardStats, recordFeePayment } from "@/lib/api";
+import { currency } from "../../../data/mockData";
 
 // shadcn/ui
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 import {
   Table, TableBody, TableCell,
   TableHead, TableHeader, TableRow,
@@ -24,10 +30,91 @@ import { cn } from "@/lib/utils";
 
 export default function BursarFees() {
   const [q, setQ] = useState("");
+  const [transactions, setTransactions] = useState<RecentTransactionItem[]>([]);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const filteredFees = feesSeed.filter(f => 
-    f.studentId.toLowerCase().includes(q.toLowerCase()) || 
-    f.receipt.toLowerCase().includes(q.toLowerCase())
+  // Payment Modal State
+  const [modalOpen, setModalOpen] = useState(false);
+  const [paymentForm, setPaymentForm] = useState({
+    studentName: "",
+    amount: "15000",
+    paymentMethod: "mpesa",
+    referenceNumber: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true);
+        const [txRes, statsRes] = await Promise.all([
+          getRecentTransactions(),
+          getDashboardStats()
+        ]);
+        setTransactions(txRes);
+        setStats(statsRes);
+      } catch (err) {
+        console.error("Failed to load fee transactions:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  async function handleReceivePayment() {
+    try {
+      setSubmitting(true);
+      const amt = Number(paymentForm.amount);
+      if (isNaN(amt) || amt <= 0) {
+        toast({ variant: "destructive", title: "Invalid Amount", description: "Please enter a valid payment amount." });
+        return;
+      }
+
+      const res = await recordFeePayment({
+        studentName: paymentForm.studentName || "Student",
+        amount: amt,
+        paymentMethod: paymentForm.paymentMethod,
+        referenceNumber: paymentForm.referenceNumber,
+        mpesaReceipt: paymentForm.paymentMethod === "mpesa" ? paymentForm.referenceNumber : undefined,
+      });
+
+      const newTx: RecentTransactionItem = {
+        id: res.id,
+        studentName: paymentForm.studentName || "Walk-in Student",
+        admissionNumber: "ADM-NEW",
+        amount: amt,
+        paymentMethod: paymentForm.paymentMethod.toUpperCase(),
+        reference: res.reference_number,
+        mpesaReceipt: res.mpesa_receipt,
+        paidAt: "Just now",
+        status: "completed",
+      };
+
+      setTransactions((prev) => [newTx, ...prev]);
+      toast({
+        title: "Payment Recorded Successfully 🎉",
+        description: `Receipt #${res.reference_number} generated for ${currency(amt)}.`,
+      });
+      setModalOpen(false);
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Payment Entry Failed",
+        description: err.message || "Failed to record transaction in database.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  const filteredFees = transactions.filter(t => 
+    t.studentName.toLowerCase().includes(q.toLowerCase()) || 
+    t.admissionNumber.toLowerCase().includes(q.toLowerCase()) ||
+    t.reference.toLowerCase().includes(q.toLowerCase()) ||
+    (t.mpesaReceipt && t.mpesaReceipt.toLowerCase().includes(q.toLowerCase()))
   );
 
   return (
@@ -40,7 +127,7 @@ export default function BursarFees() {
             <Button variant="outline" size="sm" className="h-9 border-slate-200 text-slate-700 bg-white shadow-sm font-bold text-xs gap-1.5 px-4">
               <Download size={14} /> Export CSV
             </Button>
-            <Button className="h-9 bg-indigo-600 hover:bg-indigo-700 shadow-sm text-xs font-bold gap-1.5 px-4">
+            <Button onClick={() => setModalOpen(true)} className="h-9 bg-indigo-600 hover:bg-indigo-700 shadow-sm text-xs font-bold gap-1.5 px-4">
               <Plus size={14} /> Receive Payment
             </Button>
           </div>
@@ -49,10 +136,10 @@ export default function BursarFees() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           {[
-            { label: "Term 2 Target", value: currency(12500000), icon: Landmark, color: "text-indigo-600" },
-            { label: "Total Collected", value: currency(8420000), icon: CheckCircle2, color: "text-emerald-600" },
-            { label: "Outstanding", value: currency(4080000), icon: Clock, color: "text-amber-600" },
-            { label: "Defaulters", value: "42 Students", icon: Ban, color: "text-rose-600" },
+            { label: "Term Target", value: currency(stats?.totalFeeBilled || 139500), icon: Landmark, color: "text-indigo-600" },
+            { label: "Total Collected", value: currency(stats?.totalFeePaid || 76500), icon: CheckCircle2, color: "text-emerald-600" },
+            { label: "Outstanding", value: currency(stats?.totalFeeBalance || 63000), icon: Clock, color: "text-amber-600" },
+            { label: "Defaulters", value: `${transactions.filter(t => t.status === "pending").length} Students`, icon: Ban, color: "text-rose-600" },
           ].map((stat, i) => (
             <Card key={i} className="shadow-sm border-slate-200/80">
               <CardContent className="p-5">
@@ -97,8 +184,8 @@ export default function BursarFees() {
             <TableHeader>
               <TableRow className="hover:bg-transparent border-b border-slate-50">
                 <TableHead className="pl-6 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Date</TableHead>
-                <TableHead className="py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Student Name / ID</TableHead>
-                <TableHead className="py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Receipt #</TableHead>
+                <TableHead className="py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Student Name / ADM</TableHead>
+                <TableHead className="py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Reference / Receipt</TableHead>
                 <TableHead className="py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Method</TableHead>
                 <TableHead className="pr-6 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 text-right">Amount</TableHead>
               </TableRow>
@@ -106,18 +193,22 @@ export default function BursarFees() {
             <TableBody>
               {filteredFees.map((f) => (
                 <TableRow key={f.id} className="group hover:bg-slate-50/50 transition-colors">
-                  <TableCell className="pl-6 py-4 text-xs font-medium text-slate-500">{f.date}</TableCell>
-                  <TableCell className="py-4">
-                    <p className="text-xs font-bold text-slate-900">{f.studentId}</p>
-                    <p className="text-[10px] text-slate-400 font-medium">Form 4 Blue</p>
+                  <TableCell className="pl-6 py-4 text-xs font-medium text-slate-500">
+                    {new Date(f.paidAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="py-4">
-                    <code className="text-[10px] font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-600 border border-slate-200/50">{f.receipt}</code>
+                    <p className="text-xs font-bold text-slate-900">{f.studentName}</p>
+                    <p className="text-[10px] text-slate-400 font-medium">{f.admissionNumber || "ADM/2025/000"}</p>
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <code className="text-[10px] font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-600 border border-slate-200/50">
+                      {f.mpesaReceipt || f.reference}
+                    </code>
                   </TableCell>
                   <TableCell className="py-4">
                     <div className="flex items-center gap-2">
                        <CreditCard size={12} className="text-indigo-400" />
-                       <span className="text-[11px] font-bold text-slate-600">{f.method}</span>
+                       <span className="text-[11px] font-bold text-slate-600 uppercase">{f.paymentMethod}</span>
                     </div>
                   </TableCell>
                   <TableCell className="pr-6 py-4 text-right">
@@ -135,6 +226,80 @@ export default function BursarFees() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <Landmark className="text-indigo-600" size={18} /> Record Fee Payment
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-slate-700">Student Name / Admission No.</Label>
+              <Input
+                value={paymentForm.studentName}
+                onChange={(e) => setPaymentForm((p) => ({ ...p, studentName: e.target.value }))}
+                placeholder="e.g. Kevin Kimani (ADM-2025-012)"
+                className="h-9 text-sm"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-slate-700">Amount (KES)</Label>
+                <Input
+                  type="number"
+                  value={paymentForm.amount}
+                  onChange={(e) => setPaymentForm((p) => ({ ...p, amount: e.target.value }))}
+                  placeholder="15000"
+                  className="h-9 text-sm font-mono font-bold"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-slate-700">Payment Method</Label>
+                <Select
+                  value={paymentForm.paymentMethod}
+                  onValueChange={(v) => v && setPaymentForm((p) => ({ ...p, paymentMethod: v }))}
+                >
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="mpesa">M-Pesa Express</SelectItem>
+                    <SelectItem value="cash">Cash Payment</SelectItem>
+                    <SelectItem value="bank_transfer">Bank Deposit / ETF</SelectItem>
+                    <SelectItem value="cheque">Bankers Cheque</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-slate-700">Reference / Receipt Number</Label>
+              <Input
+                value={paymentForm.referenceNumber}
+                onChange={(e) => setPaymentForm((p) => ({ ...p, referenceNumber: e.target.value }))}
+                placeholder="e.g. QFH892KS1 or CHQ-00812"
+                className="h-9 text-sm font-mono"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" size="sm" onClick={() => setModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button size="sm" onClick={handleReceivePayment} disabled={submitting} className="bg-indigo-600 hover:bg-indigo-700">
+              {submitting ? "Processing..." : "Save Payment & Issue Receipt"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Toaster />
     </div>
   );
 }

@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { PageHeader } from "@/components/layout";
-import { feesSeed, studentsSeed, currency, FeeRecord } from "@/primaryschool/src/data/mockData";
+import { getStudentsList, getRecentTransactions, recordFeePayment, StudentItem, RecentTransactionItem } from "@/lib/api";
 
 // shadcn/ui
 import { Button } from "@/components/ui/button";
@@ -25,16 +25,23 @@ import { cn } from "@/lib/utils";
 import {
   TrendingUp, AlertCircle, CreditCard, Search,
   Plus, Download, Smartphone, Banknote, Building2,
-  Clock, CheckCircle2, ChevronRight, Send,
+  Clock, CheckCircle2, ChevronRight, Send, Loader2
 } from "lucide-react";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
+
+const currency = (val: number) =>
+  new Intl.NumberFormat("en-KE", { style: "currency", currency: "KES" }).format(val);
 
 function getInitials(name: string) {
   return name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 }
 
 function MethodBadge({ method }: { method: string }) {
+  const normalizedMethod = method?.toLowerCase().includes("mpesa") ? "M-Pesa" : 
+                           method?.toLowerCase().includes("cash") ? "Cash" : 
+                           method?.toLowerCase().includes("bank") ? "Bank" : "Cash";
+
   const map: Record<string, { icon: React.ReactNode; cls: string }> = {
     "M-Pesa": {
       icon: <Smartphone size={10} />,
@@ -49,10 +56,10 @@ function MethodBadge({ method }: { method: string }) {
       cls: "bg-indigo-50 text-indigo-700 border-indigo-200",
     },
   };
-  const cfg = map[method] ?? { icon: <CreditCard size={10} />, cls: "bg-slate-50 text-slate-600 border-slate-200" };
+  const cfg = map[normalizedMethod] ?? { icon: <CreditCard size={10} />, cls: "bg-slate-50 text-slate-600 border-slate-200" };
   return (
     <Badge variant="outline" className={cn("text-[11px] font-medium border gap-1 px-2 py-0.5", cfg.cls)}>
-      {cfg.icon}{method}
+      {cfg.icon}{normalizedMethod}
     </Badge>
   );
 }
@@ -90,48 +97,100 @@ function StatCard({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AdminFees() {
-  const [fees, setFees] = useState<FeeRecord[]>(feesSeed);
+  const [fees, setFees] = useState<RecentTransactionItem[]>([]);
+  const [students, setStudents] = useState<StudentItem[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  
   const [modal, setModal] = useState(false);
+  
+  // Payment form states
+  const [selStudentId, setSelStudentId] = useState<string>("");
+  const [payAmount, setPayAmount] = useState<string>("10000");
+  const [payMethod, setPayMethod] = useState<string>("M-Pesa");
+  const [payReceipt, setPayReceipt] = useState<string>("");
+
   const [q, setQ] = useState("");
   const [methodFilter, setMethodFilter] = useState("All");
   const { toast } = useToast();
 
+  const loadData = async () => {
+    try {
+      const [stds, txns] = await Promise.all([
+        getStudentsList(),
+        getRecentTransactions()
+      ]);
+      setStudents(stds);
+      setFees(txns);
+      if (stds.length > 0 && !selStudentId) {
+        setSelStudentId(stds[0].id);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoaded(true);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
   const filtered = useMemo(() => {
     return fees.filter((f) => {
-      const s = studentsSeed.find((x) => x.id === f.studentId);
+      const s = students.find((x) => x.admission_number === f.admissionNumber);
+      const sName = s?.name || f.studentName || "";
       const matchQ =
-        s?.name.toLowerCase().includes(q.toLowerCase()) ||
-        f.receipt.toLowerCase().includes(q.toLowerCase());
-      const matchMethod = methodFilter === "All" || f.method === methodFilter;
+        sName.toLowerCase().includes(q.toLowerCase()) ||
+        f.reference.toLowerCase().includes(q.toLowerCase());
+      
+      const fMeth = f.paymentMethod?.toLowerCase().includes("mpesa") ? "M-Pesa" : 
+                    f.paymentMethod?.toLowerCase().includes("cash") ? "Cash" : 
+                    f.paymentMethod?.toLowerCase().includes("bank") ? "Bank" : "Cash";
+
+      const matchMethod = methodFilter === "All" || fMeth === methodFilter;
       return matchQ && matchMethod;
     });
-  }, [fees, q, methodFilter]);
+  }, [fees, q, methodFilter, students]);
 
-  const balances = studentsSeed
-    .filter((s) => s.balance > 0)
-    .sort((a, b) => b.balance - a.balance)
-    .slice(0, 7);
+  const balances = useMemo(() => {
+    return students
+      .filter((s) => s.balance > 0)
+      .sort((a, b) => b.balance - a.balance)
+      .slice(0, 7);
+  }, [students]);
 
-  const totalCollected = fees.reduce((s, f) => s + f.amount, 0);
-  const totalOutstanding = studentsSeed.reduce((s, x) => s + (x.balance ?? 0), 0);
-  const collectionRate = Math.round(
+  const totalCollected = fees.reduce((s, f) => s + (f.amount || 0), 0);
+  const totalOutstanding = students.reduce((s, x) => s + (x.balance ?? 0), 0);
+  const collectionRate = totalCollected + totalOutstanding > 0 ? Math.round(
     (totalCollected / (totalCollected + totalOutstanding)) * 100
-  );
+  ) : 0;
 
   const methods = ["M-Pesa", "Cash", "Bank"];
 
-  function handleRecord() {
-    const rec: FeeRecord = {
-      id: `f${Date.now()}`,
-      studentId: studentsSeed[0].id,
-      date: new Date().toISOString().slice(0, 10),
-      amount: 10000,
-      method: "M-Pesa",
-      receipt: `RCP-${Math.floor(Math.random() * 900000 + 100000)}`,
-    };
-    setFees((p) => [rec, ...p]);
-    toast({ title: "Payment recorded", description: `${currency(rec.amount)} via ${rec.method}` });
-    setModal(false);
+  async function handleRecord() {
+    setIsSaving(true);
+    try {
+      const amt = Number(payAmount);
+      if (isNaN(amt) || amt <= 0) throw new Error("Invalid amount");
+
+      await recordFeePayment({
+        studentId: selStudentId,
+        amount: amt,
+        paymentMethod: payMethod,
+        referenceNumber: payReceipt || undefined,
+        mpesaReceipt: payMethod.includes("mpesa") || payMethod === "M-Pesa" ? payReceipt : undefined
+      });
+      
+      toast({ title: "Payment recorded", description: `${currency(amt)} via ${payMethod}` });
+      setModal(false);
+      setPayReceipt("");
+      await loadData();
+    } catch (err) {
+      toast({ title: "Failed to record payment", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -148,6 +207,7 @@ export default function AdminFees() {
             </Button>
             <Button
               size="sm"
+              disabled={!isLoaded}
               onClick={() => setModal(true)}
               className="bg-indigo-600 hover:bg-indigo-700 shadow-sm gap-1.5"
             >
@@ -169,7 +229,7 @@ export default function AdminFees() {
         />
         <StatCard
           label="Outstanding Balance"
-          value={`${studentsSeed.filter((s) => s.balance > 0).length} students`}
+          value={`${students.filter((s) => s.balance > 0).length} students`}
           sub="Pending"
           valueClass="text-amber-600"
           iconBg="bg-amber-50 border-amber-100"
@@ -253,41 +313,46 @@ export default function AdminFees() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
+                  {!isLoaded && (
+                    <TableRow>
+                      <TableCell colSpan={6} className="py-8 text-center text-slate-400">Loading...</TableCell>
+                    </TableRow>
+                  )}
                   {filtered.slice(0, 15).map((f) => {
-                    const s = studentsSeed.find((x) => x.id === f.studentId)!;
+                    const s = students.find((x) => x.admission_number === f.admissionNumber);
+                    const dateStr = new Date(f.paidAt).toISOString().split("T")[0];
                     return (
                       <TableRow key={f.id} className="hover:bg-slate-50/60 border-b border-slate-100/80 transition-colors">
                         <TableCell className="pl-6 py-3.5">
                           <div className="flex items-center gap-1.5 text-xs text-slate-500">
                             <Clock size={11} className="text-slate-300" />
-                            {f.date}
+                            {dateStr}
                           </div>
                         </TableCell>
                         <TableCell className="py-3.5">
                           <div className="flex items-center gap-2.5">
                             <Avatar className="h-8 w-8 ring-1 ring-slate-100">
-                              <AvatarImage src={s?.photo} className="object-cover" />
                               <AvatarFallback className="text-[10px] bg-indigo-50 text-indigo-700 font-semibold">
-                                {getInitials(s?.name ?? "?")}
+                                {getInitials(s?.name || f.studentName || "?")}
                               </AvatarFallback>
                             </Avatar>
-                            <span className="text-sm font-medium text-slate-900">{s?.name}</span>
+                            <span className="text-sm font-medium text-slate-900">{s?.name || f.studentName}</span>
                           </div>
                         </TableCell>
                         <TableCell className="py-3.5">
                           <span className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-md px-2 py-0.5">
-                            {s?.klass}
+                            {s?.className || "N/A"}
                           </span>
                         </TableCell>
                         <TableCell className="py-3.5">
                           <span className="text-sm font-semibold text-slate-900">{currency(f.amount)}</span>
                         </TableCell>
                         <TableCell className="py-3.5">
-                          <MethodBadge method={f.method} />
+                          <MethodBadge method={f.paymentMethod} />
                         </TableCell>
                         <TableCell className="py-3.5">
                           <code className="text-[11px] font-mono text-slate-400 bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5">
-                            {f.receipt}
+                            {f.reference || f.mpesaReceipt || "-"}
                           </code>
                         </TableCell>
                       </TableRow>
@@ -297,7 +362,7 @@ export default function AdminFees() {
               </Table>
             </div>
 
-            {filtered.length === 0 && (
+            {filtered.length === 0 && isLoaded && (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center mb-3">
                   <CreditCard size={20} className="text-slate-400" />
@@ -333,7 +398,7 @@ export default function AdminFees() {
                   </CardDescription>
                 </div>
                 <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-600 border-amber-200 font-semibold">
-                  {studentsSeed.filter((s) => s.balance > 0).length} pending
+                  {students.filter((s) => s.balance > 0).length} pending
                 </Badge>
               </div>
             </div>
@@ -342,15 +407,17 @@ export default function AdminFees() {
 
           <CardContent className="p-0">
             <div className="divide-y divide-slate-100">
+              {balances.length === 0 && isLoaded && (
+                <div className="px-5 py-4 text-center text-sm text-slate-400">No pending balances</div>
+              )}
               {balances.map((s, i) => {
-                const pct = Math.min(100, Math.round((s.balance / 50000) * 100));
+                const pct = Math.min(100, Math.round((s.balance / (s.totalBilled || 50000)) * 100));
                 return (
                   <div key={s.id} className="px-5 py-3.5 hover:bg-slate-50/50 transition-colors">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2.5">
                         <div className="relative">
                           <Avatar className="h-8 w-8 ring-1 ring-slate-100">
-                            <AvatarImage src={s.photo} className="object-cover" />
                             <AvatarFallback className="text-[10px] bg-rose-50 text-rose-700 font-semibold">
                               {getInitials(s.name)}
                             </AvatarFallback>
@@ -361,7 +428,7 @@ export default function AdminFees() {
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-slate-800 leading-tight">{s.name}</p>
-                          <p className="text-[10px] text-slate-400">{s.klass}</p>
+                          <p className="text-[10px] text-slate-400">{s.className}</p>
                         </div>
                       </div>
                       <span className={cn(
@@ -384,15 +451,17 @@ export default function AdminFees() {
               })}
             </div>
 
-            <div className="px-5 py-4 border-t border-slate-100">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full h-9 text-xs border-slate-200 text-slate-700 hover:bg-slate-50 gap-1.5"
-              >
-                <Send size={12} />Send SMS Reminders to All
-              </Button>
-            </div>
+            {balances.length > 0 && (
+              <div className="px-5 py-4 border-t border-slate-100">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full h-9 text-xs border-slate-200 text-slate-700 hover:bg-slate-50 gap-1.5"
+                >
+                  <Send size={12} />Send SMS Reminders to All
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -415,14 +484,14 @@ export default function AdminFees() {
           <div className="px-6 py-5 space-y-4">
             <div className="space-y-1.5">
               <Label className="text-xs font-medium text-slate-600">Student <span className="text-rose-400">*</span></Label>
-              <Select defaultValue={studentsSeed[0]?.id}>
+              <Select value={selStudentId} onValueChange={setSelStudentId}>
                 <SelectTrigger className="h-9 text-sm border-slate-200">
                   <SelectValue placeholder="Select student" />
                 </SelectTrigger>
                 <SelectContent>
-                  {studentsSeed.slice(0, 20).map((s) => (
+                  {students.map((s) => (
                     <SelectItem key={s.id} value={s.id}>
-                      {s.name} — {s.klass}
+                      {s.name} — {s.className}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -434,13 +503,14 @@ export default function AdminFees() {
                 <Label className="text-xs font-medium text-slate-600">Amount (KES) <span className="text-rose-400">*</span></Label>
                 <Input
                   type="number"
-                  defaultValue={10000}
+                  value={payAmount}
+                  onChange={(e) => setPayAmount(e.target.value)}
                   className="h-9 text-sm border-slate-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400"
                 />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-slate-600">Payment Method <span className="text-rose-400">*</span></Label>
-                <Select defaultValue="M-Pesa">
+                <Select value={payMethod} onValueChange={setPayMethod}>
                   <SelectTrigger className="h-9 text-sm border-slate-200"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="M-Pesa">M-Pesa</SelectItem>
@@ -456,6 +526,8 @@ export default function AdminFees() {
                 <Label className="text-xs font-medium text-slate-600">Receipt / Reference</Label>
                 <Input
                   placeholder="e.g., RCP-2025123"
+                  value={payReceipt}
+                  onChange={(e) => setPayReceipt(e.target.value)}
                   className="h-9 text-sm font-mono border-slate-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400"
                 />
               </div>
@@ -487,11 +559,12 @@ export default function AdminFees() {
           </div>
 
           <DialogFooter className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 gap-2">
-            <Button variant="outline" size="sm" onClick={() => setModal(false)} className="border-slate-300 text-slate-700">
+            <Button variant="outline" size="sm" disabled={isSaving} onClick={() => setModal(false)} className="border-slate-300 text-slate-700">
               Cancel
             </Button>
-            <Button size="sm" onClick={handleRecord} className="bg-emerald-600 hover:bg-emerald-700 shadow-sm gap-1.5">
-              <CheckCircle2 size={13} />Save Payment
+            <Button size="sm" onClick={handleRecord} disabled={isSaving || !selStudentId} className="bg-emerald-600 hover:bg-emerald-700 shadow-sm gap-1.5">
+              {isSaving ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
+              Save Payment
             </Button>
           </DialogFooter>
         </DialogContent>

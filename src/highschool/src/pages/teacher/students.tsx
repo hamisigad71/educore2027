@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { PageHeader } from "@/components/layout";
 import { teachersSeed, studentsSeed, Student } from "../../data/mockData";
+import { getTeacherProfile, getTeacherStudents, StudentItem } from "@/lib/api";
 
 // shadcn/ui
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -31,14 +32,36 @@ const initials = (name: string) =>
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function TeacherStudents() {
-  const teacher = teachersSeed[0];
+  const mockTeacher = teachersSeed[0];
+  const [liveStudents, setLiveStudents] = useState<StudentItem[]>([]);
+  const [liveClasses, setLiveClasses] = useState<string[]>(mockTeacher.classes);
   const [q, setQ] = useState("");
   const [klassFilter, setKlassFilter] = useState("All");
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  const myStudents = useMemo(
-    () => studentsSeed.filter((s) => teacher.classes.includes(s.klass)),
-    [teacher]
-  );
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const profile = await getTeacherProfile();
+        if (profile && profile.classes.length > 0) {
+          setLiveClasses(profile.classes);
+          const students = await getTeacherStudents(profile.classes);
+          setLiveStudents(students);
+        }
+      } catch (err) {
+        console.error("Teacher students load error:", err);
+      } finally {
+        setIsLoaded(true);
+      }
+    }
+    loadData();
+  }, []);
+
+  const myStudents = isLoaded && liveStudents.length > 0
+    ? liveStudents
+    : studentsSeed.filter((s) => mockTeacher.classes.includes(s.klass));
+
+  const classesForFilter = isLoaded && liveClasses.length > 0 ? liveClasses : mockTeacher.classes;
 
   const filtered = useMemo(
     () =>
@@ -80,7 +103,7 @@ export default function TeacherStudents() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="All">All Classes</SelectItem>
-                  {teacher.classes.map(k => <SelectItem key={k} value={k}>{k}</SelectItem>)}
+                  {classesForFilter.map(k => <SelectItem key={k} value={k}>{k}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -101,7 +124,9 @@ export default function TeacherStudents() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((s) => (
+                {filtered.map((s) => {
+                  const att = (s as any).attendance_rate ?? (s as any).attendance ?? 0;
+                  return (
                   <TableRow key={s.id} className="hover:bg-slate-50/50 border-b border-slate-50 transition-colors">
                     <TableCell className="pl-6 py-4">
                       <div className="flex items-center gap-3">
@@ -120,7 +145,7 @@ export default function TeacherStudents() {
 
                     <TableCell className="py-4">
                       <Badge variant="outline" className="text-[10px] font-bold border-indigo-100 text-indigo-700 bg-indigo-50 px-2 py-0">
-                        {s.klass}
+                        {s.className ?? s.klass}
                       </Badge>
                     </TableCell>
 
@@ -134,10 +159,10 @@ export default function TeacherStudents() {
                     <TableCell className="py-4">
                        <div className="w-24 space-y-1.5">
                           <div className="flex justify-between items-center text-[9px] font-bold">
-                            <span className={cn(s.attendance < 75 ? "text-rose-500" : "text-slate-400")}>{s.attendance}%</span>
+                            <span className={cn((att < 75) ? "text-rose-500" : "text-slate-400")}>{att}%</span>
                           </div>
-                          <Progress value={s.attendance} className={cn("h-1 bg-slate-100", 
-                            s.attendance < 75 ? "[&>div]:bg-rose-500" : "[&>div]:bg-indigo-500"
+                          <Progress value={att} className={cn("h-1 bg-slate-100", 
+                            (att < 75) ? "[&>div]:bg-rose-500" : "[&>div]:bg-indigo-500"
                           )} />
                        </div>
                     </TableCell>
@@ -152,7 +177,8 @@ export default function TeacherStudents() {
                        </Button>
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           </div>

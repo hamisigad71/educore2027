@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { PageHeader } from "@/components/layout";
 import { teachersSeed, Teacher } from "../../data/mockData";
+import { createTeacherAccount } from "@/lib/api";
 
 // shadcn/ui
 import { Button } from "@/components/ui/button";
@@ -89,6 +90,15 @@ export default function AdminTeachers() {
   const [modal, setModal] = useState<{ open: boolean; data?: Teacher }>({ open: false });
   const { toast } = useToast();
 
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "Mathematics",
+    classes: "Form 3 East",
+  });
+  const [submitting, setSubmitting] = useState(false);
+
   const subjects = useMemo(
     () => Array.from(new Set(teachers.map((t) => t.subject))),
     [teachers]
@@ -112,23 +122,51 @@ export default function AdminTeachers() {
       ? (teachers.reduce((s, t) => s + t.classes.length, 0) / teachers.length).toFixed(1)
       : 0;
 
-  function handleSave() {
+  async function handleSave() {
     if (modal.data) {
       toast({ title: "Teacher updated", description: "Changes saved to the system." });
+      setModal({ open: false });
     } else {
-      const t: Teacher = {
-        id: `t${Date.now()}`,
-        name: "New Teacher",
-        subject: "Mathematics",
-        email: "new.teacher@educore.ke",
-        phone: "+254700000000",
-        classes: ["Form 4 Red"],
-        photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200",
-      };
-      setTeachers((p) => [t, ...p]);
-      toast({ title: "Teacher added", description: `${t.name} has joined the staff.` });
+      try {
+        setSubmitting(true);
+        const nameParts = (formData.name || "New Teacher").split(" ");
+        const firstName = nameParts[0];
+        const lastName = nameParts.slice(1).join(" ") || "Staff";
+        const email = formData.email || `teacher${Date.now().toString().slice(-4)}@educore.ke`;
+
+        const res = await createTeacherAccount({
+          email,
+          firstName,
+          lastName,
+          subject: formData.subject,
+          phone: formData.phone,
+        });
+
+        const t: Teacher = {
+          id: res.userId,
+          name: `${firstName} ${lastName}`,
+          subject: formData.subject,
+          email,
+          phone: formData.phone || "+254700000000",
+          classes: formData.classes.split(",").map((c) => c.trim()).filter(Boolean),
+          photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200",
+        };
+        setTeachers((p) => [t, ...p]);
+        toast({
+          title: "Teacher Registered & Auth Created 🎉",
+          description: `Account created for ${t.name}. Temp Password: ${res.tempPassword}`,
+        });
+        setModal({ open: false });
+      } catch (err: any) {
+        toast({
+          variant: "destructive",
+          title: "Registration Failed",
+          description: err.message || "Failed to register teacher account in Supabase.",
+        });
+      } finally {
+        setSubmitting(false);
+      }
     }
-    setModal({ open: false });
   }
 
   function handleDelete(t: Teacher) {
@@ -379,12 +417,16 @@ export default function AdminTeachers() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-slate-600">Full Name <span className="text-rose-400">*</span></Label>
-                <Input defaultValue={modal.data?.name ?? ""} placeholder="e.g., Dr. Sarah Mwangi"
-                  className="h-9 text-sm border-slate-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400" />
+                <Input
+                  value={formData.name}
+                  onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
+                  placeholder="e.g., Dr. Sarah Mwangi"
+                  className="h-9 text-sm border-slate-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-slate-600">Subject <span className="text-rose-400">*</span></Label>
-                <Select defaultValue={modal.data?.subject ?? "Mathematics"}>
+                <Select value={formData.subject} onValueChange={(v) => setFormData((p) => ({ ...p, subject: v || "Mathematics" }))}>
                   <SelectTrigger className="h-9 text-sm border-slate-200"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {subjects.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -393,25 +435,33 @@ export default function AdminTeachers() {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-slate-600">Email <span className="text-rose-400">*</span></Label>
-                <Input type="email" defaultValue={modal.data?.email ?? ""} placeholder="teacher@educore.ke"
-                  className="h-9 text-sm border-slate-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400" />
+                <Label className="text-xs font-medium text-slate-600">Email (Auth Credentials) <span className="text-rose-400">*</span></Label>
+                <Input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
+                  placeholder="teacher@educore.ke"
+                  className="h-9 text-sm border-slate-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-slate-600">Phone <span className="text-rose-400">*</span></Label>
-                <Input defaultValue={modal.data?.phone ?? "+254"} placeholder="+254700000000"
-                  className="h-9 text-sm font-mono border-slate-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400" />
+                <Input
+                  value={formData.phone}
+                  onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))}
+                  placeholder="+254700000000"
+                  className="h-9 text-sm font-mono border-slate-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400"
+                />
               </div>
               <div className="sm:col-span-2 space-y-1.5">
                 <Label className="text-xs font-medium text-slate-600">Class Assignments</Label>
-                <Input placeholder="Form 4 Red, Form 3 Blue" defaultValue={modal.data?.classes.join(", ") ?? ""}
-                  className="h-9 text-sm border-slate-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400" />
+                <Input
+                  value={formData.classes}
+                  onChange={(e) => setFormData((p) => ({ ...p, classes: e.target.value }))}
+                  placeholder="Form 4 Red, Form 3 Blue"
+                  className="h-9 text-sm border-slate-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400"
+                />
                 <p className="text-[11px] text-slate-400">Separate multiple classes with commas</p>
-              </div>
-              <div className="sm:col-span-2 space-y-1.5">
-                <Label className="text-xs font-medium text-slate-600">Profile Photo URL</Label>
-                <Input defaultValue={modal.data?.photo ?? ""} placeholder="https://…"
-                  className="h-9 text-sm border-slate-200 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-400" />
               </div>
             </div>
           </div>
@@ -420,8 +470,8 @@ export default function AdminTeachers() {
             <Button variant="outline" size="sm" onClick={() => setModal({ open: false })} className="border-slate-300 text-slate-700">
               Cancel
             </Button>
-            <Button size="sm" onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700 shadow-sm">
-              {modal.data ? "Save Changes" : "Add Teacher"}
+            <Button size="sm" onClick={handleSave} disabled={submitting} className="bg-indigo-600 hover:bg-indigo-700 shadow-sm">
+              {submitting ? "Registering Auth..." : modal.data ? "Save Changes" : "Register & Create Auth"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -18,6 +18,7 @@ import TeacherDashboard from "./pages/teacher/dashboard";
 import TeacherClasses from "./pages/teacher/classes";
 import TeacherStudents from "./pages/teacher/students";
 import TeacherMarks from "./pages/teacher/marks";
+import TeacherUploadMarks from "./pages/teacher/upload-marks";
 import TeacherAttendance from "./pages/teacher/attendance";
 import TeacherProfile from "./pages/teacher/profile";
 
@@ -69,6 +70,7 @@ function App() {
           <Route path="classes" element={<TeacherClasses />} />
           <Route path="students" element={<TeacherStudents />} />
           <Route path="marks" element={<TeacherMarks />} />
+          <Route path="upload-marks" element={<TeacherUploadMarks />} />
           <Route path="attendance" element={<TeacherAttendance />} />
           <Route path="profile" element={<TeacherProfile />} />
         </Route>

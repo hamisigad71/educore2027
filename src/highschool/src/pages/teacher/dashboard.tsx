@@ -1,14 +1,16 @@
 
+import React, { useState, useEffect } from "react";
 import { PageHeader } from "@/components/layout";
 import { useAuth } from "@/context/AuthContext";
 import { teachersSeed, studentsSeed } from "../../data/mockData";
+import { getTeacherProfile, getTeacherStudents, TeacherProfile, StudentItem } from "@/lib/api";
 
 // shadcn/ui
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+
 import { Sparkline } from "@/components/ui/charts";
-import { Separator } from "@/components/ui/separator";
+
 
 // lucide
 import { 
@@ -48,10 +50,36 @@ function TeacherStatCard({
 
 export default function TeacherDashboard() {
   const { user } = useAuth();
-  const teacher = teachersSeed[0]; // mock logged-in teacher
-  const myStudents = studentsSeed.filter((s) => teacher.classes.includes(s.klass));
-  const avgPerf = Math.round(myStudents.reduce((t, s) => t + s.performance, 0) / (myStudents.length || 1));
-  const avgAtt = Math.round(myStudents.reduce((t, s) => t + s.attendance, 0) / (myStudents.length || 1));
+  const [teacherProfile, setTeacherProfile] = useState<TeacherProfile | null>(null);
+  const [myStudents, setMyStudents] = useState<StudentItem[]>([]);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const profile = await getTeacherProfile();
+        if (profile) {
+          setTeacherProfile(profile);
+          const students = await getTeacherStudents(profile.classes);
+          setMyStudents(students);
+        }
+      } catch (err) {
+        console.error("Teacher dashboard load error:", err);
+      }
+    }
+    loadData();
+  }, []);
+
+  // Fallback to mock data if Supabase has no data yet
+  const mockTeacher = teachersSeed[0];
+  const teacher = teacherProfile ? { ...teacherProfile } : mockTeacher;
+  const students = myStudents.length > 0 ? myStudents : studentsSeed.filter((s) => mockTeacher.classes.includes(s.klass));
+
+  const avgPerf = students.length > 0
+    ? Math.round(students.reduce((t: number, s: any) => t + (s.performance || 75), 0) / students.length)
+    : 0;
+  const avgAtt = students.length > 0
+    ? Math.round(students.reduce((t: number, s: any) => t + (s.attendance_rate || s.attendance || 90), 0) / students.length)
+    : 0;
 
   return (
     <div className="space-y-6">

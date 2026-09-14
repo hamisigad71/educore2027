@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PageHeader } from "@/components/layout";
-import { feesSeed, currency } from "../../../data/mockData";
+import { getDashboardStats, DashboardStats } from "@/lib/api";
+import { currency } from "../../../data/mockData";
 import { Link } from "react-router-dom";
 
 // shadcn/ui
@@ -20,9 +21,24 @@ import {
 import { cn } from "@/lib/utils";
 
 export default function BursarDashboard() {
-  const totalFees = 14500000;
-  const collected = feesSeed.reduce((s, f) => s + f.amount, 0);
-  const percentage = Math.round((collected / totalFees) * 100);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const res = await getDashboardStats();
+        setStats(res);
+      } catch (err) {
+        console.error("Bursar stats error:", err);
+      }
+    }
+    loadData();
+  }, []);
+
+  const totalFees = stats?.totalFeeBilled ?? 139500;
+  const collected = stats?.totalFeePaid ?? 76500;
+  const outstanding = stats?.totalFeeBalance ?? 63000;
+  const percentage = totalFees > 0 ? Math.round((collected / totalFees) * 100) : 0;
 
   const modules = [
     { title: "Fee Collection", desc: "Manage payments & arrears", icon: CreditCard, path: "/highschool/staff/bursar/fees", color: "text-indigo-600", bg: "bg-indigo-50" },

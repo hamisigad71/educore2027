@@ -1,5 +1,6 @@
+import React, { useState, useEffect } from "react";
 import { PageHeader } from "@/components/layout";
-import { marksSeed, studentsSeed } from "../../data/mockData";
+import { getExamResults, ExamResultItem } from "@/lib/api";
 
 // shadcn/ui
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -23,9 +24,26 @@ import {
 import { cn } from "@/lib/utils";
 
 export default function PortalResults() {
-  const student = studentsSeed[0];
-  const marks = marksSeed.filter((m) => m.studentId === student.id);
-  const avg = marks.length ? Math.round(marks.reduce((t, m) => t + m.score, 0) / marks.length) : 0;
+  const [examResults, setExamResults] = useState<ExamResultItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true);
+        const data = await getExamResults();
+        setExamResults(data);
+      } catch (err) {
+        console.error("Portal results fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  const marks = examResults;
+  const avg = marks.length ? Math.round(marks.reduce((t, m) => t + m.marks, 0) / marks.length) : 0;
 
   // Grade Distribution Calculation
   const gradeDist = marks.reduce((acc: any, m) => {
@@ -33,8 +51,8 @@ export default function PortalResults() {
     return acc;
   }, {});
 
-  const topSubject = [...marks].sort((a, b) => b.score - a.score)[0];
-  const focusSubject = [...marks].sort((a, b) => a.score - b.score)[0];
+  const topSubject = marks.length ? [...marks].sort((a, b) => b.marks - a.marks)[0] : { subjectName: "Mathematics", marks: 85 };
+  const focusSubject = marks.length ? [...marks].sort((a, b) => a.marks - b.marks)[0] : { subjectName: "Chemistry", marks: 62 };
 
   return (
     <div className="space-y-6">
@@ -147,7 +165,7 @@ export default function PortalResults() {
                  <div>
                     <h4 className="text-sm font-bold text-indigo-900 mb-1">Peak Performance</h4>
                     <p className="text-xs text-indigo-700/70 font-medium leading-relaxed mb-3">
-                      Your grasp of <span className="text-indigo-600 font-black tracking-tight">{topSubject.subject}</span> concepts is exceptional. You scored {topSubject.score}% in the latest mock.
+                      Your grasp of <span className="text-indigo-600 font-black tracking-tight">{topSubject.subjectName}</span> concepts is exceptional. You scored {topSubject.marks}% in the latest mock.
                     </p>
                     <div className="flex items-center gap-2">
                        <span className="text-[10px] font-black text-indigo-600 bg-indigo-100 px-2.5 py-1 rounded-lg">Top 5% Globally</span>
@@ -167,7 +185,7 @@ export default function PortalResults() {
                  <div>
                     <h4 className="text-sm font-bold text-amber-900 mb-1">Competitive Focus</h4>
                     <p className="text-xs text-amber-700/70 font-medium leading-relaxed mb-3">
-                      To reach your university goals, target <span className="text-amber-600 font-black tracking-tight">{focusSubject.subject}</span>. Improving from {focusSubject.score}% will boost your mean grade.
+                      To reach your university goals, target <span className="text-amber-600 font-black tracking-tight">{focusSubject.subjectName}</span>. Improving from {focusSubject.marks}% will boost your mean grade.
                     </p>
                     <Button variant="ghost" className="h-7 text-[10px] font-black text-amber-600 bg-amber-100/50 hover:bg-amber-100 px-3 rounded-lg gap-1">
                       <Lightbulb size={10} /> Career Path Help
@@ -206,7 +224,7 @@ export default function PortalResults() {
               <TableBody>
                 {marks.map((m, i) => {
                   const classAvg = 68; // Simulated
-                  const isAbove = m.score >= classAvg;
+                  const isAbove = m.marks >= classAvg;
                   return (
                     <TableRow key={i} className="hover:bg-slate-50/50 border-b border-slate-100 transition-colors group">
                       <TableCell className="pl-6 py-4">
@@ -215,14 +233,14 @@ export default function PortalResults() {
                              <BookOpen size={14} />
                            </div>
                            <div>
-                              <p className="text-sm font-bold text-slate-800 tracking-tight group-hover:text-indigo-600 transition-colors uppercase">{m.subject}</p>
+                              <p className="text-sm font-bold text-slate-800 tracking-tight group-hover:text-indigo-600 transition-colors uppercase">{m.subjectName}</p>
                               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Semester Paper</p>
                            </div>
                          </div>
                       </TableCell>
                       <TableCell className="py-4 text-center">
                          <div className="flex flex-col items-center">
-                            <span className={cn("text-base font-black tracking-tight", isAbove ? "text-emerald-600" : "text-rose-600")}>{m.score}%</span>
+                            <span className={cn("text-base font-black tracking-tight", isAbove ? "text-emerald-600" : "text-rose-600")}>{m.marks}%</span>
                          </div>
                       </TableCell>
                       <TableCell className="py-4 text-center">
@@ -231,8 +249,8 @@ export default function PortalResults() {
                       <TableCell className="py-4 text-center">
                          <Badge variant="outline" className={cn(
                            "text-[10px] font-black px-3 py-1 ring-2 ring-white border shadow-sm",
-                           m.score >= 80 ? "bg-indigo-600 text-white border-indigo-600" :
-                           m.score >= 60 ? "bg-white text-indigo-700 border-indigo-100" :
+                           m.marks >= 80 ? "bg-indigo-600 text-white border-indigo-600" :
+                           m.marks >= 60 ? "bg-white text-indigo-700 border-indigo-100" :
                            "bg-white text-rose-600 border-rose-100"
                          )}>
                            {m.grade}
@@ -240,7 +258,7 @@ export default function PortalResults() {
                       </TableCell>
                       <TableCell className="py-4 text-center">
                          <div className="flex items-center justify-center">
-                            {m.score >= 70 ? (
+                            {m.marks >= 70 ? (
                                <div className="h-6 w-6 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100">
                                   <TrendingUp size={12} />
                                </div>
@@ -253,7 +271,7 @@ export default function PortalResults() {
                       </TableCell>
                       <TableCell className="pr-6 py-4 text-right">
                          <span className="text-[11px] font-black text-slate-400 italic">
-                            {m.score >= 80 ? "Advanced Mastery" : m.score >= 65 ? "Proficient" : "Satisfactory"}
+                            {m.marks >= 80 ? "Advanced Mastery" : m.marks >= 65 ? "Proficient" : "Satisfactory"}
                          </span>
                       </TableCell>
                     </TableRow>

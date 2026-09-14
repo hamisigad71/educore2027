@@ -1,26 +1,25 @@
-import React, { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { PageHeader } from "@/components/layout";
-import { teachersSeed, studentsSeed, Student } from "@/primaryschool/src/data/mockData";
+
+import { teachersSeed, studentsSeed } from "@/primaryschool/src/data/mockData";
+import { getTeacherProfile, getTeacherStudents, TeacherProfile, StudentItem } from "@/lib/api";
 
 // shadcn/ui
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import {
   Table, TableBody, TableCell,
   TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 
 // lucide
-import { 
-  Users, Search, Filter, MoreHorizontal, 
-  ChevronRight, Phone, Mail, FileText
-} from "lucide-react";
+import { Search, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -31,30 +30,43 @@ const initials = (name: string) =>
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function TeacherStudents() {
-  const teacher = teachersSeed[0];
+
+  const [teacherProfile, setTeacherProfile] = useState<TeacherProfile | null>(null);
+  const [myStudents, setMyStudents] = useState<StudentItem[]>([]);
   const [q, setQ] = useState("");
   const [klassFilter, setKlassFilter] = useState("All");
 
-  const myStudents = useMemo(
-    () => studentsSeed.filter((s) => teacher.classes.includes(s.klass)),
-    [teacher]
+  useEffect(() => {
+    async function load() {
+      try {
+        const profile = await getTeacherProfile();
+        if (profile) {
+          setTeacherProfile(profile);
+          const students = await getTeacherStudents(profile.classes);
+          setMyStudents(students);
+        }
+      } catch (e) {
+        console.error("Students page load error:", e);
+      }
+    }
+    load();
+  }, []);
+
+  const teacher = teacherProfile ? teacherProfile : teachersSeed[0];
+  const students = myStudents.length > 0 ? myStudents : studentsSeed.filter((s) => teachersSeed[0].classes.includes(s.className ?? s.klass));
+  const myStudentsFiltered = useMemo(() =>
+    students.filter(
+      (s) => (klassFilter === "All" || (s.className ?? s.klass) === klassFilter) && s.name.toLowerCase().includes(q.toLowerCase())
+    ),
+    [students, q, klassFilter]
   );
 
-  const filtered = useMemo(
-    () =>
-      myStudents.filter(
-        (s) =>
-          (klassFilter === "All" || s.klass === klassFilter) &&
-          s.name.toLowerCase().includes(q.toLowerCase())
-      ),
-    [myStudents, q, klassFilter]
-  );
 
   return (
     <div className="space-y-6">
       <PageHeader 
         title="My Students" 
-        subtitle={`Tracking ${myStudents.length} students across your assigned classes`} 
+        subtitle={`Tracking ${students.length} students across your assigned classes`} 
       />
 
       <Card className="shadow-sm border-slate-200/80">
@@ -74,7 +86,7 @@ export default function TeacherStudents() {
                   className="pl-9 h-9 w-[200px] text-xs bg-slate-50 border-slate-200 focus-visible:ring-indigo-500/20"
                 />
               </div>
-              <Select value={klassFilter} onValueChange={setKlassFilter}>
+                              <Select value={klassFilter} onValueChange={(value) => setKlassFilter(value)}>
                 <SelectTrigger className="h-9 w-[130px] text-xs bg-slate-50 border-slate-200">
                    <SelectValue placeholder="All Classes" />
                 </SelectTrigger>
@@ -101,7 +113,9 @@ export default function TeacherStudents() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((s) => (
+                {myStudentsFiltered.map((s) => {
+                  const att = s.attendance_rate ?? s.attendance ?? 0;
+                  return (
                   <TableRow key={s.id} className="hover:bg-slate-50/50 border-b border-slate-50 transition-colors">
                     <TableCell className="pl-6 py-4">
                       <div className="flex items-center gap-3">
@@ -120,7 +134,7 @@ export default function TeacherStudents() {
 
                     <TableCell className="py-4">
                       <Badge variant="outline" className="text-[10px] font-bold border-indigo-100 text-indigo-700 bg-indigo-50 px-2 py-0">
-                        {s.klass}
+                        {s.className ?? s.klass}
                       </Badge>
                     </TableCell>
 
@@ -134,10 +148,10 @@ export default function TeacherStudents() {
                     <TableCell className="py-4">
                        <div className="w-24 space-y-1.5">
                           <div className="flex justify-between items-center text-[9px] font-bold">
-                            <span className={cn(s.attendance < 75 ? "text-rose-500" : "text-slate-400")}>{s.attendance}%</span>
+                            <span className={cn((att < 75) ? "text-rose-500" : "text-slate-400")}>{att}%</span>
                           </div>
-                          <Progress value={s.attendance} className={cn("h-1 bg-slate-100", 
-                            s.attendance < 75 ? "[&>div]:bg-rose-500" : "[&>div]:bg-indigo-500"
+                          <Progress value={att} className={cn("h-1 bg-slate-100", 
+                            (att < 75) ? "[&>div]:bg-rose-500" : "[&>div]:bg-indigo-500"
                           )} />
                        </div>
                     </TableCell>
@@ -152,7 +166,8 @@ export default function TeacherStudents() {
                        </Button>
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           </div>

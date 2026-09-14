@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/layout";
 import PaymentFlow from "./components/PaymentFlow";
 import { studentsSeed, feesSeed, marksSeed, currency } from "../../data/mockData";
+import { getParentChildren, getStudentFees, getStudentExamResults, getStudentAttendance } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 // shadcn/ui
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -172,19 +174,99 @@ function StatCard({
   );
 }
 
+// ─── Demo Data (used when no real Supabase account) ────────────────────────────
+
+const DEMO_STUDENT = {
+  id: "demo",
+  name: "Brian Mwangi",
+  admission: "HS/2026/019",
+  klass: "Form 3 East",
+  balance: 12000,
+  attendance: 89,
+  photo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeZ-Wgcii4q-7z1rQuFYsU7nwL5bqyrNO0ut_-kyw1KslCT6lca_nqh-8f&s=10",
+};
+
+const DEMO_MARKS = [
+  { subject: "Mathematics",  score: 84, grade: "A-" },
+  { subject: "English",      score: 78, grade: "B+" },
+  { subject: "Biology",      score: 90, grade: "A+" },
+  { subject: "Chemistry",    score: 75, grade: "B" },
+  { subject: "Physics",      score: 82, grade: "A-" },
+  { subject: "History",      score: 70, grade: "B" },
+];
+
+const DEMO_FEES = { totalPaid: 28000, balance: 12000 };
+const DEMO_ATTENDANCE = { rate: 89 };
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function PortalDashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [payOpen, setPayOpen] = React.useState(false);
-  const student = studentsSeed[0];
-  const fees = feesSeed.filter((f) => f.studentId === student.id);
-  const paid = fees.reduce((s, f) => s + f.amount, 0);
-  const marks = marksSeed.filter((m) => m.studentId === student.id);
+  const [childData, setChildData] = React.useState<any>(null);
+  const [liveFees, setLiveFees] = React.useState<any>(null);
+  const [liveMarks, setLiveMarks] = React.useState<any[]>([]);
+  const [liveAttendance, setLiveAttendance] = React.useState<any>(null);
+
+  // Detect demo session: demo users have no Supabase UUID (no user.id)
+  const isDemo = !user?.id;
+
+  React.useEffect(() => {
+    if (isDemo) return; // skip API calls for demo sessions
+    async function loadData() {
+      try {
+        const children = await getParentChildren();
+        if (children && children.length > 0) {
+          const mainChild = children[0];
+          setChildData(mainChild);
+          const [fData, mData, aData] = await Promise.all([
+            getStudentFees(mainChild.id),
+            getStudentExamResults(mainChild.id),
+            getStudentAttendance(mainChild.id)
+          ]);
+          setLiveFees(fData);
+          setLiveMarks(mData);
+          setLiveAttendance(aData);
+        }
+      } catch (err) {
+        console.error("Parent portal dashboard fetch error:", err);
+      }
+    }
+    loadData();
+  }, [isDemo]);
+
+  // Use demo data for demo sessions, live data for real users
+  const student = isDemo ? DEMO_STUDENT : childData ? {
+    id: childData.id,
+    name: childData.name,
+    admission: childData.admissionNumber,
+    klass: childData.className || "Unassigned",
+    balance: liveFees?.balance || 0,
+    attendance: liveAttendance?.rate || 0,
+    photo: user?.photo || "",
+  } : {
+    id: "new",
+    name: user?.name || "Student",
+    admission: "Pending Admission",
+    klass: "Unassigned",
+    balance: 0,
+    attendance: 0,
+    photo: user?.photo || "",
+  };
+
+  const rawMarks = isDemo ? DEMO_MARKS : childData ? liveMarks : [];
+  const marks = isDemo ? DEMO_MARKS : rawMarks.map((m: any) => ({
+    subject: m.subjectName || m.subject,
+    score: m.marks ?? m.score,
+    grade: m.grade
+  }));
+
+  const paid = isDemo ? DEMO_FEES.totalPaid : childData ? (liveFees?.totalPaid || 0) : 0;
   const avgScore = marks.length
-    ? Math.round(marks.reduce((t, m) => t + m.score, 0) / marks.length)
+    ? Math.round(marks.reduce((t: number, m: any) => t + (m.score || 0), 0) / marks.length)
     : 0;
-  const topSubject = [...marks].sort((a, b) => b.score - a.score)[0];
+  const topSubject = [...marks].sort((a: any, b: any) => b.score - a.score)[0];
   const feesCleared = student.balance === 0;
 
   return (
@@ -242,7 +324,7 @@ export default function PortalDashboard() {
                   <span className="text-[10px] font-bold uppercase tracking-wider">Student Portal</span>
                 </div>
                 <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-[1.15] mt-1">
-                  Hello, <span className="text-indigo-600 font-extrabold">{student.name.split(" ")[0]}</span> 👋
+                  Hello, <span className="text-indigo-600 font-extrabold">{user?.name?.split(" ")[0] || student.name.split(" ")[0]}</span> 👋
                 </h2>
               </div>
               <p className="text-sm text-slate-500 max-w-xl font-medium leading-relaxed">

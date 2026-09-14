@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PageHeader } from "@/components/layout";
 import { studentsSeed } from "@/primaryschool/src/data/mockData";
+import { getParentChildren, getStudentAttendance } from "@/lib/api";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -66,7 +67,6 @@ const MONTH_STATUS = {
 };
 
 export default function PortalAttendance() {
-  const student = studentsSeed[0];
   const { toast } = useToast();
   const [tab, setTab] = useState<Tab>("monthly");
   const [leaveOpen, setLeaveOpen] = useState(false);
@@ -75,11 +75,35 @@ export default function PortalAttendance() {
   const [leaveFile, setLeaveFile] = useState("");
   const [detailMonth, setDetailMonth] = useState<(typeof MONTHLY_DATA)[0] | null>(null);
 
-  const totalPresent  = MONTHLY_DATA.reduce((s, m) => s + m.present, 0);
-  const totalAbsent   = MONTHLY_DATA.reduce((s, m) => s + m.absent,  0);
-  const totalLate     = MONTHLY_DATA.reduce((s, m) => s + m.late,    0);
-  const totalDays     = totalPresent + totalAbsent + totalLate;
-  const overallRate   = Math.round((totalPresent / totalDays) * 100);
+  const [childData, setChildData] = useState<any>(null);
+  const [liveAttendance, setLiveAttendance] = useState<any>(null);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const children = await getParentChildren();
+        if (children && children.length > 0) {
+          const mainChild = children[0];
+          setChildData(mainChild);
+          const att = await getStudentAttendance(mainChild.id);
+          setLiveAttendance(att);
+        }
+      } catch (err) {}
+    }
+    loadData();
+  }, []);
+
+  const student = childData ? {
+    id: childData.id,
+    name: childData.name,
+    attendance: liveAttendance ? liveAttendance.rate : 0
+  } : studentsSeed[0];
+
+  const totalPresent  = (childData && liveAttendance) ? liveAttendance.present : MONTHLY_DATA.reduce((s, m) => s + m.present, 0);
+  const totalAbsent   = (childData && liveAttendance) ? (liveAttendance.total - liveAttendance.present) : MONTHLY_DATA.reduce((s, m) => s + m.absent,  0);
+  const totalLate     = (childData && liveAttendance) ? 0 : MONTHLY_DATA.reduce((s, m) => s + m.late,    0);
+  const totalDays     = (childData && liveAttendance) ? liveAttendance.total : totalPresent + totalAbsent + totalLate;
+  const overallRate   = (childData && liveAttendance) ? liveAttendance.rate : Math.round((totalPresent / totalDays) * 100) || 0;
 
   const submitLeave = () => {
     if (!leaveDate || !leaveReason) {
