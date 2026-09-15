@@ -587,11 +587,9 @@ export default function Home() {
                 className="flex flex-wrap items-center gap-8"
               >
                 <div className="flex -space-x-3">
-                  {[20, 21, 22, 23, 24].map((seed) => (
-                    <div key={seed} className="w-10 h-10 rounded-full border-3 border-white bg-slate-100 overflow-hidden shadow-sm ring-2 ring-white">
-                      <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`} alt="User avatar" />
-                    </div>
-                  ))}
+                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-indigo-50 to-white border-2 border-indigo-100 shadow-sm ring-4 ring-white">
+                    <Users className="text-indigo-600 w-5 h-5" />
+                  </div>
                 </div>
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1">
