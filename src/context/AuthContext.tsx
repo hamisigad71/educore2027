@@ -70,6 +70,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Sync Supabase Auth session on mount and state change
   useEffect(() => {
+    if (!supabase) {
+      // No Supabase client — skip auth sync, just mark loading done
+      setLoading(false);
+      return;
+    }
+
     async function syncSession() {
       try {
         const { data: { session } } = await supabase.auth.getSession();
