@@ -1,8 +1,50 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Component } from "react";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import Loader from "@/components/ui/loader";
 import ChatbotWidget from "@/components/ui/ChatbotWidget";
+
+// ─── Top-level Error Boundary ─────────────────────────────────────────────────
+// Prevents a blank white page if any component throws an uncaught error.
+class ErrorBoundary extends Component<
+  { children: React.ReactNode },
+  { hasError: boolean; message: string }
+> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false, message: "" };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, message: error?.message || "Unknown error" };
+  }
+  componentDidCatch(error: Error, info: any) {
+    console.error("[EduCore] Uncaught error:", error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ minHeight: "100dvh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#f8fafc", fontFamily: "Inter, sans-serif", padding: "2rem", textAlign: "center" }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>⚠️</div>
+          <h1 style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", marginBottom: 8 }}>Something went wrong</h1>
+          <p style={{ fontSize: 14, color: "#64748b", marginBottom: 24, maxWidth: 400 }}>
+            EduCore encountered an unexpected error. Please refresh the page to try again.
+          </p>
+          <code style={{ fontSize: 11, color: "#ef4444", background: "#fef2f2", padding: "8px 16px", borderRadius: 8, maxWidth: 500, wordBreak: "break-word" }}>
+            {this.state.message}
+          </code>
+          <button
+            onClick={() => window.location.reload()}
+            style={{ marginTop: 24, padding: "12px 28px", background: "#4f46e5", color: "white", border: "none", borderRadius: 12, fontWeight: 700, fontSize: 14, cursor: "pointer" }}
+          >
+            Refresh Page
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 
 // Pages
 import Home from "@/pages/home";
@@ -496,18 +538,20 @@ function NavigationLoader() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <div style={{ fontFamily: "Inter, system-ui, -apple-system, Roboto, sans-serif" }}>
-          <style>{`
-            * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }
-            :root { color-scheme: light; }
-          `}</style>
-          <NavigationLoader />
-          <AppRoutes />
-          <ChatbotWidget />
-        </div>
-      </AuthProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <div style={{ fontFamily: "Inter, system-ui, -apple-system, Roboto, sans-serif" }}>
+            <style>{`
+              * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }
+              :root { color-scheme: light; }
+            `}</style>
+            <NavigationLoader />
+            <AppRoutes />
+            <ChatbotWidget />
+          </div>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
