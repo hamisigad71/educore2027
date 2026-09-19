@@ -33,7 +33,7 @@ export default function WelcomeScreen() {
       {/* ─── TOP HERO SECTION ─────────────────────────────────────── */}
       <div className="relative flex-1 flex flex-col items-center justify-center px-7 pt-14 pb-8 overflow-hidden"
         style={{
-          backgroundImage: "linear-gradient(155deg, rgba(6, 22, 40, 0.85) 0%, rgba(10, 37, 64, 0.75) 55%, rgba(46, 98, 166, 0.85) 100%), url('/mobile-hero-bg.jpg')",
+          backgroundImage: "linear-gradient(155deg, rgba(6, 22, 40, 0.55) 0%, rgba(10, 37, 64, 0.45) 55%, rgba(46, 98, 166, 0.55) 100%), url('/mobile-hero-bg.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center top",
         }}
@@ -45,13 +45,7 @@ export default function WelcomeScreen() {
         <div className="absolute bottom-[20px] right-[-90px] w-[280px] h-[280px] rounded-full bg-[#2E62A6]/20 blur-3xl pointer-events-none" />
         <div className="absolute top-[30px] right-[-60px] w-[200px] h-[200px] rounded-full bg-[#2E62A6]/10 blur-2xl pointer-events-none" />
 
-        {/* Dot grid pattern */}
-        <div className="absolute inset-0 opacity-[0.12]"
-          style={{
-            backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
-          }}
-        />
+
 
         {/* Logo */}
         <motion.div
