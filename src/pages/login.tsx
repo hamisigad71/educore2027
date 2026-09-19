@@ -358,7 +358,7 @@ export default function Login() {
             <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6 w-fit">
               <Crown className="size-3 text-amber-400" />
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-300">
-                Kenya's #1 School Platform
+                
               </span>
             </div>
 

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/layout";
 import { teachersSeed, Teacher } from "@/primaryschool/src/data/mockData";
 
@@ -85,6 +86,7 @@ export default function AdminTeachers() {
   const [subjectFilter, setSubjectFilter] = useState("All");
   const [modal, setModal] = useState<{ open: boolean; data?: Teacher }>({ open: false });
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const subjects = useMemo(
     () => Array.from(new Set(teachers.map((t) => t.subject))),
@@ -230,7 +232,11 @@ export default function AdminTeachers() {
                 </TableHeader>
                 <TableBody>
                   {filtered.map((t) => (
-                    <TableRow key={t.id} className="hover:bg-slate-50/60 border-b border-slate-100/80 transition-colors">
+                    <TableRow 
+                      key={t.id} 
+                      onClick={() => navigate(`/admin/teachers/${t.id}`)}
+                      className="cursor-pointer hover:bg-slate-50/60 border-b border-slate-100/80 transition-colors"
+                    >
 
                       {/* Teacher */}
                       <TableCell className="pl-6 py-4">
@@ -300,7 +306,7 @@ export default function AdminTeachers() {
 
                       {/* Actions */}
                       <TableCell className="pr-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-1">
+                        <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
                           <Button variant="ghost" size="sm"
                             onClick={() => setModal({ open: true, data: t })}
                             className="h-8 px-2.5 text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 gap-1">
@@ -317,7 +323,7 @@ export default function AdminTeachers() {
                               <DropdownMenuItem className="gap-2 cursor-pointer text-xs">
                                 <Mail size={12} />Send Email
                               </DropdownMenuItem>
-                              <DropdownMenuItem className="gap-2 cursor-pointer text-xs">
+                              <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate(`/admin/teachers/${t.id}`)}>
                                 <ChevronRight size={12} />View Profile
                               </DropdownMenuItem>
                               <Separator className="my-1" />

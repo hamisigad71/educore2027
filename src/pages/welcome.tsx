@@ -32,7 +32,11 @@ export default function WelcomeScreen() {
 
       {/* ─── TOP HERO SECTION ─────────────────────────────────────── */}
       <div className="relative flex-1 flex flex-col items-center justify-center px-7 pt-14 pb-8 overflow-hidden"
-        style={{ background: "linear-gradient(155deg, #061628 0%, #0A2540 55%, #2E62A6 100%)" }}
+        style={{
+          backgroundImage: "linear-gradient(155deg, rgba(6, 22, 40, 0.85) 0%, rgba(10, 37, 64, 0.75) 55%, rgba(46, 98, 166, 0.85) 100%), url('/mobile-hero-bg.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
+        }}
       >
         {/* Decorative rings */}
         <div className="absolute top-[-80px] left-[-80px] w-[260px] h-[260px] rounded-full border border-white/[0.06]" />
@@ -73,7 +77,7 @@ export default function WelcomeScreen() {
           className="text-center z-10 mb-5"
         >
           <p className="text-[11px] font-black uppercase tracking-[0.25em] text-[#2E62A6]/90 mb-3" style={{ color: "#7aaee8" }}>
-            Kenya's #1 School Platform
+            
           </p>
           <h1 className="text-[2rem] font-black text-white leading-tight tracking-tight">
             Manage your school<br />

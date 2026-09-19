@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Table, TableBody, TableCell,
@@ -88,7 +89,7 @@ export default function AdminResults() {
               </Select>
             </div>
             <div className="space-y-1.5">
-               <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-1">ExLovethtion Hub</Label>
+               <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-1">Examination Hub</Label>
                <Select value={exam} onValueChange={setExam}>
                  <SelectTrigger className="w-[200px] h-10 border-slate-200 bg-white shadow-sm font-bold">
                     <SelectValue />

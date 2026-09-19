@@ -53,7 +53,13 @@ const roleProfiles: Record<string, AuthUser> = {
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(() => {
+    const storedDemo = localStorage.getItem("educore_demo_role");
+    if (storedDemo && roleProfiles[storedDemo]) {
+      return roleProfiles[storedDemo];
+    }
+    return null;
+  });
   const [loading, setLoading] = useState<boolean>(true);
   const [portal, setPortal] = useState<string | null>(() =>
     localStorage.getItem("portal")
@@ -271,6 +277,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = (role: Role, portalVal: string, dept?: string) => {
     if (role && roleProfiles[role]) {
       setUser(roleProfiles[role]);
+      localStorage.setItem("educore_demo_role", role);
     }
     setPortal(portalVal);
     localStorage.setItem("portal", portalVal);
@@ -293,6 +300,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     setPortal(null);
     setDepartment(null);
+    localStorage.removeItem("educore_demo_role");
     localStorage.removeItem("portal");
     localStorage.removeItem("department");
   };

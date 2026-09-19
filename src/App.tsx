@@ -14,6 +14,7 @@ import AdminLayout from "@/primaryschool/src/pages/admin/layout";
 import AdminDashboard from "@/primaryschool/src/pages/admin/dashboard";
 import AdminStudents from "@/primaryschool/src/pages/admin/students";
 import AdminTeachers from "@/primaryschool/src/pages/admin/teachers";
+import AdminTeacherProfile from "@/primaryschool/src/pages/admin/teacher-profile";
 import AdminClasses from "@/primaryschool/src/pages/admin/classes";
 import AdminFees from "@/primaryschool/src/pages/admin/fees";
 import AdminResults from "@/primaryschool/src/pages/admin/results";
@@ -170,15 +171,18 @@ import OperationsWorkOrders from "@/highschool/src/pages/staff/operations/work-o
 
 // Route guard
 function RequireAuth({ children, role }: { children: React.ReactNode; role?: string }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const location = useLocation();
+  if (loading) return null;
   if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
   if (role && user.role !== role && user.role !== "admin") return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
 
 function AppRoutes() {
-  const { user, portal, department } = useAuth();
+  const { user, portal, department, loading } = useAuth();
+
+  if (loading) return null;
 
   return (
     <Routes>
@@ -309,6 +313,7 @@ function AppRoutes() {
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="students" element={<AdminStudents />} />
         <Route path="teachers" element={<AdminTeachers />} />
+        <Route path="teachers/:id" element={<AdminTeacherProfile />} />
         <Route path="classes" element={<AdminClasses />} />
         <Route path="fees" element={<AdminFees />} />
         <Route path="results" element={<AdminResults />} />

@@ -11,10 +11,15 @@ declare global {
   }
 }
 
-export default function OnboardingVideo() {
+export default function OnboardingVideo({ onComplete, destination: propDestination }: { onComplete?: () => void, destination?: string } = {}) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const destination = searchParams.get("to") || "/";
+  const destination = propDestination || searchParams.get("to") || "/";
+
+  const handleFinish = () => {
+    if (onComplete) onComplete();
+    else navigate(destination);
+  };
 
   const playerRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -63,12 +68,12 @@ export default function OnboardingVideo() {
   useEffect(() => {
     if (!videoEnded) return;
     if (countdown <= 0) {
-      navigate(destination);
+      handleFinish();
       return;
     }
     const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(t);
-  }, [videoEnded, countdown, navigate, destination]);
+  }, [videoEnded, countdown, navigate, destination, onComplete]);
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-[#0A2540] overflow-hidden relative">
@@ -139,7 +144,7 @@ export default function OnboardingVideo() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              onClick={() => navigate(destination)}
+              onClick={handleFinish}
               className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white/40 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-white/10 transition-all active:scale-95"
             >
               Skip intro
@@ -156,7 +161,7 @@ export default function OnboardingVideo() {
                 Redirecting to your portal in <span className="text-white font-black">{countdown}s</span>...
               </p>
               <button
-                onClick={() => navigate(destination)}
+                onClick={handleFinish}
                 className="w-full py-4 rounded-2xl font-black text-sm text-white active:scale-95 transition-all flex items-center justify-center gap-2"
                 style={{
                   background: "linear-gradient(135deg, #0A2540 0%, #2E62A6 100%)",
