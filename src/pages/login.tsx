@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth, Role } from "@/context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Loader, { ButtonLoader } from "@/components/ui/loader";
 
@@ -92,8 +92,12 @@ const testimonial = {
 export default function Login() {
   const { login, loginWithSupabase, signUpWithSupabase } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
+  const queryParams = new URLSearchParams(location.search);
+  const initialMode = queryParams.get("tab") === "register" ? "signup" : "signin";
+
+  const [authMode, setAuthMode] = useState<"signin" | "signup">(initialMode);
   const [portal, setPortal] = useState<"primary" | "highschool">("primary");
   const [selected, setSelected] = useState<Role>(null);
   const [emailInput, setEmailInput] = useState<string>("");
