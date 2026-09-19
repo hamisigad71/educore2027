@@ -3,19 +3,24 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl  = import.meta.env.VITE_SUPABASE_URL  as string
 const supabaseKey  = import.meta.env.VITE_SUPABASE_ANON_KEY as string
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error(
-    'Missing Supabase env vars. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your Vercel Environment Variables.'
+const hasEnvVars = !!supabaseUrl && !!supabaseKey;
+
+if (!hasEnvVars) {
+  console.warn(
+    '[EduCore] Missing Supabase env vars (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY). ' +
+    'Authentication features will be disabled. Add these in Vercel → Project Settings → Environment Variables.'
   )
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-  },
-})
+export const supabase = hasEnvVars
+  ? createClient(supabaseUrl, supabaseKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
+    })
+  : null as any;
 
 // ─── Typed helpers ────────────────────────────────────────────────────────────
 
