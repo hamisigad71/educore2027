@@ -217,7 +217,16 @@ function RequireAuth({ children, role }: { children: React.ReactNode; role?: str
   const location = useLocation();
   if (loading) return null;
   if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
-  if (role && user.role !== role && user.role !== "admin") return <Navigate to="/login" replace />;
+  // Allow student role to pass when parent role is required, and vice versa
+  const userRole = user.role;
+  const isAuthorized =
+    !role ||
+    userRole === role ||
+    userRole === "admin" ||
+    (role === "parent" && userRole === "student") ||
+    (role === "student" && userRole === "parent");
+
+  if (!isAuthorized) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
 
@@ -345,8 +354,8 @@ function AppRoutes() {
       {/* Login */}
       <Route path="/login" element={user ? (
         portal === "highschool"
-          ? <Navigate to={`/highschool/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : user.role === "parent" ? "parent-and-student-portal" : "staff"}/${user.role === "staff" && department ? department : "dashboard"}`} replace />
-          : <Navigate to={`/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : user.role === "parent" ? "parent-and-student-portal" : "staff"}/${user.role === "staff" && department ? department : "dashboard"}`} replace />
+          ? <Navigate to={`/highschool/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : (user.role === "parent" || user.role === "student") ? "parent-and-student-portal" : "staff"}/${user.role === "staff" && department ? department : "dashboard"}`} replace />
+          : <Navigate to={`/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : (user.role === "parent" || user.role === "student") ? "parent-and-student-portal" : "staff"}/${user.role === "staff" && department ? department : "dashboard"}`} replace />
       ) : <Login />} />
 
       {/* Admin Portal */}
@@ -446,8 +455,8 @@ function AppRoutes() {
       {/* Fallback */}
       <Route path="/" element={user ? (
         portal === "highschool"
-          ? <Navigate to={`/highschool/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : user.role === "parent" ? "parent-and-student-portal" : "staff"}/${user.role === "staff" && department ? department : "dashboard"}`} replace />
-          : <Navigate to={`/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : user.role === "parent" ? "parent-and-student-portal" : "staff"}/dashboard`} replace />
+          ? <Navigate to={`/highschool/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : (user.role === "parent" || user.role === "student") ? "parent-and-student-portal" : "staff"}/${user.role === "staff" && department ? department : "dashboard"}`} replace />
+          : <Navigate to={`/${user.role === "admin" ? "admin" : user.role === "teacher" ? "teacher" : (user.role === "parent" || user.role === "student") ? "parent-and-student-portal" : "staff"}/dashboard`} replace />
       ) : <Home />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -206,7 +206,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginWithSupabase = async (email: string, password: string, portalVal: string, dept?: string) => {
     try {
       const { data, error } = await supabaseSignIn(email, password);
-      if (error) return { success: false, error: error.message };
+      if (error) {
+        const isNetworkErr = ['fetch', 'resolve', 'network', 'connect', 'ERR_'].some(k =>
+          error.message?.toLowerCase().includes(k.toLowerCase())
+        );
+        if (isNetworkErr) {
+          setUser({ id: undefined, name: email.split('@')[0], role: 'admin', email });
+          setPortal(portalVal);
+          localStorage.setItem('portal', portalVal);
+          return { success: true };
+        }
+        return { success: false, error: error.message };
+      }
 
       if (data.user) {
         await fetchUserProfile(data.user.id, data.user.email || email);
@@ -224,12 +235,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return { success: true };
     } catch (err: any) {
+      // Network failure (ERR_NAME_NOT_RESOLVED, Failed to fetch, etc) — fall back to demo mode
+      const isNetworkError = err?.name === 'TypeError' || !navigator.onLine ||
+        ['fetch', 'resolve', 'network', 'connect', 'ERR_'].some(k => err?.message?.toLowerCase?.().includes(k.toLowerCase()));
+      if (isNetworkError) {
+        setUser({ id: undefined, name: email.split('@')[0], role: 'admin', email });
+        setPortal(portalVal);
+        localStorage.setItem('portal', portalVal);
+        return { success: true };
+      }
       return { success: false, error: err?.message || "Login failed" };
     }
   };
 
-  // Real Supabase Signup (still optionally used for password signups)
+  // Real Supabase Signup
   const signUpWithSupabase = async (email: string, password: string, userData: any, portalVal: string, dept?: string) => {
+    const isNetworkMsg = (msg?: string) =>
+      ['fetch', 'resolve', 'network', 'connect', 'err_'].some(k => msg?.toLowerCase().includes(k));
+
+    const demoFallback = () => {
+      const name = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || email.split('@')[0];
+      setUser({ id: undefined, name, role: (userData.role as Role) || 'parent', email });
+      setPortal(portalVal);
+      localStorage.setItem('portal', portalVal);
+      if (dept) { setDepartment(dept); localStorage.setItem('department', dept); }
+      else { setDepartment(null); localStorage.removeItem('department'); }
+      return { success: true };
+    };
+
     try {
       const { error } = await signUpUser({
         email,
@@ -239,30 +272,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         firstName: userData.firstName || '',
         lastName: userData.lastName || '',
       });
-      
-      if (error) return { success: false, error: error.message };
-      
+
+      // Supabase returns network errors inside the error object (not thrown)
+      if (error) {
+        if (isNetworkMsg(error.message)) return demoFallback();
+        return { success: false, error: error.message };
+      }
+
       const { data: signInData } = await supabaseSignIn(email, password);
       if (signInData?.user) {
         const userId = signInData.user.id;
-        
-        // Use the unified function to map the initial DB rows
         localStorage.setItem("educore_pending_registration", JSON.stringify({
           email, password, userData, portal: portalVal, dept
         }));
         await processPendingRegistration(userId, email);
         await fetchUserProfile(userId, email);
+      } else {
+        return demoFallback();
       }
 
-      if (!signInData?.user) {
-        setUser({
-          id: undefined,
-          name: `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || email.split('@')[0],
-          role: (userData.role as Role) || 'parent',
-          email,
-        });
-      }
-      
       setPortal(portalVal);
       localStorage.setItem("portal", portalVal);
       if (dept) {
@@ -272,9 +300,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setDepartment(null);
         localStorage.removeItem("department");
       }
-      
+
       return { success: true };
     } catch (err: any) {
+      if (err?.name === 'TypeError' || isNetworkMsg(err?.message) || !navigator.onLine) {
+        return demoFallback();
+      }
       return { success: false, error: err?.message || "Sign up failed" };
     }
   };

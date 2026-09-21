@@ -20,10 +20,10 @@ const TRUST_ITEMS = [
 ];
 
 const FEATURES = [
-  "Fee & M-Pesa management",
-  "Smart attendance tracking",
-  "Real-time parent portal",
-  "KNEC-aligned report cards",
+  "Staff & student management",
+  "Smart timetabling",
+  "Academic Analytics",
+  "Parent & student portal",
 ];
 
 export default function WelcomeScreen() {
@@ -45,22 +45,7 @@ export default function WelcomeScreen() {
         <div className="absolute bottom-[20px] right-[-90px] w-[280px] h-[280px] rounded-full bg-[#2E62A6]/20 blur-3xl pointer-events-none" />
         <div className="absolute top-[30px] right-[-60px] w-[200px] h-[200px] rounded-full bg-[#2E62A6]/10 blur-2xl pointer-events-none" />
 
-
-
-        {/* Logo */}
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0}
-          className="relative mb-8 z-10"
-        >
-          {/* Radial glow behind logo */}
-          <div className="absolute -inset-4 rounded-[2rem] bg-[#2E62A6]/20 blur-2xl" />
-          <div className="relative bg-white rounded-[1.6rem] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.35)]">
-            <LogoFull className="h-[80px] w-auto" />
-          </div>
-        </motion.div>
+        <div className="h-[142px]" />
 
         {/* Headline */}
         <motion.div
@@ -134,35 +119,52 @@ export default function WelcomeScreen() {
           initial="hidden"
           animate="visible"
           custom={0.4}
-          className="flex flex-col gap-3"
+          className="flex flex-row gap-3"
         >
           <Link
             to="/login?tab=register"
-            className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-black text-sm text-white shadow-lg active:scale-95 transition-all"
+            className="flex items-center justify-center gap-1.5 flex-1 py-3 rounded-2xl font-black text-[12px] text-white shadow-lg active:scale-95 transition-all"
             style={{ background: "linear-gradient(135deg, #0A2540 0%, #2E62A6 100%)", boxShadow: "0 4px 20px rgba(10,37,64,0.45)" }}
           >
-            Create Free Account
-            <ArrowRight size={16} />
+            Create Account
+            <ArrowRight size={13} />
           </Link>
 
           <Link
             to="/login"
-            className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-black text-sm text-slate-700 border-2 border-slate-200 bg-white hover:bg-slate-50 active:scale-95 transition-all"
+            className="flex items-center justify-center gap-1.5 flex-1 py-3 rounded-2xl font-black text-[12px] text-slate-700 border-2 border-slate-200 bg-white hover:bg-slate-50 active:scale-95 transition-all"
           >
-            Sign In to Portal
+            Sign In
           </Link>
         </motion.div>
 
-        {/* Footer */}
-        <motion.p
+        {/* Professional Footer */}
+        <motion.div
           variants={fadeUp}
           initial="hidden"
           animate="visible"
           custom={0.5}
-          className="text-center text-[10px] text-slate-400 font-semibold mt-5"
+          className="mt-10 pt-8 border-t border-slate-100 flex flex-col items-center gap-6"
         >
-          🇰🇪 Proudly built for Kenyan Education Excellence
-        </motion.p>
+          <LogoFull className="h-[52px] w-auto opacity-70 grayscale hover:grayscale-0 transition-all duration-300" />
+          
+          <div className="flex items-center gap-4 text-[11px] font-semibold text-slate-400">
+            <a href="#" className="hover:text-[#2E62A6] transition-colors">Support</a>
+            <span className="w-1 h-1 rounded-full bg-slate-200" />
+            <a href="#" className="hover:text-[#2E62A6] transition-colors">Privacy</a>
+            <span className="w-1 h-1 rounded-full bg-slate-200" />
+            <a href="#" className="hover:text-[#2E62A6] transition-colors">Terms</a>
+          </div>
+
+          <div className="flex flex-col items-center gap-1.5 pb-2">
+            <p className="text-[10px] text-slate-400 font-medium tracking-wide">
+              &copy; {new Date().getFullYear()} EduCore. All rights reserved.
+            </p>
+            <p className="text-[10px] text-slate-400 font-semibold flex items-center gap-1.5">
+              🇰🇪 Proudly built for Kenyan Education
+            </p>
+          </div>
+        </motion.div>
       </div>
 
     </div>

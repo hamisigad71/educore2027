@@ -165,18 +165,20 @@ export default function Login() {
       admin:   "/admin/dashboard",
       teacher: "/teacher/dashboard",
       parent:  "/parent-and-student-portal/dashboard",
+      student: "/parent-and-student-portal/dashboard",
       staff:   `/staff/${staffRole}`,
     };
     const highschoolRoutes: Record<string, string> = {
       admin:   "/highschool/admin/dashboard",
       teacher: "/highschool/teacher/dashboard",
       parent:  "/highschool/parent-and-student-portal/dashboard",
+      student: "/highschool/parent-and-student-portal/dashboard",
       staff:   `/highschool/staff/${staffRole}`,
     };
 
     const routeMap = portal === "highschool" ? highschoolRoutes : primaryRoutes;
-    const targetRole = selected || "admin";
-    const targetPath = routeMap[targetRole] || "/admin/dashboard";
+    const targetRole = selected || "parent";
+    const targetPath = routeMap[targetRole] || "/parent-and-student-portal/dashboard";
 
     if (passwordInput && effectiveEmail) {
       if (authMode === "signup") {
@@ -566,7 +568,7 @@ export default function Login() {
             </div>
 
             {/* ── Role Selector ── */}
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-normal mb-4">
               Select Your Role
             </p>
             <div className="grid grid-cols-2 gap-3 mb-6">
@@ -627,7 +629,7 @@ export default function Login() {
             {/* ── Staff Department ── */}
             {selected === "staff" && (
               <div className="mb-8 animate-in fade-in slide-in-from-top-3 duration-500">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.18em] mb-4">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-normal mb-4">
                   Departmental Access
                 </p>
                 <div className="grid grid-cols-2 gap-2.5">
@@ -680,7 +682,7 @@ export default function Login() {
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">First Name</Label>
+                      <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">First Name</Label>
                       <Input
                         type="text"
                         placeholder="John"
@@ -690,7 +692,7 @@ export default function Login() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">Last Name</Label>
+                      <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Last Name</Label>
                       <Input
                         type="text"
                         placeholder="Doe"
@@ -702,7 +704,7 @@ export default function Login() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">Phone</Label>
+                      <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Phone</Label>
                       <Input
                         type="tel"
                         placeholder="+254 7XX "
@@ -712,7 +714,7 @@ export default function Login() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">School Code (Optional)</Label>
+                      <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">School Code (Optional)</Label>
                       <Input
                         type="text"
                         placeholder="BFA-2025"
@@ -724,7 +726,7 @@ export default function Login() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">School Name</Label>
+                      <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">School Name</Label>
                       <Input
                         type="text"
                         placeholder="e.g. Bright Futures Academy"
@@ -734,7 +736,7 @@ export default function Login() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">Join Date</Label>
+                      <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Join Date</Label>
                       <Input
                         type="date"
                         value={joinDate}
@@ -754,7 +756,7 @@ export default function Login() {
                         className="grid grid-cols-2 gap-4"
                       >
                         <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">Admission Number</Label>
+                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Admission Number</Label>
                           <Input
                             type="text"
                             placeholder="e.g. ADM/2026/001"
@@ -764,7 +766,7 @@ export default function Login() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">Class / Grade</Label>
+                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Class / Grade</Label>
                           <Input
                             type="text"
                             placeholder={portal === "highschool" ? "e.g. Form 3 East" : "e.g. Grade 5 Blue"}
@@ -784,7 +786,7 @@ export default function Login() {
                         className="grid grid-cols-2 gap-4"
                       >
                         <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">Admission Number</Label>
+                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Admission Number</Label>
                           <Input
                             type="text"
                             placeholder="e.g. ADM/2026/001"
@@ -794,7 +796,7 @@ export default function Login() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">Child's Class / Grade</Label>
+                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Child's Class / Grade</Label>
                           <Input
                             type="text"
                             placeholder={portal === "highschool" ? "e.g. Form 2 West" : "e.g. Grade 4 Green"}
@@ -814,7 +816,7 @@ export default function Login() {
                         className="grid grid-cols-2 gap-4"
                       >
                         <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">TSC Number</Label>
+                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">TSC Number</Label>
                           <Input
                             type="text"
                             placeholder="e.g. 543210"
@@ -824,7 +826,7 @@ export default function Login() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">Employee Number</Label>
+                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Employee Number</Label>
                           <Input
                             type="text"
                             placeholder="e.g. EMP-998"
@@ -844,7 +846,7 @@ export default function Login() {
                         className="grid grid-cols-2 gap-4"
                       >
                         <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">Employee Number</Label>
+                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Employee Number</Label>
                           <Input
                             type="text"
                             placeholder="e.g. STF-012"
@@ -854,7 +856,7 @@ export default function Login() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">Position / Title</Label>
+                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Position / Title</Label>
                           <Input
                             type="text"
                             placeholder="e.g. Accountant, Librarian"
@@ -870,7 +872,7 @@ export default function Login() {
               )}
 
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">
+                <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">
                   System Identity
                 </Label>
                 <Input
@@ -890,7 +892,7 @@ export default function Login() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2 md:col-span-1">
-                  <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">
+                  <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">
                     {authMode === "signup" ? "Create Password" : "Access Key"}
                   </Label>
                   <div className="relative group">
@@ -914,7 +916,7 @@ export default function Login() {
 
                 {authMode === "signup" && (
                   <div className="space-y-2 md:col-span-1 border-l pl-4 border-slate-100 hidden md:block">
-                    <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">Confirm Password</Label>
+                    <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Confirm Password</Label>
                     <div className="relative group">
                       <Input
                         type={showPassword ? "text" : "password"}
@@ -929,7 +931,7 @@ export default function Login() {
                 {/* Mobile version for confirm password */}
                 {authMode === "signup" && (
                   <div className="space-y-2 md:col-span-1 md:hidden">
-                    <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 ml-1">Confirm Password</Label>
+                    <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Confirm Password</Label>
                     <div className="relative group">
                       <Input
                         type={showPassword ? "text" : "password"}
@@ -943,13 +945,64 @@ export default function Login() {
                 )}
               </div>
               
-              {authMode === "signup" && passwordInput && (
-                <div className="flex gap-1 mt-2">
-                  <div className={cn("h-1 flex-1 rounded-full bg-slate-200 transition-all", passwordInput.length > 3 && "bg-rose-500")} />
-                  <div className={cn("h-1 flex-1 rounded-full bg-slate-200 transition-all", passwordInput.length > 5 && "bg-amber-400")} />
-                  <div className={cn("h-1 flex-1 rounded-full bg-slate-200 transition-all", passwordInput.length > 7 && "bg-emerald-500")} />
-                </div>
-              )}
+              {authMode === "signup" && passwordInput && (() => {
+                const len = passwordInput.length;
+                const hasUpper = /[A-Z]/.test(passwordInput);
+                const hasNum = /[0-9]/.test(passwordInput);
+                const hasSpecial = /[^A-Za-z0-9]/.test(passwordInput);
+                const score = (len > 5 ? 1 : 0) + (len > 7 ? 1 : 0) + (hasUpper ? 1 : 0) + (hasNum ? 1 : 0) + (hasSpecial ? 1 : 0);
+                const level = score <= 1 ? 0 : score <= 3 ? 1 : 2;
+                const labels = ["Weak", "Fair", "Strong"];
+                const colors = ["text-rose-500", "text-amber-500", "text-emerald-600"];
+                const segColors = [
+                  ["bg-rose-500", "bg-slate-100", "bg-slate-100"],
+                  ["bg-amber-400", "bg-amber-400", "bg-slate-100"],
+                  ["bg-emerald-500", "bg-emerald-500", "bg-emerald-500"],
+                ];
+                const checks = [
+                  { label: "At least 8 characters", met: len >= 8 },
+                  { label: "Uppercase letter (A–Z)", met: hasUpper },
+                  { label: "Number (0–9)", met: hasNum },
+                  { label: "Special character (!@#...)", met: hasSpecial },
+                  { label: "Passwords match", met: !!confirmPasswordInput && passwordInput === confirmPasswordInput },
+                ];
+                return (
+                  <div className="mt-3 space-y-2.5">
+                    <div className="flex items-center justify-between px-0.5">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-normal">Password strength</span>
+                      <span className={cn("text-[11px] font-black transition-colors", colors[level])}>
+                        {labels[level]}
+                      </span>
+                    </div>
+                    <div className="flex gap-1.5">
+                      {segColors[level].map((c, i) => (
+                        <div key={i} className={cn("h-1.5 flex-1 rounded-full transition-all duration-500", c)} />
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 pt-1">
+                      {checks.map(({ label, met }) => (
+                        <div key={label} className="flex items-center gap-1.5">
+                          <div className={cn(
+                            "w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0 transition-all duration-300",
+                            met ? "bg-emerald-100" : "bg-slate-100"
+                          )}>
+                            {met
+                              ? <Check size={8} className="text-emerald-600" strokeWidth={3} />
+                              : <span className="w-1 h-1 rounded-full bg-slate-300 block" />
+                            }
+                          </div>
+                          <span className={cn(
+                            "text-[10px] font-semibold leading-tight transition-colors duration-300",
+                            met ? "text-emerald-700" : "text-slate-400"
+                          )}>
+                            {label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* ── Remember / Forgot ── */}
