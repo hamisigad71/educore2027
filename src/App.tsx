@@ -256,6 +256,7 @@ function AppRoutes() {
       {/* High School Teacher Portal */}
       <Route path="/highschool/teacher" element={<RequireAuth role="teacher"><HSTeacherLayout /></RequireAuth>}>
         <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="feed" element={<SchoolFeedPage />} />
         <Route path="dashboard" element={<HSTeacherDashboard />} />
         <Route path="classes" element={<HSTeacherClasses />} />
         <Route path="students" element={<HSTeacherStudents />} />
@@ -276,6 +277,7 @@ function AppRoutes() {
       {/* High School Parent/Student Portal */}
       <Route path="/highschool/parent-and-student-portal" element={<RequireAuth role="parent"><HSParentLayout /></RequireAuth>}>
         <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="feed" element={<SchoolFeedPage />} />
         <Route path="dashboard" element={<HSPortalDashboard />} />
         <Route path="results" element={<HSPortalResults />} />
         <Route path="fees" element={<HSPortalFees />} />
@@ -297,6 +299,7 @@ function AppRoutes() {
 
       <Route path="/highschool/staff" element={<RequireAuth role="staff"><HSStaffLayout /></RequireAuth>}>
         <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="feed" element={<SchoolFeedPage />} />
         <Route path="dashboard" element={<HSStaffDashboard />} />
         
         {/* Specialized Modules */}
@@ -363,6 +366,7 @@ function AppRoutes() {
       {/* Admin Portal */}
       <Route path="/admin" element={<RequireAuth role="admin"><AdminLayout /></RequireAuth>}>
         <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="feed" element={<SchoolFeedPage />} />
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="students" element={<AdminStudents />} />
         <Route path="teachers" element={<AdminTeachers />} />
@@ -378,6 +382,7 @@ function AppRoutes() {
       {/* Teacher Portal */}
       <Route path="/teacher" element={<RequireAuth role="teacher"><TeacherLayout /></RequireAuth>}>
         <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="feed" element={<SchoolFeedPage />} />
         <Route path="dashboard" element={<TeacherDashboard />} />
         <Route path="classes" element={<TeacherClasses />} />
         <Route path="students" element={<TeacherStudents />} />
@@ -398,6 +403,7 @@ function AppRoutes() {
       {/* Parent/Student Portal */}
       <Route path="/parent-and-student-portal" element={<RequireAuth role="parent"><ParentLayout /></RequireAuth>}>
         <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="feed" element={<SchoolFeedPage />} />
         <Route path="dashboard" element={<PortalDashboard />} />
         <Route path="results" element={<PortalResults />} />
         <Route path="fees" element={<PortalFees />} />
@@ -420,6 +426,7 @@ function AppRoutes() {
       {/* Staff Portal */}
       <Route path="/staff" element={<RequireAuth role="staff"><StaffLayout /></RequireAuth>}>
         <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="feed" element={<SchoolFeedPage />} />
         <Route path="dashboard" element={<StaffDashboard />} />
         <Route path="tasks" element={<StaffTasks />} />
         <Route path="attendance" element={<StaffAttendance />} />

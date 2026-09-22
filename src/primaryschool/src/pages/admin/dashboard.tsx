@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/layout";
 import {
   studentsSeed, teachersSeed, feesSeed, classesSeed, currency,
 } from "@/primaryschool/src/data/mockData";
-import { PostsFeed, CreatePostWidget } from "@/components/posts/PostsFeed";
+
 
 // shadcn/ui
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
@@ -255,25 +255,6 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      {/* ─── Posts Feed ───────────────────────────────────────────────────────── */}
-      <div className="pt-4 mt-6 border-t border-slate-100">
-        <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-4">
-          <Zap className="w-5 h-5 text-indigo-500" />
-          School Feed
-        </h2>
-        <div className="grid gap-6 xl:grid-cols-3">
-          <div className="xl:col-span-2">
-            <CreatePostWidget />
-            <PostsFeed className="max-w-none w-full" />
-          </div>
-          <div className="hidden xl:block">
-            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-6 text-white shadow-sm sticky top-6">
-              <h3 className="font-bold text-lg mb-2">School Announcements</h3>
-              <p className="text-indigo-100 text-sm">Create updates here to broadcast them to all staff, teachers, and parents.</p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

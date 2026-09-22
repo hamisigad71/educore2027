@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { PageHeader } from "@/components/layout";
 import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
-import { PostsFeed } from "@/components/posts/PostsFeed";
+
 
 // shadcn/ui
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -268,14 +268,6 @@ export default function StaffDashboard() {
         </div>
       </div>
 
-      {/* ─── Posts Feed ───────────────────────────────────────────────────────── */}
-      <div className="pt-4 mt-6 border-t border-slate-100 px-2 lg:px-0">
-        <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-4">
-          <Activity className="w-5 h-5 text-indigo-500" />
-          General Announcements
-        </h2>
-        <PostsFeed className="max-w-2xl mx-auto xl:mx-0" />
-      </div>
     </div>
   );
 }
