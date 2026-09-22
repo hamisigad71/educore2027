@@ -1068,3 +1068,72 @@ export async function getAttendanceRoster(date?: string): Promise<AttendanceRost
     };
   });
 }
+
+// ─── POSTS & UPDATES MOCK API ──────────────────────────────────────────────────
+export interface PostItem {
+  id: string;
+  content: string;
+  imageUrl?: string;
+  authorName: string;
+  authorRole: string;
+  authorAvatar?: string;
+  likesCount: number;
+  commentsCount: number;
+  createdAt: string;
+}
+
+const defaultPosts: PostItem[] = [
+  {
+    id: "post_1",
+    content: "Welcome to the new semester! Please ensure all fees are cleared by Friday. The portal is fully operational now.",
+    authorName: "System Admin",
+    authorRole: "Administrator",
+    authorAvatar: "SA",
+    imageUrl: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80",
+    likesCount: 142,
+    commentsCount: 18,
+    createdAt: new Date(Date.now() - 3600000).toISOString(),
+  },
+  {
+    id: "post_2",
+    content: "Teachers' meeting scheduled for tomorrow at 4 PM in the main hall. Agenda: Curriculum review.",
+    authorName: "Principal's Office",
+    authorRole: "Management",
+    authorAvatar: "PO",
+    likesCount: 56,
+    commentsCount: 3,
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+  }
+];
+
+export let mockPosts: PostItem[] = (() => {
+  try {
+    const saved = localStorage.getItem('educore_mock_posts');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {
+    console.error("Failed to parse local storage posts", e);
+  }
+  return [...defaultPosts];
+})();
+
+export async function getPosts(): Promise<PostItem[]> {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return [...mockPosts].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export async function createPost(data: { content: string; imageUrl?: string; authorName?: string; authorRole?: string; }): Promise<PostItem> {
+  await new Promise(resolve => setTimeout(resolve, 600));
+  const newPost: PostItem = {
+    id: `post_${Date.now()}`,
+    content: data.content,
+    imageUrl: data.imageUrl,
+    authorName: data.authorName || "System Admin",
+    authorRole: data.authorRole || "Administrator",
+    likesCount: 0,
+    commentsCount: 0,
+    createdAt: new Date().toISOString(),
+  };
+  mockPosts = [newPost, ...mockPosts];
+  localStorage.setItem('educore_mock_posts', JSON.stringify(mockPosts));
+  return newPost;
+}

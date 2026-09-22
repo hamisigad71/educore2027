@@ -95,6 +95,7 @@ import PortalNotices from "@/primaryschool/src/pages/parent-and-student-portal/n
 import PortalCalendar from "@/primaryschool/src/pages/parent-and-student-portal/calendar";
 import PortalMessages from "@/primaryschool/src/pages/parent-and-student-portal/messages";
 import { PortalPlaceholder } from "@/components/portal/PortalPlaceholder";
+import { SchoolFeedPage } from "@/components/posts/SchoolFeedPage";
 import PortalTransport from "./primaryschool/src/pages/parent-and-student-portal/transport";
 import PortalConduct from "./primaryschool/src/pages/parent-and-student-portal/conduct";
 import PortalMeals from "./primaryschool/src/pages/parent-and-student-portal/meals";
@@ -240,6 +241,7 @@ function AppRoutes() {
       {/* High School Admin Portal */}
       <Route path="/highschool/admin" element={<RequireAuth role="admin"><HSAdminLayout /></RequireAuth>}>
         <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="feed" element={<SchoolFeedPage />} />
         <Route path="dashboard" element={<HSAdminDashboard />} />
         <Route path="students" element={<HSAdminStudents />} />
         <Route path="teachers" element={<HSAdminTeachers />} />

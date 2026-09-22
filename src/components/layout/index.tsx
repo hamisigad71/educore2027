@@ -66,6 +66,7 @@ const adminNav: NavGroup[] = [
   {
     items: [
       { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/admin/feed", label: "School Feed", icon: Zap },
     ],
   },
   {
@@ -102,6 +103,7 @@ const teacherNav: NavGroup[] = [
   {
     items: [
       { to: "/teacher/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/teacher/feed", label: "School Feed", icon: Zap },
     ],
   },
   {
@@ -149,6 +151,7 @@ const portalNav: NavGroup[] = [
   {
     items: [
       { to: "/parent-and-student-portal/dashboard",  label: "Overview",        icon: LayoutDashboard },
+      { to: "/parent-and-student-portal/feed",  label: "School Feed",        icon: Zap },
     ],
   },
   {
@@ -202,6 +205,7 @@ const staffNav: NavGroup[] = [
   {
     items: [
       { to: "/staff/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/staff/feed", label: "School Feed", icon: Zap },
     ],
   },
   {
@@ -638,6 +642,7 @@ export function StaffSidebar(props: PublicSidebarProps) {
     {
       items: [
         { to: "/staff/dashboard", label: "Dashboard", icon: LayoutDashboard },
+        { to: "/staff/feed", label: "School Feed", icon: Zap },
       ],
     },
     ...deptNav,

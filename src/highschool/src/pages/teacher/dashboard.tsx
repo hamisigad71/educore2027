@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout";
 import { useAuth } from "@/context/AuthContext";
 import { teachersSeed, studentsSeed } from "../../data/mockData";
 import { getTeacherProfile, getTeacherStudents, TeacherProfile, StudentItem } from "@/lib/api";
+import { PostsFeed } from "@/components/posts/PostsFeed";
 
 // shadcn/ui
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -175,6 +176,15 @@ export default function TeacherDashboard() {
             ))}
           </CardContent>
         </Card>
+      </div>
+
+      {/* ─── Posts Feed ───────────────────────────────────────────────────────── */}
+      <div className="pt-4 mt-6 border-t border-slate-100">
+        <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-4">
+          <Zap className="w-5 h-5 text-indigo-500" />
+          School Feed
+        </h2>
+        <PostsFeed className="max-w-2xl mx-auto" />
       </div>
     </div>
   );
