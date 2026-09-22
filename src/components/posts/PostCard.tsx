@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Send, MoreHorizontal, Bookmark } from 'lucide-react';
+import { Heart, MessageCircle, Send, MoreHorizontal, Bookmark, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from '@/lib/utils';
 import { PostItem } from '@/lib/api';
 import { cn } from '@/lib/utils';
@@ -7,11 +7,13 @@ import { cn } from '@/lib/utils';
 interface PostCardProps {
   post: PostItem;
   className?: string;
+  isAdmin?: boolean;
+  onDelete?: (id: string) => void;
 }
 
-export function PostCard({ post, className }: PostCardProps) {
+export function PostCard({ post, className, isAdmin, onDelete }: PostCardProps) {
   const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(post.likes || 0);
+  const [likesCount, setLikesCount] = useState(post.likesCount || 0);
 
   const handleLike = () => {
     setLiked(!liked);
@@ -37,9 +39,20 @@ export function PostCard({ post, className }: PostCardProps) {
             </div>
           </div>
         </div>
-        <button className="text-gray-400 hover:text-gray-600 transition-colors p-2">
-          <MoreHorizontal className="w-5 h-5" />
-        </button>
+        <div className="flex items-center space-x-1">
+          {isAdmin && (
+            <button 
+              onClick={() => onDelete?.(post.id)}
+              className="text-gray-400 hover:text-red-500 transition-colors p-2"
+              title="Delete post"
+            >
+              <Trash2 className="w-5 h-5" />
+            </button>
+          )}
+          <button className="text-gray-400 hover:text-gray-600 transition-colors p-2">
+            <MoreHorizontal className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Image if available */}

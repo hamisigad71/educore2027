@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { getPosts, PostItem, createPost, uploadPostImage } from '@/lib/api';
+import { getPosts, PostItem, createPost, uploadPostImage, deletePost } from '@/lib/api';
 import { PostCard } from './PostCard';
 import { Send, Image as ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useAuth } from "@/context/AuthContext";
 
 export function PostsFeed({ className }: { className?: string }) {
   const [posts, setPosts] = useState<PostItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -30,6 +33,17 @@ export function PostsFeed({ className }: { className?: string }) {
     setPosts(prev => [newPost, ...prev]);
   };
 
+  const handlePostDeleted = async (id: string) => {
+    // Optimistic delete
+    setPosts(prev => prev.filter(p => p.id !== id));
+    try {
+      await deletePost(id);
+    } catch (e) {
+      console.error("Failed to delete post", e);
+      // Revert if needed (simplified here)
+    }
+  };
+
   if (loading) {
     return (
       <div className={cn("flex flex-col space-y-4 animate-pulse", className)}>
@@ -42,9 +56,14 @@ export function PostsFeed({ className }: { className?: string }) {
 
   return (
     <div className={cn("max-w-xl mx-auto flex flex-col w-full", className)}>
-      <CreatePostWidget onPostCreated={handlePostCreated} />
+      {isAdmin && <CreatePostWidget onPostCreated={handlePostCreated} />}
       {posts.map(post => (
-        <PostCard key={post.id} post={post} />
+        <PostCard 
+          key={post.id} 
+          post={post} 
+          isAdmin={isAdmin}
+          onDelete={handlePostDeleted}
+        />
       ))}
       <div className="py-8 text-center text-sm text-gray-400 font-medium">
         You are all caught up!

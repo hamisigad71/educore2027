@@ -1143,6 +1143,16 @@ export async function createPost(data: { content: string; imageUrl?: string; aut
   return newPost;
 }
 
+export async function deletePost(postId: string): Promise<void> {
+  await new Promise(resolve => setTimeout(resolve, 300));
+  mockPosts = mockPosts.filter(p => p.id !== postId);
+  try {
+    localStorage.setItem('educore_mock_posts', JSON.stringify(mockPosts));
+  } catch (e) {
+    console.warn('Could not persist posts to localStorage:', e);
+  }
+}
+
 /**
  * Upload a post image File to Supabase Storage and return its public URL.
  * Falls back to a local object URL if Supabase is unavailable.
