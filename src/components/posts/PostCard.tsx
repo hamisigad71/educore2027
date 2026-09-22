@@ -44,11 +44,11 @@ export function PostCard({ post, className }: PostCardProps) {
 
       {/* Image if available */}
       {post.imageUrl && (
-        <div className="w-full relative bg-gray-50 aspect-video tablet:aspect-square flex items-center overflow-hidden">
+        <div className="w-full bg-gray-50">
           <img 
             src={post.imageUrl} 
             alt="Post content" 
-            className="w-full h-full object-cover"
+            className="w-full h-auto object-contain"
             loading="lazy"
           />
         </div>

@@ -25,6 +25,11 @@ export function PostsFeed({ className }: { className?: string }) {
     fetchPosts();
   }, []);
 
+  // Called by CreatePostWidget after a post is saved — prepend optimistically
+  const handlePostCreated = (newPost: PostItem) => {
+    setPosts(prev => [newPost, ...prev]);
+  };
+
   if (loading) {
     return (
       <div className={cn("flex flex-col space-y-4 animate-pulse", className)}>
@@ -37,6 +42,7 @@ export function PostsFeed({ className }: { className?: string }) {
 
   return (
     <div className={cn("max-w-xl mx-auto flex flex-col w-full", className)}>
+      <CreatePostWidget onPostCreated={handlePostCreated} />
       {posts.map(post => (
         <PostCard key={post.id} post={post} />
       ))}
@@ -47,11 +53,31 @@ export function PostsFeed({ className }: { className?: string }) {
   );
 }
 
-export function CreatePostWidget({ onPostCreated }: { onPostCreated?: () => void }) {
+
+export function CreatePostWidget({ onPostCreated }: { onPostCreated?: (post: PostItem) => void }) {
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [imageInputOpen, setImageInputOpen] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      setImagePreview(result);
+      setImageUrl(result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeImage = () => {
+    setImagePreview(null);
+    setImageUrl('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +85,7 @@ export function CreatePostWidget({ onPostCreated }: { onPostCreated?: () => void
     
     setSubmitting(true);
     try {
-      await createPost({
+      const newPost = await createPost({
         content,
         imageUrl: imageUrl.trim() || undefined,
         authorName: "System Admin",
@@ -67,8 +93,9 @@ export function CreatePostWidget({ onPostCreated }: { onPostCreated?: () => void
       });
       setContent('');
       setImageUrl('');
-      setImageInputOpen(false);
-      onPostCreated?.();
+      setImagePreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      onPostCreated?.(newPost);
     } catch(err) {
       console.error(err);
     } finally {
@@ -89,24 +116,36 @@ export function CreatePostWidget({ onPostCreated }: { onPostCreated?: () => void
             placeholder="Share an update or announcement..."
             className="w-full bg-transparent resize-none outline-none text-gray-800 placeholder:text-gray-400 pt-2 min-h-[60px]"
           />
-          
-          {imageInputOpen && (
-            <div className="mt-2 text-sm">
-              <input 
-                type="text" 
-                placeholder="Paste an image URL..." 
-                value={imageUrl}
-                onChange={e => setImageUrl(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-indigo-500 outline-none"
-              />
+
+          {/* Image preview */}
+          {imagePreview && (
+            <div className="mt-2 relative w-full rounded-2xl overflow-hidden border border-gray-100">
+              <img src={imagePreview} alt="Preview" className="w-full max-h-56 object-cover" />
+              <button
+                type="button"
+                onClick={removeImage}
+                className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold transition-colors"
+              >
+                ✕
+              </button>
             </div>
           )}
 
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleImageChange}
+          />
+
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
-            <button 
-              type="button" 
-              onClick={() => setImageInputOpen(!imageInputOpen)}
-              className={cn("p-2 rounded-full transition-colors", imageInputOpen ? "bg-indigo-50 text-indigo-600" : "text-gray-400 hover:bg-gray-50")}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              title="Upload image"
+              className={cn("p-2 rounded-full transition-colors", imagePreview ? "bg-indigo-50 text-indigo-600" : "text-gray-400 hover:bg-gray-50")}
             >
               <ImageIcon className="w-5 h-5" />
             </button>

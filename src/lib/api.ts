@@ -1134,6 +1134,15 @@ export async function createPost(data: { content: string; imageUrl?: string; aut
     createdAt: new Date().toISOString(),
   };
   mockPosts = [newPost, ...mockPosts];
-  localStorage.setItem('educore_mock_posts', JSON.stringify(mockPosts));
+  // Strip base64 image data before persisting to localStorage to avoid QuotaExceededError.
+  // The image is still available in the in-memory mockPosts for the current session.
+  try {
+    const persistable = mockPosts.map(p =>
+      p.imageUrl?.startsWith('data:') ? { ...p, imageUrl: undefined } : p
+    );
+    localStorage.setItem('educore_mock_posts', JSON.stringify(persistable));
+  } catch (e) {
+    console.warn('Could not persist posts to localStorage:', e);
+  }
   return newPost;
 }

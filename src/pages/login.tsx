@@ -123,7 +123,6 @@ export default function Login() {
   
   const [authSuccess, setAuthSuccess] = useState<boolean>(false);
   const [showOtpModal, setShowOtpModal] = useState<boolean>(false);
-  const [pendingAuthExecution, setPendingAuthExecution] = useState<(() => Promise<void>) | null>(null);
 
   
   const [showPassword, setShowPassword] = useState(false);
@@ -241,86 +240,66 @@ export default function Login() {
           targetPath
         }));
 
-        // Trigger OTP Modal for local active-tab verification
-        setShowOtpModal(true);
+        // Trigger OTP Modal for local active-tab verification (signup only)
         setShowOtpModal(true);
       } else {
+        // Sign-in: skip OTP, authenticate directly
         const dept = selected === "staff" ? staffRole : undefined;
-        setPendingAuthExecution(() => async () => {
-          setLoading(true);
-          const result = await loginWithSupabase(effectiveEmail, passwordInput, portal, dept);
-          setLoading(false);
-          if (!result.success) {
-            setAuthError(result.error || "Authentication failed. Please check credentials.");
-            return;
-          }
-          setVideoTarget(targetPath);
-          setShowVideoOverlay(true);
-        });
-
-        // Trigger OTP Modal
-        setShowOtpModal(true);
+        setLoading(true);
+        const result = await loginWithSupabase(effectiveEmail, passwordInput, portal, dept);
+        setLoading(false);
+        if (!result.success) {
+          setAuthError(result.error || "Authentication failed. Please check credentials.");
+          return;
+        }
+        setVideoTarget(targetPath);
+        setShowVideoOverlay(true);
       }
     } else {
-      // Demo preset login
-      setPendingAuthExecution(() => async () => {
-        setLoading(true);
-        setTimeout(() => {
-          setLoading(false);
-          const dept = selected === "staff" ? staffRole : undefined;
-          login(selected, portal, dept);
-          setVideoTarget(targetPath);
-          setShowVideoOverlay(true);
-        }, 1000);
-      });
-
-
-      // Trigger OTP Modal
-      setShowOtpModal(true);
+      // Demo preset login: skip OTP, proceed directly
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        const dept = selected === "staff" ? staffRole : undefined;
+        login(selected, portal, dept);
+        setVideoTarget(targetPath);
+        setShowVideoOverlay(true);
+      }, 1000);
     }
   }
 
   async function handleOtpSuccess() {
     setShowOtpModal(false);
 
-    // For signup flow: read stashed payload from localStorage and complete registration
-    if (authMode === "signup") {
-      const rawPending = localStorage.getItem("educore_pending_registration");
-      if (rawPending) {
-        try {
-          const pending = JSON.parse(rawPending);
-          setLoading(true);
+    // Signup flow: read stashed payload from localStorage and complete registration
+    const rawPending = localStorage.getItem("educore_pending_registration");
+    if (rawPending) {
+      try {
+        const pending = JSON.parse(rawPending);
+        setLoading(true);
 
-          const result = await signUpWithSupabase(
-            pending.email,
-            pending.password,
-            pending.userData,
-            pending.portal,
-            pending.dept
-          );
+        const result = await signUpWithSupabase(
+          pending.email,
+          pending.password,
+          pending.userData,
+          pending.portal,
+          pending.dept
+        );
 
-          setLoading(false);
-          localStorage.removeItem("educore_pending_registration");
+        setLoading(false);
+        localStorage.removeItem("educore_pending_registration");
 
-          if (!result.success) {
-            setAuthError(result.error || "Registration failed. Please try again.");
-            return;
-          }
-
-          setVideoTarget(pending.targetPath);
-          setShowVideoOverlay(true);
-          return;
-        } catch (e) {
-          setLoading(false);
-          setAuthError("Unexpected error during registration. Please try again.");
+        if (!result.success) {
+          setAuthError(result.error || "Registration failed. Please try again.");
           return;
         }
-      }
-    }
 
-    // For login flow: run the queued pending auth action
-    if (pendingAuthExecution) {
-      await pendingAuthExecution();
+        setVideoTarget(pending.targetPath);
+        setShowVideoOverlay(true);
+      } catch (e) {
+        setLoading(false);
+        setAuthError("Unexpected error during registration. Please try again.");
+      }
     }
   }
 
