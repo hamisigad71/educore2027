@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getPosts, PostItem, createPost } from '@/lib/api';
+import { getPosts, PostItem, createPost, uploadPostImage } from '@/lib/api';
 import { PostCard } from './PostCard';
 import { Send, Image as ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -56,48 +56,56 @@ export function PostsFeed({ className }: { className?: string }) {
 
 export function CreatePostWidget({ onPostCreated }: { onPostCreated?: (post: PostItem) => void }) {
   const [content, setContent] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setImageFile(file);
+    // Show a local base64 preview instantly — upload happens on submit
     const reader = new FileReader();
-    reader.onloadend = () => {
-      const result = reader.result as string;
-      setImagePreview(result);
-      setImageUrl(result);
-    };
+    reader.onloadend = () => setImagePreview(reader.result as string);
     reader.readAsDataURL(file);
   };
 
   const removeImage = () => {
     setImagePreview(null);
-    setImageUrl('');
+    setImageFile(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() && !imageUrl.trim()) return;
-    
+    if (!content.trim() && !imageFile) return;
+
     setSubmitting(true);
     try {
+      // Upload image to Supabase Storage first to get a persistent public URL
+      let finalImageUrl: string | undefined;
+      if (imageFile) {
+        setUploading(true);
+        finalImageUrl = await uploadPostImage(imageFile);
+        setUploading(false);
+      }
+
       const newPost = await createPost({
         content,
-        imageUrl: imageUrl.trim() || undefined,
+        imageUrl: finalImageUrl,
         authorName: "System Admin",
         authorRole: "Administrator"
       });
       setContent('');
-      setImageUrl('');
+      setImageFile(null);
       setImagePreview(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
       onPostCreated?.(newPost);
     } catch(err) {
       console.error(err);
+      setUploading(false);
     } finally {
       setSubmitting(false);
     }
@@ -152,11 +160,11 @@ export function CreatePostWidget({ onPostCreated }: { onPostCreated?: (post: Pos
             
             <Button 
               type="submit" 
-              disabled={submitting || (!content.trim() && !imageUrl.trim())}
+              disabled={submitting || (!content.trim() && !imageFile)}
               className="rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 shadow-sm"
               size="sm"
             >
-              {submitting ? 'Posting...' : 'Post'}
+              {uploading ? 'Uploading…' : submitting ? 'Posting…' : 'Post'}
               {!submitting && <Send className="w-4 h-4 ml-2 -mr-1" />}
             </Button>
           </div>

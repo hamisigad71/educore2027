@@ -1134,15 +1134,42 @@ export async function createPost(data: { content: string; imageUrl?: string; aut
     createdAt: new Date().toISOString(),
   };
   mockPosts = [newPost, ...mockPosts];
-  // Strip base64 image data before persisting to localStorage to avoid QuotaExceededError.
-  // The image is still available in the in-memory mockPosts for the current session.
+  // Persist all posts. imageUrl is now always a real public URL (never base64).
   try {
-    const persistable = mockPosts.map(p =>
-      p.imageUrl?.startsWith('data:') ? { ...p, imageUrl: undefined } : p
-    );
-    localStorage.setItem('educore_mock_posts', JSON.stringify(persistable));
+    localStorage.setItem('educore_mock_posts', JSON.stringify(mockPosts));
   } catch (e) {
     console.warn('Could not persist posts to localStorage:', e);
   }
   return newPost;
+}
+
+/**
+ * Upload a post image File to Supabase Storage and return its public URL.
+ * Falls back to a local object URL if Supabase is unavailable.
+ */
+export async function uploadPostImage(file: File): Promise<string> {
+  if (!supabase) return URL.createObjectURL(file);
+
+  try {
+    const ext = file.name.split('.').pop() || 'jpg';
+    const fileName = `post_${Date.now()}_${Math.floor(Math.random() * 9999)}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('post-images')
+      .upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+    if (uploadError) {
+      console.warn('Supabase upload failed, using local URL:', uploadError);
+      return URL.createObjectURL(file);
+    }
+
+    const { data } = supabase.storage
+      .from('post-images')
+      .getPublicUrl(fileName);
+
+    return data.publicUrl;
+  } catch (err) {
+    console.warn('Image upload error, using local URL:', err);
+    return URL.createObjectURL(file);
+  }
 }
