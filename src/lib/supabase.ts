@@ -70,12 +70,13 @@ export const onAuthStateChange = (
 ) => supabase.auth.onAuthStateChange(callback)
 
 /** Send OTP via Email or SMS */
-export async function sendOtpCode(destination: string, channel: 'email' | 'phone') {
+export async function sendOtpCode(destination: string, channel: 'email' | 'phone', userData?: any) {
   if (channel === 'email') {
     return supabase.auth.signInWithOtp({
       email: destination,
       options: {
         shouldCreateUser: true,
+        data: userData || {},
       },
     })
   } else {
@@ -83,6 +84,7 @@ export async function sendOtpCode(destination: string, channel: 'email' | 'phone
       phone: destination,
       options: {
         shouldCreateUser: true,
+        data: userData || {},
       },
     })
   }
@@ -92,11 +94,23 @@ export async function sendOtpCode(destination: string, channel: 'email' | 'phone
 /** Verify OTP code */
 export async function verifyOtpCode(destination: string, token: string, channel: 'email' | 'phone', isSignup = false) {
   if (channel === 'email') {
-    return supabase.auth.verifyOtp({
-      email: destination,
-      token,
-      type: isSignup ? 'signup' : 'email',
-    })
+    const typesToTry = isSignup ? ['signup', 'magiclink', 'email'] : ['email', 'magiclink'];
+    let lastError = null;
+
+    for (const type of typesToTry) {
+      const { data, error } = await supabase.auth.verifyOtp({
+        email: destination,
+        token,
+        type: type as any,
+      });
+      
+      if (!error) {
+        return { data, error: null };
+      }
+      lastError = error;
+    }
+    
+    return { data: null, error: lastError };
   } else {
     return supabase.auth.verifyOtp({
       phone: destination,

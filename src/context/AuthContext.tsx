@@ -182,36 +182,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Real Supabase Signup
   const signUpWithSupabase = async (email: string, password: string, userData: any, portalVal: string, dept?: string) => {
-    const isNetworkMsg = (msg?: string) =>
-      ['fetch', 'resolve', 'network', 'connect', 'err_'].some(k => msg?.toLowerCase().includes(k));
-
-    const demoFallback = () => {
-      const name = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || email.split('@')[0];
-      setUser({ id: undefined, name, role: (userData.role as Role) || 'parent', email });
-      setPortal(portalVal);
-      localStorage.setItem('portal', portalVal);
-      if (dept) { setDepartment(dept); localStorage.setItem('department', dept); }
-      else { setDepartment(null); localStorage.removeItem('department'); }
-      return { success: true };
-    };
-
     try {
-      const { error } = await signUpUser({
-        email,
-        password,
-        schoolId: userData.schoolId || '',
-        role: userData.role || 'parent',
-        firstName: userData.firstName || '',
-        lastName: userData.lastName || '',
-      });
+      const { data: sessionData } = await supabase.auth.getSession();
+      let authError = null;
 
-      // Supabase returns network errors inside the error object (not thrown)
-      if (error) {
-        if (isNetworkMsg(error.message)) return demoFallback();
-        return { success: false, error: error.message };
+      if (sessionData?.session?.user && sessionData.session.user.email === email) {
+        // Active session exists (e.g. from recent OTP verification). 
+        // Update their profile with the chosen password and details.
+        const { error } = await supabase.auth.updateUser({
+          password,
+          data: {
+            school_id: userData.schoolId || '',
+            role: userData.role || 'parent',
+            first_name: userData.firstName || '',
+            last_name: userData.lastName || '',
+          }
+        });
+        authError = error;
+      } else {
+        // No session exists, proceed with normal sign up
+        const { error } = await signUpUser({
+          email,
+          password,
+          schoolId: userData.schoolId || '',
+          role: userData.role || 'parent',
+          firstName: userData.firstName || '',
+          lastName: userData.lastName || '',
+        });
+        authError = error;
       }
 
-      const { data: signInData } = await supabaseSignIn(email, password);
+      if (authError) {
+        return { success: false, error: authError.message };
+      }
+
+      const { data: signInData, error: signInError } = await supabaseSignIn(email, password);
+      if (signInError) {
+        return { success: false, error: signInError.message };
+      }
+      
       if (signInData?.user) {
         const userId = signInData.user.id;
         try {
@@ -222,8 +231,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.error("Backend identity processing failed", e);
         }
         await fetchUserProfile(userId, email);
-      } else {
-        return demoFallback();
       }
 
       setPortal(portalVal);
@@ -238,9 +245,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return { success: true };
     } catch (err: any) {
-      if (err?.name === 'TypeError' || isNetworkMsg(err?.message) || !navigator.onLine) {
-        return demoFallback();
-      }
       return { success: false, error: err?.message || "Sign up failed" };
     }
   };

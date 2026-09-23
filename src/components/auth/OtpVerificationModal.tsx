@@ -27,7 +27,7 @@ export default function OtpVerificationModal({
 }: OtpVerificationModalProps) {
   const { toast } = useToast();
   const [channel, setChannel] = useState<"email" | "phone">("email");
-  const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
+  const [otp, setOtp] = useState<string[]>(Array(8).fill(""));
   const [generatedCode, setGeneratedCode] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(false);
@@ -42,7 +42,7 @@ export default function OtpVerificationModal({
     if (isOpen) {
       handleSendOtp(channel);
     } else {
-      setOtp(Array(6).fill(""));
+      setOtp(Array(8).fill(""));
       setError(null);
       setIsVerified(false);
     }
@@ -68,7 +68,17 @@ export default function OtpVerificationModal({
     const targetDestination = selectedChannel === "email" ? email : (phone || "+254 712 345 678");
 
     try {
-      const { data, error } = await supabaseSendOtp(targetDestination, selectedChannel);
+      let userData = {};
+      if (isSignup) {
+        const rawPending = localStorage.getItem("educore_pending_registration");
+        if (rawPending) {
+          try {
+            userData = JSON.parse(rawPending).userData || {};
+          } catch(e) {}
+        }
+      }
+
+      const { data, error } = await supabaseSendOtp(targetDestination, selectedChannel, userData);
       
       if (error) {
         throw new Error(error.message);
@@ -88,7 +98,7 @@ export default function OtpVerificationModal({
   function handleChannelSwitch(newChannel: "email" | "phone") {
     if (newChannel === channel) return;
     setChannel(newChannel);
-    setOtp(Array(6).fill(""));
+    setOtp(Array(8).fill(""));
     setError(null);
     handleSendOtp(newChannel);
   }
@@ -101,7 +111,7 @@ export default function OtpVerificationModal({
     setError(null);
 
     // Auto-advance to next input box
-    if (value && index < 5) {
+    if (value && index < 7) {
       inputRefs.current[index + 1]?.focus();
     }
   }
@@ -114,17 +124,17 @@ export default function OtpVerificationModal({
 
   function handlePaste(e: React.ClipboardEvent<HTMLInputElement>) {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData("text").trim().slice(0, 6);
-    if (/^\d{6}$/.test(pastedData)) {
+    const pastedData = e.clipboardData.getData("text").trim().slice(0, 8);
+    if (/^\d{8}$/.test(pastedData)) {
       setOtp(pastedData.split(""));
-      inputRefs.current[5]?.focus();
+      inputRefs.current[7]?.focus();
     }
   }
 
   async function handleVerify() {
     const enteredCode = otp.join("");
-    if (enteredCode.length < 6) {
-      setError("Please enter the complete 6-digit OTP code.");
+    if (enteredCode.length < 8) {
+      setError("Please enter the complete 8-digit OTP code.");
       return;
     }
 
@@ -168,60 +178,58 @@ export default function OtpVerificationModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[440px] p-0 overflow-hidden rounded-[32px] border-slate-200/80 shadow-2xl bg-white">
-        <div className="p-7 relative">
+      <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden rounded-[32px] border-zinc-200/60 shadow-2xl bg-white shadow-black/5">
+        <div className="p-8 relative">
           
           {/* Header Icon */}
-          <div className="flex items-center justify-between mb-5">
-            <div className="h-12 w-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-sm">
-              <KeyRound size={22} />
+          <div className="flex items-center justify-between mb-6">
+            <div className="h-12 w-12 rounded-full bg-zinc-100/80 border border-zinc-200/50 flex items-center justify-center text-zinc-800 shadow-sm">
+              <KeyRound size={20} strokeWidth={1.5} />
             </div>
-            <Badge variant="outline" className="bg-slate-50 text-slate-500 border-slate-200 text-[10px] font-bold uppercase tracking-wider px-3 py-1">
+            <Badge variant="outline" className="bg-white text-zinc-500 border-zinc-200 text-[10px] font-semibold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
               Two-Factor Auth
             </Badge>
           </div>
 
-          <h3 className="text-xl font-bold text-slate-900 tracking-tight mb-1">
+          <h3 className="text-2xl font-semibold text-zinc-900 tracking-tight mb-2">
             Confirm Your Identity
           </h3>
-          <p className="text-xs text-slate-500 font-medium leading-relaxed mb-6">
-            Enter the 6-digit confirmation code sent to your choice of communication channel.
+          <p className="text-sm text-zinc-500 font-medium leading-relaxed mb-8">
+            Enter the 8-digit confirmation code sent to your choice of communication channel.
           </p>
 
           {/* Delivery Channel Selector */}
-          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100/70 rounded-2xl mb-4">
+          <div className="grid grid-cols-2 gap-1.5 p-1.5 bg-zinc-100/80 rounded-2xl mb-8">
             <button
               type="button"
               onClick={() => handleChannelSwitch("email")}
               className={cn(
-                "flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all",
+                "flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all duration-300",
                 channel === "email"
-                  ? "bg-white text-indigo-700 shadow-sm border border-slate-200/60"
-                  : "text-slate-500 hover:text-slate-800"
+                  ? "bg-white text-zinc-900 shadow-sm border border-zinc-200/50 ring-1 ring-black/5"
+                  : "text-zinc-500 hover:text-zinc-700"
               )}
             >
-              <Mail size={14} />
+              <Mail size={14} strokeWidth={2} />
               <span className="truncate">Email ({maskedEmail.split("@")[0]})</span>
             </button>
             <button
               type="button"
               onClick={() => handleChannelSwitch("phone")}
               className={cn(
-                "flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all",
+                "flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all duration-300",
                 channel === "phone"
-                  ? "bg-white text-indigo-700 shadow-sm border border-slate-200/60"
-                  : "text-slate-500 hover:text-slate-800"
+                  ? "bg-white text-zinc-900 shadow-sm border border-zinc-200/50 ring-1 ring-black/5"
+                  : "text-zinc-500 hover:text-zinc-700"
               )}
             >
-              <Phone size={14} />
+              <Phone size={14} strokeWidth={2} />
               <span className="truncate">SMS ({maskedPhone})</span>
             </button>
           </div>
 
-
-
           {/* OTP Digit Inputs */}
-          <div className="flex items-center justify-between gap-2 mb-6" onPaste={handlePaste}>
+          <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-8" onPaste={handlePaste}>
             {otp.map((digit, idx) => (
               <input
                 key={idx}
@@ -232,11 +240,11 @@ export default function OtpVerificationModal({
                 onChange={(e) => handleInputChange(idx, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(idx, e)}
                 className={cn(
-                  "w-12 h-14 text-center text-xl font-bold rounded-2xl border-2 transition-all outline-none shadow-sm shadow-slate-200",
+                  "w-10 sm:w-11 h-12 sm:h-14 text-center text-xl font-semibold rounded-2xl border transition-all duration-200 outline-none",
                   digit
-                    ? "border-indigo-600 text-indigo-950 bg-indigo-50/50"
-                    : "border-slate-300 bg-slate-100 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100",
-                  error && "border-red-400 bg-red-50/30 text-red-900"
+                    ? "border-zinc-400 text-zinc-900 bg-zinc-50 shadow-sm"
+                    : "border-zinc-200 bg-zinc-50/50 focus:border-zinc-500 focus:bg-white focus:ring-4 focus:ring-zinc-100",
+                  error && "border-red-400 bg-red-50/50 text-red-900 focus:border-red-500 focus:ring-red-100"
                 )}
               />
             ))}
@@ -244,57 +252,57 @@ export default function OtpVerificationModal({
 
           {/* Error Banner */}
           {error && (
-            <div className="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2.5 animate-in fade-in slide-in-from-top-1">
-              <AlertCircle size={15} className="flex-shrink-0 text-red-600" />
+            <div className="mb-6 p-3 rounded-xl bg-red-50/80 border border-red-100 text-red-700 text-sm font-medium flex items-center gap-3 animate-in fade-in slide-in-from-top-1">
+              <AlertCircle size={16} strokeWidth={2} className="flex-shrink-0 text-red-500" />
               <span>{error}</span>
             </div>
           )}
 
           {/* Success Banner */}
           {isVerified && (
-            <div className="mb-5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2.5 animate-in fade-in">
-              <CheckCircle2 size={16} className="text-emerald-600 flex-shrink-0" />
+            <div className="mb-6 p-3 rounded-xl bg-emerald-50/80 border border-emerald-100 text-emerald-700 text-sm font-medium flex items-center gap-3 animate-in fade-in">
+              <CheckCircle2 size={16} strokeWidth={2} className="text-emerald-500 flex-shrink-0" />
               <span>OTP Verified! Redirecting to portal...</span>
             </div>
           )}
 
           {/* Resend Link & Timer */}
-          <div className="flex items-center justify-between text-xs mb-6">
-            <span className="text-slate-400 font-medium">Didn't receive code?</span>
+          <div className="flex items-center justify-between text-sm mb-8">
+            <span className="text-zinc-500 font-medium">Didn't receive code?</span>
             {timer > 0 ? (
-              <span className="font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
-                Resend in <span className="text-indigo-600 font-mono">{timer}s</span>
+              <span className="font-semibold text-zinc-600 bg-zinc-100/80 px-3 py-1 rounded-full text-xs">
+                Resend in <span className="font-mono text-zinc-900">{timer}s</span>
               </span>
             ) : (
               <button
                 type="button"
                 onClick={() => handleSendOtp(channel)}
                 disabled={loading}
-                className="font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 underline-offset-4 hover:underline"
+                className="font-medium text-zinc-900 hover:text-black flex items-center gap-1.5 underline-offset-4 hover:underline transition-colors text-xs"
               >
-                <RefreshCw size={12} className={cn(loading && "animate-spin")} /> Resend OTP Code
+                <RefreshCw size={14} className={cn(loading && "animate-spin")} /> Resend Code
               </button>
             )}
           </div>
 
           {/* Action Buttons */}
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             <Button
               onClick={handleVerify}
-              disabled={verifying || isVerified || otp.join("").length < 6}
-              className="w-full h-12 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-200 gap-2"
+              disabled={verifying || isVerified || otp.join("").length < 8}
+              className="w-full h-14 rounded-2xl bg-zinc-900 hover:bg-black text-white font-semibold text-base shadow-lg shadow-zinc-200/50 gap-2 transition-all duration-300"
             >
               {verifying ? (
                 <>
-                  <RefreshCw size={16} className="animate-spin" /> Verifying Code...
+                  <RefreshCw size={18} className="animate-spin opacity-70" /> Verifying...
                 </>
               ) : isVerified ? (
                 <>
-                  <CheckCircle2 size={16} /> Access Granted
+                  <CheckCircle2 size={18} className="opacity-70" /> Access Granted
                 </>
               ) : (
                 <>
-                  Confirm & Access Portal <ArrowRight size={16} />
+                  Confirm Code <ArrowRight size={18} className="opacity-70" />
                 </>
               )}
             </Button>
@@ -302,9 +310,9 @@ export default function OtpVerificationModal({
             <Button
               variant="ghost"
               onClick={onClose}
-              className="w-full h-10 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-600"
+              className="w-full h-12 rounded-xl text-sm font-medium text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100/50 transition-colors"
             >
-              Cancel & Back to Login
+              Cancel
             </Button>
           </div>
 

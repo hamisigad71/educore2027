@@ -454,7 +454,7 @@ export default function Login() {
               on the card so the full form fits without scrolling on a standard
               1366×768 laptop screen.
             */}
-            <Card className="w-full max-w-[480px] relative z-10 border border-white/50 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08),0_0_1px_rgba(255,255,255,1)_inset] bg-white/70 backdrop-blur-3xl rounded-[40px] transition-all duration-1000 overflow-hidden">
+            <Card className="w-full max-w-[540px] relative z-10 border border-white/50 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08),0_0_1px_rgba(255,255,255,1)_inset] bg-white/70 backdrop-blur-3xl rounded-[40px] transition-all duration-1000 overflow-hidden">
               {/* Grain/Noise Overlay */}
               <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
               
