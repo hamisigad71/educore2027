@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { PageHeader } from "@/components/layout";
 import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
-
-
-// shadcn/ui
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-// lucide
-import { 
-  Clock, ChevronRight, Activity, 
-  Landmark, BookOpen, Stethoscope,
-  Shield, Bus, GraduationCap, Package,
-  TrendingUp, LayoutDashboard, Search,
+import {
+  Clock, ChevronRight, Activity, Landmark, BookOpen, Stethoscope,
+  Shield, Bus, GraduationCap, Package, TrendingUp, LayoutDashboard, Search,
   Users, Wrench
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// ── Shared staff components ───────────────────────────────────────────────
+import { TimeTracker } from "@/components/staff/StaffShared";
 
 const modules = [
   { 
@@ -196,29 +188,8 @@ export default function StaffDashboard() {
 
         {/* ─── Sidebar: Workflows & Duty ────────────────────────────────────── */}
         <div className="space-y-8">
-           {/* Active Work Timer */}
-           <Card className="shadow-2xl border-indigo-100 overflow-hidden group">
-              <CardHeader className="bg-indigo-50/50 pb-4">
-                 <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-indigo-600" />
-                    <CardTitle className="text-xs font-black uppercase tracking-widest text-indigo-900">Current Shift</CardTitle>
-                 </div>
-              </CardHeader>
-              <CardContent className="p-6 text-center space-y-6">
-                 <div className="space-y-1">
-                   <p className="text-4xl font-black text-slate-900 tracking-tighter">04:12:05</p>
-                   <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest leading-none">On-Campus Presence</p>
-                 </div>
-                 <div className="grid grid-cols-2 gap-2">
-                    <Button className="bg-indigo-600 hover:bg-indigo-700 font-bold h-10 rounded-xl shadow-lg shadow-indigo-200">
-                      Break
-                    </Button>
-                    <Button variant="outline" className="border-rose-200 text-rose-600 hover:bg-rose-50 font-bold h-10 rounded-xl">
-                      Clock Out
-                    </Button>
-                 </div>
-              </CardContent>
-           </Card>
+           {/* Reusing shared TimeTracker instead of hardcoded component */}
+           <TimeTracker />
 
            {/* Emergency & Duty Section */}
            <div className="space-y-4">

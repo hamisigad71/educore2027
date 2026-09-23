@@ -93,7 +93,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        await processPendingRegistration(session.user.id, session.user.email ?? "");
         await fetchUserProfile(session.user.id, session.user.email ?? "");
       } else if (event === "SIGNED_OUT") {
         setUser(null);
@@ -105,75 +104,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  async function processPendingRegistration(userId: string, email: string) {
-    try {
-      const stored = localStorage.getItem("educore_pending_registration");
-      if (!stored) return;
-
-      const pending = JSON.parse(stored);
-      if (pending.email !== email) return; // Prevent mixups
-
-      const userData = pending.userData;
-      
-      // Update public user metadata (phone)
-      if (userData.phone) {
-        await supabase.from('users' as any).update({ phone: userData.phone }).eq('id', userId);
-      }
-
-      // Sync role-specific identification data
-      if (userData.identificationData) {
-        const idData = userData.identificationData;
-        const schoolId = userData.schoolId || null;
-        const basePayload: any = { user_id: userId };
-        if (schoolId) basePayload.school_id = schoolId;
-        
-        if (userData.role === 'student') {
-          const payload: any = { user_id: userId, admission_number: idData.admissionNumber || `ADM-${Math.floor(Math.random()*10000)}` };
-          if (idData.joinDate) payload.admission_date = idData.joinDate;
-          if (idData.studentClass) payload.current_class = idData.studentClass;
-          await supabase.from('students' as any).upsert(payload, { onConflict: 'user_id' });
-        } else if (userData.role === 'parent') {
-          try {
-            const parentPayload: any = { user_id: userId, admission_number: idData.admissionNumber || `PARENT-${Math.floor(Math.random()*10000)}` };
-            if (idData.studentClass) parentPayload.guardian_relationship = `parent|child_class:${idData.studentClass}`;
-            await supabase.from('students' as any).upsert(parentPayload, { onConflict: 'user_id' });
-          } catch {}
-        } else if (userData.role === 'teacher') {
-          const payload: any = { ...basePayload };
-          if (idData.tscNumber) payload.tsc_number = idData.tscNumber;
-          if (idData.employeeNumber) payload.employee_number = idData.employeeNumber;
-          if (idData.joinDate) payload.date_employed = idData.joinDate;
-          await supabase.from('teachers' as any).upsert(payload, { onConflict: 'user_id' });
-        } else if (userData.role === 'staff') {
-          const payload: any = { ...basePayload };
-          if (idData.employeeNumber) payload.employee_number = idData.employeeNumber;
-          if (idData.position) payload.position = idData.position;
-          if (idData.joinDate) payload.date_employed = idData.joinDate;
-          await supabase.from('staff' as any).upsert(payload, { onConflict: 'user_id' });
-        }
-        
-        if (userData.firstName || userData.lastName || userData.schoolId) {
-          await supabase.from('users' as any).update({
-            first_name: userData.firstName,
-            last_name: userData.lastName,
-            role: userData.role,
-            school_id: userData.schoolId
-          }).eq('id', userId);
-        }
-      }
-
-      setPortal(pending.portal);
-      localStorage.setItem("portal", pending.portal);
-      if (pending.dept) {
-        setDepartment(pending.dept);
-        localStorage.setItem("department", pending.dept);
-      }
-      
-      localStorage.removeItem("educore_pending_registration");
-    } catch (e) {
-      console.error("Error processing pending registration:", e);
-    }
-  }
+  // processPendingRegistration removed: Registration is now securely handled
+  // via Postgres Triggers (users table) and Edge Functions (staff/students).
 
   async function fetchUserProfile(userId: string, email: string) {
     try {
@@ -282,10 +214,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data: signInData } = await supabaseSignIn(email, password);
       if (signInData?.user) {
         const userId = signInData.user.id;
-        localStorage.setItem("educore_pending_registration", JSON.stringify({
-          email, password, userData, portal: portalVal, dept
-        }));
-        await processPendingRegistration(userId, email);
+        try {
+          await supabase.functions.invoke('complete-registration', {
+            body: { role: userData.role, identificationData: userData.identificationData || {} }
+          });
+        } catch(e) {
+          console.error("Backend identity processing failed", e);
+        }
         await fetchUserProfile(userId, email);
       } else {
         return demoFallback();

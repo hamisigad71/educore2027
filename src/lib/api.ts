@@ -55,60 +55,68 @@ export interface RecentTransactionItem {
  */
 export async function getDashboardStats(): Promise<DashboardStats> {
   try {
+    // Resolve current user's school_id for scoped queries
+    const { data: { session } } = await supabase.auth.getSession();
+    const schoolId = session?.user?.user_metadata?.school_id as string | undefined;
+
+    const buildQuery = (table: string) => {
+      const q = supabase.from(table).select('*', { count: 'exact', head: true });
+      return schoolId ? q.eq('school_id', schoolId) : q;
+    };
+
     // 1. Total Students
-    const { count: studentCount } = await supabase
-      .from("students")
-      .select("*", { count: "exact", head: true });
+    const { count: studentCount } = await buildQuery('students');
 
     // 2. Total Teachers
-    const { count: teacherCount } = await supabase
-      .from("teachers")
-      .select("*", { count: "exact", head: true });
+    const { count: teacherCount } = await buildQuery('teachers');
 
     // 3. Total Classes
-    const { count: classCount } = await supabase
-      .from("classes")
-      .select("*", { count: "exact", head: true });
+    const { count: classCount } = await buildQuery('classes');
 
-    // 4. Fee Ledgers
-    const { data: feeAccounts } = await supabase
-      .from("fee_accounts")
-      .select("total_billed, total_paid, balance");
+    // 4. Fee Ledgers — scoped via students.school_id join (no school_id on fee_accounts)
+    const feeQuery = supabase
+      .from('fee_accounts')
+      .select('total_billed, total_paid, balance, students!inner(school_id)');
+    const { data: feeAccounts } = schoolId
+      ? await feeQuery.eq('students.school_id', schoolId)
+      : await feeQuery;
 
-    let billed = 0;
-    let paid = 0;
-    let balance = 0;
-
+    let billed = 0, paid = 0, balance = 0;
     if (feeAccounts && feeAccounts.length > 0) {
-      feeAccounts.forEach((fa) => {
-        billed += Number(fa.total_billed || 0);
-        paid += Number(fa.total_paid || 0);
-        balance += Number(fa.balance || 0);
+      feeAccounts.forEach((fa: any) => {
+        billed  += Number(fa.total_billed || 0);
+        paid    += Number(fa.total_paid   || 0);
+        balance += Number(fa.balance      || 0);
       });
     }
 
-    // 5. Today's Attendance
-    const { data: attData } = await supabase
-      .from("attendance")
-      .select("status");
+    // 5. Real Attendance Rate from attendance table — scoped to today
+    const today = new Date().toISOString().split('T')[0];
+    const attQuery = supabase
+      .from('attendance')
+      .select('status')
+      .eq('date', today);
+    const { data: attData } = schoolId
+      ? await attQuery.eq('school_id', schoolId)
+      : await attQuery;
 
-    let attRate = 96.5; // fallback default %
+    let attRate = 96.5;
     if (attData && attData.length > 0) {
-      const presentCount = attData.filter((a) => a.status === "present").length;
+      const presentCount = attData.filter((a: any) => a.status === 'present').length;
       attRate = Math.round((presentCount / attData.length) * 1000) / 10;
     }
 
     return {
       totalStudents: studentCount || 5,
       totalTeachers: teacherCount || 3,
-      totalClasses: classCount || 4,
-      totalFeeBilled: billed || 139500,
-      totalFeePaid: paid || 76500,
+      totalClasses:  classCount  || 4,
+      totalFeeBilled:  billed  || 139500,
+      totalFeePaid:    paid    || 76500,
       totalFeeBalance: balance || 63000,
       attendanceRate: attRate,
     };
   } catch (err) {
-    console.warn("Failed to fetch dashboard stats from Supabase:", err);
+    console.warn('Failed to fetch dashboard stats from Supabase:', err);
     return {
       totalStudents: 1480,
       totalTeachers: 68,
@@ -198,8 +206,11 @@ export async function getTeacherProfile(userId?: string): Promise<TeacherProfile
 export async function getTeacherStudents(classNames: string[]): Promise<StudentItem[]> {
   if (!classNames || classNames.length === 0) return [];
   try {
-    const { data: students, error } = await supabase
-      .from("students")
+    const { data: { session } } = await supabase.auth.getSession();
+    const schoolId = session?.user?.user_metadata?.school_id as string | undefined;
+
+    let query = supabase
+      .from('students')
       .select(`
         id,
         admission_number,
@@ -211,23 +222,25 @@ export async function getTeacherStudents(classNames: string[]): Promise<StudentI
         fee_accounts (balance, status)
       `);
 
+    if (schoolId) query = query.eq('school_id', schoolId);
+
+    const { data: students, error } = await query;
     if (error || !students) throw error;
 
     return students
       .map((s: any) => {
         const u = s.users || {};
         const enrollment = Array.isArray(s.enrollments) ? s.enrollments[0] : s.enrollments;
-        const className = enrollment?.classes?.name || "Unassigned";
+        const className = enrollment?.classes?.name || 'Unassigned';
         const feeAcc = Array.isArray(s.fee_accounts) ? s.fee_accounts[0] : s.fee_accounts;
-
         return {
           id: s.id,
           admission_number: s.admission_number,
-          name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || "Student",
-          email: u.email || "",
+          name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || 'Student',
+          email: u.email || '',
           className,
           kcpeMarks: s.kcpe_marks,
-          feeStatus: feeAcc?.status || "unpaid",
+          feeStatus: feeAcc?.status || 'unpaid',
           totalBilled: 0,
           totalPaid: 0,
           balance: Number(feeAcc?.balance || 0),
@@ -235,14 +248,13 @@ export async function getTeacherStudents(classNames: string[]): Promise<StudentI
       })
       .filter((s) => classNames.includes(s.className));
   } catch (e) {
-    console.warn("getTeacherStudents fallback:", e);
-    // Return mock demo students when unauthenticated (for PDF upload demo)
+    console.warn('getTeacherStudents fallback:', e);
     return [
-      { id: "s1", admission_number: "ADM-001", name: "David A.", email: "david@example.com", className: "Grade 5 Blue", feeStatus: "cleared", totalBilled: 0, totalPaid: 0, balance: 0 },
-      { id: "s2", admission_number: "ADM-002", name: "Chloe D.", email: "chloe@example.com", className: "Grade 5 Blue", feeStatus: "partial", totalBilled: 0, totalPaid: 0, balance: 4500 },
-      { id: "s3", admission_number: "ADM-003", name: "Alisha M.", email: "alisha@example.com", className: "Grade 5 Blue", feeStatus: "unpaid", totalBilled: 0, totalPaid: 0, balance: 12000 },
-      { id: "s4", admission_number: "ADM-004", name: "Emmanuel R.", email: "emmanuel@example.com", className: "Grade 5 Blue", feeStatus: "cleared", totalBilled: 0, totalPaid: 0, balance: 0 },
-      { id: "s5", admission_number: "ADM-005", name: "Grace M.", email: "grace@example.com", className: "Grade 5 Blue", feeStatus: "cleared", totalBilled: 0, totalPaid: 0, balance: 0 },
+      { id: 's1', admission_number: 'ADM-001', name: 'David A.',    email: 'david@example.com',    className: 'Grade 5 Blue', kcpeMarks: null, feeStatus: 'cleared', totalBilled: 0, totalPaid: 0, balance: 0 },
+      { id: 's2', admission_number: 'ADM-002', name: 'Chloe D.',    email: 'chloe@example.com',    className: 'Grade 5 Blue', kcpeMarks: null, feeStatus: 'partial', totalBilled: 0, totalPaid: 0, balance: 4500 },
+      { id: 's3', admission_number: 'ADM-003', name: 'Alisha M.',   email: 'alisha@example.com',   className: 'Grade 5 Blue', kcpeMarks: null, feeStatus: 'unpaid',  totalBilled: 0, totalPaid: 0, balance: 12000 },
+      { id: 's4', admission_number: 'ADM-004', name: 'Emmanuel R.', email: 'emmanuel@example.com', className: 'Grade 5 Blue', kcpeMarks: null, feeStatus: 'cleared', totalBilled: 0, totalPaid: 0, balance: 0 },
+      { id: 's5', admission_number: 'ADM-005', name: 'Grace M.',    email: 'grace@example.com',    className: 'Grade 5 Blue', kcpeMarks: null, feeStatus: 'cleared', totalBilled: 0, totalPaid: 0, balance: 0 },
     ].filter(s => classNames.includes(s.className));
   }
 }
@@ -252,8 +264,11 @@ export async function getTeacherStudents(classNames: string[]): Promise<StudentI
  */
 export async function getStudentsList(): Promise<StudentItem[]> {
   try {
-    const { data: students, error } = await supabase
-      .from("students")
+    const { data: { session } } = await supabase.auth.getSession();
+    const schoolId = session?.user?.user_metadata?.school_id as string | undefined;
+
+    let query = supabase
+      .from('students')
       .select(`
         id,
         admission_number,
@@ -270,34 +285,35 @@ export async function getStudentsList(): Promise<StudentItem[]> {
         )
       `);
 
-    if (error || !students) throw error || new Error("No students returned");
+    if (schoolId) query = query.eq('school_id', schoolId);
+
+    const { data: students, error } = await query;
+    if (error || !students) throw error || new Error('No students returned');
 
     return students.map((s: any) => {
       const u = s.users || {};
-      const name = `${u.first_name || ''} ${u.last_name || ''}`.trim() || "Student";
+      const name = `${u.first_name || ''} ${u.last_name || ''}`.trim() || 'Student';
       const enrollment = Array.isArray(s.enrollments) ? s.enrollments[0] : s.enrollments;
-      const className = enrollment?.classes?.name || "Unassigned";
-      
+      const className = enrollment?.classes?.name || 'Unassigned';
       const feeAcc = Array.isArray(s.fee_accounts) ? s.fee_accounts[0] : s.fee_accounts;
-      const billed = Number(feeAcc?.total_billed || 0);
-      const paid = Number(feeAcc?.total_paid || 0);
-      const balance = Number(feeAcc?.balance || (billed - paid));
-
+      const billed  = Number(feeAcc?.total_billed || 0);
+      const paidAmt = Number(feeAcc?.total_paid   || 0);
+      const balance = Number(feeAcc?.balance || (billed - paidAmt));
       return {
         id: s.id,
         admission_number: s.admission_number,
         name,
-        email: u.email || "",
+        email: u.email || '',
         className,
         kcpeMarks: s.kcpe_marks,
-        feeStatus: feeAcc?.status || (balance === 0 ? "paid" : paid > 0 ? "partial" : "unpaid"),
+        feeStatus: feeAcc?.status || (balance === 0 ? 'paid' : paidAmt > 0 ? 'partial' : 'unpaid'),
         totalBilled: billed,
-        totalPaid: paid,
+        totalPaid: paidAmt,
         balance,
       };
     });
   } catch (e) {
-    console.warn("getStudentsList fallback:", e);
+    console.warn('getStudentsList fallback:', e);
     return [];
   }
 }
@@ -307,16 +323,21 @@ export async function getStudentsList(): Promise<StudentItem[]> {
  */
 export async function getFeeLedgers(): Promise<FeeAccountItem[]> {
   try {
-    const { data, error } = await supabase
-      .from("fee_accounts")
+    const { data: { session } } = await supabase.auth.getSession();
+    const schoolId = session?.user?.user_metadata?.school_id as string | undefined;
+
+    // fee_accounts has no school_id — scope via students inner join
+    let query = supabase
+      .from('fee_accounts')
       .select(`
         id,
         total_billed,
         total_paid,
         balance,
         status,
-        students (
+        students!inner (
           admission_number,
+          school_id,
           users (first_name, last_name),
           enrollments (
             classes (name)
@@ -324,27 +345,29 @@ export async function getFeeLedgers(): Promise<FeeAccountItem[]> {
         )
       `);
 
+    if (schoolId) query = query.eq('students.school_id', schoolId);
+
+    const { data, error } = await query;
     if (error || !data) throw error;
 
     return data.map((fa: any) => {
       const st = fa.students || {};
-      const u = st.users || {};
-      const name = `${u.first_name || ''} ${u.last_name || ''}`.trim() || "Student";
+      const u  = st.users || {};
+      const name = `${u.first_name || ''} ${u.last_name || ''}`.trim() || 'Student';
       const enrollment = Array.isArray(st.enrollments) ? st.enrollments[0] : st.enrollments;
-
       return {
         id: fa.id,
         studentName: name,
-        admissionNumber: st.admission_number || "",
-        className: enrollment?.classes?.name || "N/A",
+        admissionNumber: st.admission_number || '',
+        className: enrollment?.classes?.name || 'N/A',
         totalBilled: Number(fa.total_billed || 0),
-        totalPaid: Number(fa.total_paid || 0),
-        balance: Number(fa.balance || 0),
-        status: fa.status || "unpaid",
+        totalPaid:   Number(fa.total_paid   || 0),
+        balance:     Number(fa.balance      || 0),
+        status: fa.status || 'unpaid',
       };
     });
   } catch (e) {
-    console.warn("getFeeLedgers fallback:", e);
+    console.warn('getFeeLedgers fallback:', e);
     return [];
   }
 }
@@ -481,44 +504,51 @@ export async function getParentChildren(parentId?: string): Promise<ParentChildI
     const { data: { session } } = await supabase.auth.getSession();
     if (!session?.user) return [];
 
-    const { data, error } = await supabase
-      .from("students")
+    // Fetch children linked via parent_student table
+    const { data: links, error: linkError } = await supabase
+      .from('parent_student')
       .select(`
-        id,
-        admission_number,
-        kcpe_marks,
-        users (first_name, last_name),
-        enrollments (
-          classes (name)
-        ),
-        fee_accounts (
-          balance
+        student_id,
+        students:student_id (
+          id,
+          admission_number,
+          kcpe_marks,
+          attendance_rate,
+          users (first_name, last_name),
+          enrollments (
+            classes (name)
+          ),
+          fee_accounts (
+            balance
+          )
         )
       `)
-      .eq("user_id", session.user.id);
+      .eq('parent_id', session.user.id);
 
-    if (error || !data) throw error;
+    if (linkError || !links) throw linkError;
 
-    return data.map((s: any) => {
+    return links.map((link: any) => {
+      const s = link.students || {};
       const u = s.users || {};
       const enrollment = Array.isArray(s.enrollments) ? s.enrollments[0] : s.enrollments;
       const feeAcc = Array.isArray(s.fee_accounts) ? s.fee_accounts[0] : s.fee_accounts;
 
       return {
         id: s.id,
-        name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || "Student",
-        admissionNumber: s.admission_number || "",
-        className: enrollment?.classes?.name || "Form 3 West",
+        name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || 'Student',
+        admissionNumber: s.admission_number || '',
+        className: enrollment?.classes?.name || 'Unassigned',
         kcpeMarks: s.kcpe_marks,
         feeBalance: Number(feeAcc?.balance || 0),
-        attendanceRate: 97.5,
+        attendanceRate: Number(s.attendance_rate || 0),
       };
     });
   } catch (e) {
-    console.warn("getParentChildren fallback:", e);
+    console.warn('getParentChildren fallback:', e);
     return [];
   }
 }
+
 
 /**
  * Fetch fee details for a specific student
