@@ -90,12 +90,12 @@ export async function sendOtpCode(destination: string, channel: 'email' | 'phone
 
 
 /** Verify OTP code */
-export async function verifyOtpCode(destination: string, token: string, channel: 'email' | 'phone') {
+export async function verifyOtpCode(destination: string, token: string, channel: 'email' | 'phone', isSignup = false) {
   if (channel === 'email') {
     return supabase.auth.verifyOtp({
       email: destination,
       token,
-      type: 'email',
+      type: isSignup ? 'signup' : 'email',
     })
   } else {
     return supabase.auth.verifyOtp({

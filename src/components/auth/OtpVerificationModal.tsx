@@ -59,28 +59,32 @@ export default function OtpVerificationModal({
     return () => clearInterval(interval);
   }, [isOpen, timer]);
 
-  // Generate random 6-digit OTP code for demo or call Supabase
+  // Verify via Supabase Auth
   async function handleSendOtp(selectedChannel: "email" | "phone") {
     setLoading(true);
     setError(null);
     setTimer(30);
 
-    const randomOtp = "123456";
-    setGeneratedCode(randomOtp);
     const targetDestination = selectedChannel === "email" ? email : (phone || "+254 712 345 678");
 
-    // DEMO MODE: Fully bypass Supabase OTP limits and hardcode success
-    setLoading(false);
-
-    toast({
-      title: selectedChannel === "email" ? "✉️ OTP Sent via Email" : "💬 OTP Sent via Phone (SMS)",
-      description: `[DEMO MODE] Use code: ${randomOtp}`,
-      duration: 8000,
-    });
+    try {
+      const { data, error } = await supabaseSendOtp(targetDestination, selectedChannel);
+      
+      if (error) {
+        throw new Error(error.message);
+      }
+      
+      toast({
+        title: selectedChannel === "email" ? "✉️ OTP Sent via Email" : "💬 OTP Sent via Phone (SMS)",
+        description: "Please check your inbox or messages for the code.",
+        duration: 8000,
+      });
+    } catch (err: any) {
+      setError(err.message || "Failed to send OTP code. Please check your Supabase Auth configuration.");
+    } finally {
+      setLoading(false);
+    }
   }
-
-
-
   function handleChannelSwitch(newChannel: "email" | "phone") {
     if (newChannel === channel) return;
     setChannel(newChannel);
@@ -130,21 +134,11 @@ export default function OtpVerificationModal({
     try {
       const targetDestination = channel === "email" ? email : (phone || "+254 712 345 678");
 
-      // Verify against Supabase OR use the dynamically generated testing bypass
-      let verified = false;
+      // Verify against Supabase 
+      const { error: supaErr } = await supabaseVerifyOtp(targetDestination, enteredCode, channel, isSignup);
       
-      if (enteredCode === generatedCode) {
-        verified = true;
-      } else {
-        const { error: supaErr } = await supabaseVerifyOtp(targetDestination, enteredCode, channel);
-        if (!supaErr) verified = true;
-      }
-
-      // Note: If using Magic Link bypass (clicking the email), the session is processed in AuthContext automatically 
-      // without reaching this manually-entered code verification logic.
-
-      if (!verified) {
-        throw new Error("Invalid OTP verification code. Please check and try again.");
+      if (supaErr) {
+        throw new Error(supaErr.message || "Invalid OTP verification code. Please check and try again.");
       }
 
       setIsVerified(true);
@@ -225,24 +219,6 @@ export default function OtpVerificationModal({
           </div>
 
 
-          {/* Unique Code Banner */}
-          {generatedCode && (
-            <div 
-              onClick={() => {
-                setOtp(generatedCode.split(""));
-                setError(null);
-              }}
-              className="mb-6 p-3 bg-amber-50 border border-amber-200 rounded-xl cursor-pointer hover:bg-amber-100 transition-colors flex items-center justify-between group group-active:scale-95"
-            >
-              <div className="flex items-center gap-2">
-                <AlertCircle size={16} className="text-amber-600" />
-                <span className="text-xs font-semibold text-amber-800">
-                  Auth: Your unique code is <strong className="font-mono text-amber-950 text-base">{generatedCode}</strong>. Click here to auto-fill.
-                </span>
-              </div>
-              <ArrowRight size={14} className="text-amber-600 opacity-50 group-hover:opacity-100 transition-opacity translate-x-0 group-hover:translate-x-1" />
-            </div>
-          )}
 
           {/* OTP Digit Inputs */}
           <div className="flex items-center justify-between gap-2 mb-6" onPaste={handlePaste}>
