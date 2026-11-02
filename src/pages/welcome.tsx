@@ -2,169 +2,179 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { LogoFull } from "../components/Logo";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, ShieldCheck, Check } from "lucide-react";
 
 const fadeUp: any = {
-  hidden: { opacity: 0, y: 28 },
+  hidden: { opacity: 0, y: 18 },
   visible: (delay: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] },
   }),
 };
 
-const TRUST_ITEMS = [
-  "1,500+ Schools",
-  "500k+ Students",
-  "99.9% Uptime",
+const TRUST_METRICS = [
+  { value: "1,500+", label: "Schools" },
+  { value: "500k+", label: "Learners" },
+  { value: "99.9%", label: "Uptime" },
 ];
 
-const FEATURES = [
-  "Staff & student management",
-  "Smart timetabling",
-  "Academic Analytics",
-  "Parent & student portal",
+const HIGHLIGHTS = [
+  "Staff & Learner Records",
+  "Automated Timetabling",
+  "CBC & KCSE Gradebooks",
+  "Parent & Student Portal",
 ];
 
 export default function WelcomeScreen() {
   return (
-    <div className="md:hidden flex flex-col min-h-[100dvh] bg-white overflow-hidden">
+    <div className="md:hidden flex flex-col min-h-[100dvh] bg-[#F8FAFC] text-slate-800 antialiased selection:bg-[#0A2540]/10 selection:text-[#0A2540]">
+      
+      {/* ─── TOP HERO WITH PROFESSIONAL PHOTOGRAPHY ───────────────── */}
+      <div className="relative w-full h-[54dvh] min-h-[340px] max-h-[460px] flex flex-col justify-between p-5 overflow-hidden">
+        {/* Background Image with Deep Gradient Shroud */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/mobile-hero-bg.jpg')" }}
+        />
+        {/* Multilayered high-contrast gradient so text pops with crisp legibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A2540] via-[#0A2540]/75 to-[#061628]/45 pointer-events-none" />
 
-      {/* ─── TOP HERO SECTION ─────────────────────────────────────── */}
-      <div className="relative flex-1 flex flex-col items-center justify-center px-7 pt-14 pb-8 overflow-hidden"
-        style={{
-          backgroundImage: "linear-gradient(155deg, rgba(6, 22, 40, 0.55) 0%, rgba(10, 37, 64, 0.45) 55%, rgba(46, 98, 166, 0.55) 100%), url('/mobile-hero-bg.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center top",
-        }}
-      >
-        {/* Decorative rings */}
-        <div className="absolute top-[-80px] left-[-80px] w-[260px] h-[260px] rounded-full border border-white/[0.06]" />
-        <div className="absolute top-[-40px] left-[-40px] w-[180px] h-[180px] rounded-full border border-white/[0.08]" />
-        <div className="absolute bottom-[-60px] right-[-60px] w-[220px] h-[220px] rounded-full border border-white/[0.05]" />
-        <div className="absolute bottom-[20px] right-[-90px] w-[280px] h-[280px] rounded-full bg-[#2E62A6]/20 blur-3xl pointer-events-none" />
-        <div className="absolute top-[30px] right-[-60px] w-[200px] h-[200px] rounded-full bg-[#2E62A6]/10 blur-2xl pointer-events-none" />
+        {/* Top Floating Brand Pill */}
+        <motion.div 
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          custom={0.05}
+          className="relative z-10 flex items-center justify-between"
+        >
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 shadow-sm">
+            <div className="h-5 w-5 rounded-full bg-white/20 p-1 flex items-center justify-center">
+              <img src="/favicon.png" alt="EduCore" className="h-full w-full object-contain" />
+            </div>
+            <span className="text-[12px] font-black tracking-tight text-white flex items-center gap-1">
+              EduCore <span className="text-emerald-400 text-[10px]">●</span>
+            </span>
+          </div>
 
-        <div className="h-[142px]" />
+          <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[10px] font-bold text-emerald-300">
+            <ShieldCheck size={11} className="text-emerald-400" />
+            <span>MOE Compliant</span>
+          </div>
+        </motion.div>
 
-        {/* Headline */}
+        {/* Hero Headline & Subtitle */}
         <motion.div
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          custom={0.1}
-          className="text-center z-10 mb-5"
+          custom={0.15}
+          className="relative z-10 text-center px-1 mb-2"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.25em] text-[#2E62A6]/90 mb-3" style={{ color: "#7aaee8" }}>
-            
-          </p>
-          <h1 className="text-[2rem] font-black text-white leading-tight tracking-tight">
+          <h1 className="text-[1.85rem] xs:text-[2.1rem] font-black text-white leading-[1.12] tracking-tight">
             Manage your school<br />
-            <span className="text-[#7aaee8]">
-              with clarity.
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-200 to-sky-300">
+              with absolute clarity.
             </span>
           </h1>
-          <p className="mt-3 text-[13px] text-indigo-200/70 font-medium leading-relaxed max-w-[260px] mx-auto">
-            Attendance, fees, grades & parent communication — all in one place.
+
+          <p className="mt-2.5 text-[12.5px] text-indigo-100/85 font-normal leading-relaxed max-w-[290px] mx-auto">
+            Fee reconciliation, CBC rubrics, timetables & real-time guardian updates.
           </p>
-        </motion.div>
 
-        {/* Trust bar */}
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0.2}
-          className="flex items-center gap-3 z-10"
-        >
-          {TRUST_ITEMS.map((item, i) => (
-            <React.Fragment key={item}>
-              <span className="text-[10px] font-black text-white/60 whitespace-nowrap">{item}</span>
-              {i < TRUST_ITEMS.length - 1 && (
-                <span className="w-1 h-1 rounded-full bg-white/20 shrink-0" />
-              )}
-            </React.Fragment>
-          ))}
+          {/* Social Proof Pill Bar */}
+          <div className="mt-4 inline-flex items-center justify-center gap-2.5 px-3 py-1.5 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10">
+            {TRUST_METRICS.map((item, i) => (
+              <React.Fragment key={item.label}>
+                <div className="flex items-center gap-1">
+                  <span className="text-[11px] font-black text-white">{item.value}</span>
+                  <span className="text-[10px] font-medium text-indigo-200/70">{item.label}</span>
+                </div>
+                {i < TRUST_METRICS.length - 1 && (
+                  <span className="w-1 h-1 rounded-full bg-white/20" />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
         </motion.div>
-
-        {/* Curved bottom edge */}
-        <div className="absolute -bottom-px left-0 right-0">
-          <svg viewBox="0 0 375 40" preserveAspectRatio="none" className="w-full h-10 block">
-            <path d="M0,40 C120,5 255,5 375,40 L375,40 L0,40 Z" fill="white" />
-          </svg>
-        </div>
       </div>
 
-      {/* ─── BOTTOM WHITE SECTION ─────────────────────────────────── */}
-      <div className="bg-white px-7 pt-2 pb-10">
-        {/* Feature checklist */}
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0.3}
-          className="grid grid-cols-2 gap-x-4 gap-y-2.5 mb-8"
-        >
-          {FEATURES.map((f) => (
-            <div key={f} className="flex items-center gap-2">
-              <CheckCircle2 size={13} className="text-[#2E62A6] shrink-0" />
-              <span className="text-[11px] font-semibold text-slate-600 leading-tight">{f}</span>
-            </div>
-          ))}
-        </motion.div>
+      {/* ─── BOTTOM FLOATING CARD BODY ────────────────────────────── */}
+      <div className="relative -mt-6 z-20 flex-1 flex flex-col justify-between bg-white rounded-t-[32px] shadow-[0_-12px_30px_rgba(10,37,64,0.08)] px-5 pt-6 pb-6">
+        
+        <div className="space-y-5">
+          {/* Subtle drag-pill handle */}
+          <div className="w-10 h-1 rounded-full bg-slate-200 mx-auto -mt-2 mb-3" />
 
-        {/* CTA Buttons */}
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0.4}
-          className="flex flex-row gap-3"
-        >
-          <Link
-            to="/login?tab=register"
-            className="flex items-center justify-center gap-1.5 flex-1 py-3 rounded-2xl font-black text-[12px] text-white shadow-lg active:scale-95 transition-all"
-            style={{ background: "linear-gradient(135deg, #0A2540 0%, #2E62A6 100%)", boxShadow: "0 4px 20px rgba(10,37,64,0.45)" }}
+          {/* Value Proposition Pills (Clean 2-column grid) */}
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            custom={0.25}
+            className="grid grid-cols-2 gap-2"
           >
-            Create Account
-            <ArrowRight size={13} />
-          </Link>
+            {HIGHLIGHTS.map((item) => (
+              <div 
+                key={item} 
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100/90 text-left"
+              >
+                <div className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <Check size={11} strokeWidth={3} />
+                </div>
+                <span className="text-[11px] font-semibold text-slate-700 leading-tight">
+                  {item}
+                </span>
+              </div>
+            ))}
+          </motion.div>
 
-          <Link
-            to="/login"
-            className="flex items-center justify-center gap-1.5 flex-1 py-3 rounded-2xl font-black text-[12px] text-slate-700 border-2 border-slate-200 bg-white hover:bg-slate-50 active:scale-95 transition-all"
+          {/* Prominent Action Buttons */}
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            custom={0.35}
+            className="flex flex-col gap-2.5 pt-1"
           >
-            Sign In
-          </Link>
-        </motion.div>
+            <Link
+              to="/login?tab=register"
+              className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl font-bold text-[13.5px] text-white shadow-md shadow-[#0A2540]/25 bg-[#0A2540] hover:bg-[#0A2540]/90 active:scale-[0.98] transition-all"
+            >
+              <span>Get Started</span>
+              <ArrowRight size={15} />
+            </Link>
 
-        {/* Professional Footer */}
-        <motion.div
+            <Link
+              to="/login"
+              className="w-full h-11 flex items-center justify-center rounded-2xl font-bold text-[13px] text-slate-700 border border-slate-200/90 bg-white hover:bg-slate-50 active:scale-[0.98] transition-all"
+            >
+              Sign In to Portal
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* Clean, Non-Crowded Footer */}
+        <motion.footer
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          custom={0.5}
-          className="mt-10 pt-8 border-t border-slate-100 flex flex-col items-center gap-6"
+          custom={0.45}
+          className="mt-6 pt-4 border-t border-slate-100 flex flex-col items-center gap-2 text-center"
         >
-          <LogoFull className="h-[52px] w-auto opacity-70 grayscale hover:grayscale-0 transition-all duration-300" />
-          
-          <div className="flex items-center gap-4 text-[11px] font-semibold text-slate-400">
-            <a href="#" className="hover:text-[#2E62A6] transition-colors">Support</a>
+          <div className="flex items-center gap-3 text-[11px] font-medium text-slate-400">
+            <a href="#" className="hover:text-slate-600 transition-colors">Support</a>
             <span className="w-1 h-1 rounded-full bg-slate-200" />
-            <a href="#" className="hover:text-[#2E62A6] transition-colors">Privacy</a>
+            <a href="#" className="hover:text-slate-600 transition-colors">Privacy</a>
             <span className="w-1 h-1 rounded-full bg-slate-200" />
-            <a href="#" className="hover:text-[#2E62A6] transition-colors">Terms</a>
+            <a href="#" className="hover:text-slate-600 transition-colors">Terms</a>
           </div>
 
-          <div className="flex flex-col items-center gap-1.5 pb-2">
-            <p className="text-[10px] text-slate-400 font-medium tracking-wide">
-              &copy; {new Date().getFullYear()} EduCore. All rights reserved.
-            </p>
-            <p className="text-[10px] text-slate-400 font-semibold flex items-center gap-1.5">
-              🇰🇪 Proudly built for Kenyan Education
-            </p>
-          </div>
-        </motion.div>
+          <p className="text-[10px] text-slate-400 font-medium">
+            &copy; {new Date().getFullYear()} EduCore · 🇰🇪 Designed for Kenya
+          </p>
+        </motion.footer>
+
       </div>
 
     </div>

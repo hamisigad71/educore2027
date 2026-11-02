@@ -113,11 +113,7 @@ export function PwaInstallBanner() {
           transition={{ type: "spring", stiffness: 350, damping: 28 }}
           className="fixed bottom-4 left-3 right-3 sm:left-auto sm:right-6 sm:max-w-[430px] z-50 pointer-events-auto"
         >
-          <div className="bg-[#0A2540] text-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 shadow-[0_20px_50px_rgba(10,37,64,0.45)] border border-indigo-400/20 backdrop-blur-xl relative overflow-hidden">
-            {/* Ambient Background Glow */}
-            <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-emerald-500/20 blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-28 h-28 rounded-full bg-indigo-500/25 blur-2xl pointer-events-none" />
-
+          <div className="bg-[#0A2540] text-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 shadow-[0_20px_50px_rgba(10,37,64,0.45)] border border-slate-700/60 relative overflow-hidden">
             <div className="flex items-center gap-3 relative z-10">
               {/* App Icon */}
               <div className="relative shrink-0">
