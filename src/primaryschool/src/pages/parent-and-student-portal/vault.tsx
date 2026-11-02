@@ -1,3 +1,8 @@
+import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { FileText, Download, ShieldCheck, Search, Filter, History, Trash2, Plus, Lock, Eye, ChevronRight, Share2 } from "lucide-react";
 import { FeatureHeader } from "@/components/portal/FeatureHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,6 +18,44 @@ const DOCUMENTS = [
 ];
 
 export default function PortalVault() {
+  const { toast } = useToast();
+  const [documents, setDocuments] = useState(DOCUMENTS);
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [securityLogOpen, setSecurityLogOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [requestDocModalOpen, setRequestDocModalOpen] = useState(false);
+  const [newDocName, setNewDocName] = useState("");
+  const [newDocType, setNewDocType] = useState("Academic");
+
+  const handleUpload = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newDocName.trim()) return;
+    const newDoc = {
+      id: Date.now(),
+      name: newDocName.endsWith(".pdf") ? newDocName : `${newDocName}.pdf`,
+      size: "1.4 MB",
+      date: new Date().toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }),
+      type: newDocType,
+      icon: FileText,
+      color: "text-indigo-600",
+      bg: "bg-indigo-50",
+    };
+    setDocuments(prev => [newDoc, ...prev]);
+    setUploadModalOpen(false);
+    setNewDocName("");
+    toast({
+      title: "Document Uploaded Successfully",
+      description: `${newDoc.name} has been securely encrypted and stored in your vault.`,
+    });
+  };
+
+  const handleDelete = (id: number, name: string) => {
+    setDocuments(prev => prev.filter(d => d.id !== id));
+    toast({
+      title: "Document Removed",
+      description: `${name} has been archived from your vault.`,
+    });
+  };
   return (
     <div className="space-y-8 pb-12">
       <FeatureHeader 
@@ -21,7 +64,7 @@ export default function PortalVault() {
         badge="Secure Storage"
         icon={<ShieldCheck className="size-8 text-indigo-400" />}
         actions={
-          <Button className="bg-indigo-600 hover:bg-black text-white shadow-lg shadow-indigo-100 gap-2 font-medium h-11 px-8 rounded-2xl group transition-all">
+          <Button onClick={() => setUploadModalOpen(true)} className="bg-indigo-600 hover:bg-black text-white shadow-lg shadow-indigo-100 gap-2 font-medium h-11 px-8 rounded-2xl group transition-all">
             <Plus size={18} /> Upload Doc
           </Button>
         }
@@ -48,7 +91,7 @@ export default function PortalVault() {
 
                <CardContent className="p-0">
                   <div className="divide-y divide-slate-50">
-                     {DOCUMENTS.map((doc) => (
+                     {documents.map((doc) => (
                         <div key={doc.id} className="p-8 flex flex-col md:flex-row gap-6 hover:bg-slate-50/50 transition-colors group">
                            <div className="shrink-0">
                               <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center shadow-sm transition-transform group-hover:scale-110", doc.bg)}>
@@ -68,13 +111,28 @@ export default function PortalVault() {
                            </div>
 
                            <div className="flex items-center gap-2 md:justify-end">
-                              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50">
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => toast({ title: "Previewing Document", description: `Opening secure preview for ${doc.name}...` })}
+                                className="h-10 w-10 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50"
+                              >
                                  <Eye size={18} />
                               </Button>
-                              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-slate-400 hover:text-emerald-600 hover:bg-emerald-50">
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => toast({ title: "Downloading Encrypted Copy", description: `${doc.name} download started.` })}
+                                className="h-10 w-10 rounded-xl text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"
+                              >
                                  <Download size={18} />
                               </Button>
-                              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50">
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => handleDelete(doc.id, doc.name)}
+                                className="h-10 w-10 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50"
+                              >
                                  <Trash2 size={18} />
                               </Button>
                            </div>
@@ -92,7 +150,7 @@ export default function PortalVault() {
                     All documents stored in your vault are protected with enterprise-grade encryption. Your data is your own, and all access is strictly logged and audited.
                   </p>
                </div>
-               <Button className="bg-white/10 hover:bg-white/20 text-white font-bold text-[10px] uppercase tracking-widest h-12 px-8 rounded-2xl shrink-0 backdrop-blur-md border border-white/20">
+               <Button onClick={() => setSecurityLogOpen(true)} className="bg-white/10 hover:bg-white/20 text-white font-bold text-[10px] uppercase tracking-widest h-12 px-8 rounded-2xl shrink-0 backdrop-blur-md border border-white/20">
                   Security Log <History size={14} className="ml-2" />
                </Button>
             </div>
@@ -120,16 +178,133 @@ export default function PortalVault() {
                </div>
 
                <div className="mt-8 pt-8 border-t border-slate-50">
-                  <Button variant="ghost" className="w-full justify-between text-slate-600 font-bold text-[10px] uppercase tracking-widest group p-0 hover:bg-transparent">
+                  <Button onClick={() => setRequestDocModalOpen(true)} variant="ghost" className="w-full justify-between text-slate-600 font-bold text-[10px] uppercase tracking-widest group p-0 hover:bg-transparent">
                      Request Document <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </Button>
-                  <Button variant="ghost" className="w-full justify-between text-slate-600 font-bold text-[10px] uppercase tracking-widest group p-0 hover:bg-transparent mt-4">
+                  <Button onClick={() => setShareModalOpen(true)} variant="ghost" className="w-full justify-between text-slate-600 font-bold text-[10px] uppercase tracking-widest group p-0 hover:bg-transparent mt-4">
                      Share Vault Access <Share2 size={14} />
                   </Button>
                </div>
             </Card>
          </div>
       </div>
+    
+       {/* Upload Document Modal */}
+       <Dialog open={uploadModalOpen} onOpenChange={setUploadModalOpen}>
+          <DialogContent className="max-w-md w-[94vw] bg-white rounded-3xl p-6 border border-slate-200">
+             <DialogHeader>
+                <DialogTitle className="text-lg font-black text-slate-900">Upload to Secure Vault</DialogTitle>
+                <DialogDescription className="text-xs text-slate-500">Add official birth certificate, immunization chart, or academic transfer forms.</DialogDescription>
+             </DialogHeader>
+             <form onSubmit={handleUpload} className="space-y-4 mt-4">
+                <div className="space-y-1.5">
+                   <Label className="text-xs font-bold text-slate-600 uppercase">Document Name</Label>
+                   <Input 
+                     value={newDocName}
+                     onChange={(e) => setNewDocName(e.target.value)}
+                     placeholder="e.g. Birth_Certificate_Certified.pdf"
+                     className="h-10 text-xs rounded-xl"
+                     required
+                   />
+                </div>
+                <div className="space-y-1.5">
+                   <Label className="text-xs font-bold text-slate-600 uppercase">Category</Label>
+                   <select 
+                     value={newDocType}
+                     onChange={(e) => setNewDocType(e.target.value)}
+                     className="w-full h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold outline-none"
+                   >
+                      <option value="Academic">Academic</option>
+                      <option value="Official">Official</option>
+                      <option value="Health">Health</option>
+                      <option value="Administrative">Administrative</option>
+                   </select>
+                </div>
+                <div className="border-2 border-dashed border-indigo-200 rounded-2xl p-6 text-center bg-indigo-50/30">
+                   <FileText size={28} className="mx-auto text-indigo-500 mb-2" />
+                   <p className="text-xs font-bold text-slate-800">Choose File to Upload</p>
+                   <p className="text-[10px] text-slate-400 mt-0.5">Encrypted with AES-256 upon save</p>
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                   <Button type="button" variant="ghost" onClick={() => setUploadModalOpen(false)} className="rounded-xl text-xs font-bold">Cancel</Button>
+                   <Button type="submit" className="rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white">Save Document</Button>
+                </div>
+             </form>
+          </DialogContent>
+       </Dialog>
+
+       {/* Security Log Modal */}
+       <Dialog open={securityLogOpen} onOpenChange={setSecurityLogOpen}>
+          <DialogContent className="max-w-md w-[94vw] bg-white rounded-3xl p-6 border border-slate-200">
+             <DialogHeader>
+                <DialogTitle className="text-lg font-black text-slate-900">Vault Access Audit Log</DialogTitle>
+                <DialogDescription className="text-xs text-slate-500">Real-time tamper-evident verification ledger.</DialogDescription>
+             </DialogHeader>
+             <div className="space-y-3 mt-4 max-h-[50vh] overflow-y-auto">
+                {[
+                  { time: "Today, 11:20 AM", event: "Admission Letter Viewed", ip: "197.232.88.14 (Nairobi, KE)", status: "Authorized" },
+                  { time: "Yesterday, 04:15 PM", event: "Term 1 Report Card Downloaded", ip: "197.232.88.14 (Nairobi, KE)", status: "Authorized" },
+                  { time: "Apr 12, 2025", event: "Vault Key Rotated", ip: "Internal System Service", status: "Verified" },
+                ].map((log, i) => (
+                   <div key={i} className="p-3 bg-slate-50 rounded-2xl border border-slate-200/60 space-y-0.5">
+                      <div className="flex justify-between items-center text-xs font-bold text-slate-800">
+                         <span>{log.event}</span>
+                         <Badge className="bg-emerald-50 text-emerald-700 text-[9px] border-emerald-200">{log.status}</Badge>
+                      </div>
+                      <p className="text-[11px] text-slate-400 font-mono">{log.ip} · {log.time}</p>
+                   </div>
+                ))}
+             </div>
+          </DialogContent>
+       </Dialog>
+
+       {/* Share Vault Modal */}
+       <Dialog open={shareModalOpen} onOpenChange={setShareModalOpen}>
+          <DialogContent className="max-w-md w-[94vw] bg-white rounded-3xl p-6 border border-slate-200">
+             <DialogHeader>
+                <DialogTitle className="text-lg font-black text-slate-900">Share Secure Vault Access</DialogTitle>
+                <DialogDescription className="text-xs text-slate-500">Generate a time-limited read-only link for admissions or medical clearance.</DialogDescription>
+             </DialogHeader>
+             <div className="space-y-3 mt-4">
+                <Input value="https://educore.shule.ke/vault/verify?token=7f82b3a10c9e" readOnly className="h-10 text-xs font-mono rounded-xl bg-slate-50" />
+                <Button 
+                  onClick={() => {
+                    navigator.clipboard?.writeText("https://educore.shule.ke/vault/verify?token=7f82b3a10c9e");
+                    setShareModalOpen(false);
+                    toast({ title: "Link Copied!", description: "Expiring access link copied to clipboard." });
+                  }}
+                  className="w-full h-10 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs"
+                >
+                   Copy Secure Link
+                </Button>
+             </div>
+          </DialogContent>
+       </Dialog>
+
+       {/* Request Document Modal */}
+       <Dialog open={requestDocModalOpen} onOpenChange={setRequestDocModalOpen}>
+          <DialogContent className="max-w-md w-[94vw] bg-white rounded-3xl p-6 border border-slate-200">
+             <DialogHeader>
+                <DialogTitle className="text-lg font-black text-slate-900">Request Official Document</DialogTitle>
+                <DialogDescription className="text-xs text-slate-500">Order an official stamped transcript, bona fide certificate, or letter of recommendation.</DialogDescription>
+             </DialogHeader>
+             <div className="space-y-3 mt-4">
+                {["Official Stamped Transcript", "Letter of Introduction & Good Conduct", "KCPE/CBC Completion Verification", "Fee Clearance Certificate"].map((docName, i) => (
+                   <button
+                     key={i}
+                     onClick={() => {
+                        setRequestDocModalOpen(false);
+                        toast({ title: "Request Submitted to Administration", description: `Your request for ${docName} has been routed to the Registry.` });
+                     }}
+                     className="w-full p-3 rounded-2xl border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/50 flex items-center justify-between text-left text-xs font-bold text-slate-800 transition-all"
+                   >
+                      <span>{docName}</span>
+                      <ChevronRight size={14} className="text-slate-400" />
+                   </button>
+                ))}
+             </div>
+          </DialogContent>
+       </Dialog>
     </div>
   );
 }

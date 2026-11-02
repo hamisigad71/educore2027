@@ -11,6 +11,7 @@ import {
   MoreHorizontal, Paperclip, Smile,
   CheckCheck, ShieldCheck
 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const TEACHERS = [
   { id: 1, name: "Mrs. Sarah Johnson", role: "Class Teacher", subject: "English", status: "online", lastMsg: "Please ensure Tim's homework is submitted by tomorrow.", time: "10:24 AM", unread: 1, avatar: "SJ" },
@@ -18,7 +19,7 @@ const TEACHERS = [
   { id: 3, name: "Ms. Linda Mwangi", role: "Subject Teacher", subject: "Science", status: "online", lastMsg: "Great project work from Tim today!", time: "09:15 AM", unread: 0, avatar: "LM" },
 ];
 
-const MESSAGES = [
+const INITIAL_MESSAGES = [
   { id: 1, side: "left", text: "Good morning! I wanted to check on Tim's progress in English.", time: "09:00 AM" },
   { id: 2, side: "right", text: "Good morning! Tim is doing exceptionally well. He's showing great interest in creative writing.", time: "09:05 AM" },
   { id: 3, side: "left", text: "That's wonderful to hear. Are there any specific books you recommend for him?", time: "09:10 AM" },
@@ -27,8 +28,45 @@ const MESSAGES = [
 ];
 
 export default function PortalMessages() {
+  const { toast } = useToast();
   const [activeTeacher, setActiveTeacher] = useState(TEACHERS[0]);
+  const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [message, setMessage] = useState("");
+
+  const handleSendMessage = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!message.trim()) return;
+
+    const newMsg = {
+      id: Date.now(),
+      side: "right" as const,
+      text: message.trim(),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isLatest: true,
+    };
+
+    setMessages((prev) => [...prev, newMsg]);
+    setMessage("");
+
+    // Realistic auto-reply simulation
+    setTimeout(() => {
+      const reply = {
+        id: Date.now() + 1,
+        side: "left" as const,
+        text: `Thank you for your message. I have received this and will review it before school closes today.`,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isLatest: true,
+      };
+      setMessages((prev) => [...prev, reply]);
+    }, 1800);
+  };
+
+  const handleCall = (type: "voice" | "video") => {
+    toast({
+      title: type === "voice" ? "Initiating Voice Call" : "Starting Video Consultation",
+      description: `Connecting with ${activeTeacher.name} via secure encrypted channel...`,
+    });
+  };
 
   return (
     <div className="h-[calc(100vh-180px)] flex flex-col gap-6">
@@ -116,13 +154,28 @@ export default function PortalMessages() {
                   </div>
                </div>
                <div className="flex gap-2">
-                  <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-slate-200 text-slate-400 hover:text-indigo-600 hover:bg-slate-50">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={() => handleCall("voice")}
+                    className="h-10 w-10 rounded-xl border-slate-200 text-slate-500 hover:text-indigo-600 hover:bg-slate-50"
+                  >
                     <Phone size={18} />
                   </Button>
-                  <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-slate-200 text-slate-400 hover:text-indigo-600 hover:bg-slate-50">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={() => handleCall("video")}
+                    className="h-10 w-10 rounded-xl border-slate-200 text-slate-500 hover:text-indigo-600 hover:bg-slate-50"
+                  >
                     <Video size={18} />
                   </Button>
-                  <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-slate-200 text-slate-400 hover:bg-slate-100">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={() => toast({ title: "Chat Settings", description: "Teacher direct office hours: Mon - Fri, 8:00 AM - 4:30 PM." })}
+                    className="h-10 w-10 rounded-xl border-slate-200 text-slate-500 hover:bg-slate-100"
+                  >
                     <MoreHorizontal size={18} />
                   </Button>
                </div>
@@ -137,7 +190,7 @@ export default function PortalMessages() {
                </div>
 
                <AnimatePresence>
-                  {MESSAGES.map(msg => (
+                  {messages.map(msg => (
                      <motion.div
                        key={msg.id}
                        initial={{ opacity: 0, x: msg.side === 'left' ? -20 : 20 }}
@@ -165,7 +218,7 @@ export default function PortalMessages() {
             </div>
 
             {/* Input Area */}
-            <div className="p-6 border-t border-slate-100">
+            <form onSubmit={handleSendMessage} className="p-6 border-t border-slate-100">
                <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-[28px] p-2 pl-6">
                   <Input 
                     placeholder="Type your message..." 
@@ -174,16 +227,32 @@ export default function PortalMessages() {
                     onChange={(e) => setMessage(e.target.value)}
                   />
                   <div className="flex items-center gap-1 group">
-                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-slate-400 hover:text-indigo-600 hover:bg-white transition-all">
+                     <Button 
+                       type="button" 
+                       variant="ghost" 
+                       size="icon" 
+                       onClick={() => setMessage(m => m + " 😊")}
+                       className="h-10 w-10 rounded-full text-slate-400 hover:text-indigo-600 hover:bg-white transition-all"
+                     >
                         <Smile size={20} />
                      </Button>
-                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-slate-400 hover:text-indigo-600 hover:bg-white transition-all">
+                     <Button 
+                       type="button" 
+                       variant="ghost" 
+                       size="icon" 
+                       onClick={() => toast({ title: "Attach File", description: "Select homework document, medical note, or photo." })}
+                       className="h-10 w-10 rounded-full text-slate-400 hover:text-indigo-600 hover:bg-white transition-all"
+                     >
                         <Paperclip size={20} />
                      </Button>
-                     <Button className={cn(
-                       "h-10 px-6 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all",
-                       message.trim() ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" : "bg-slate-200 text-slate-400"
-                     )}>
+                     <Button 
+                       type="submit"
+                       disabled={!message.trim()}
+                       className={cn(
+                         "h-10 px-6 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all",
+                         message.trim() ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" : "bg-slate-200 text-slate-400"
+                       )}
+                     >
                         <Send size={16} className="mr-2" /> Send
                      </Button>
                   </div>
@@ -195,7 +264,7 @@ export default function PortalMessages() {
                      End-to-end encrypted communication
                   </p>
                </div>
-            </div>
+            </form>
          </Card>
       </div>
     </div>

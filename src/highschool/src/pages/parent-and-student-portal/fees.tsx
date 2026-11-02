@@ -352,6 +352,17 @@ export default function PortalFees() {
         open={payOpen} 
         onOpenChange={setPayOpen} 
         studentName={student.name || "Student"}
+        studentId={student.id}
+        onPaymentSuccess={async (payment) => {
+          toast({
+            title: "Payment Received",
+            description: `Payment of KES ${payment.amount.toLocaleString()} confirmed via ${payment.method.toUpperCase()} (${payment.receipt})`,
+          });
+          if (childData?.id) {
+            const fData = await getStudentFees(childData.id);
+            setLiveFees(fData);
+          }
+        }}
       />
 
       {/* Transaction Detail Dialog */}

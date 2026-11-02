@@ -90,7 +90,7 @@ const testimonial = {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function Login() {
-  const { login, loginWithSupabase, signUpWithSupabase } = useAuth();
+  const { login, loginWithSupabase, signUpWithSupabase, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -155,6 +155,24 @@ export default function Login() {
   const effectiveEmail = emailInput || (selected ? `${selected}@shule.go.ke` : "");
   const deptRoles =
     portal === "highschool" ? highschoolStaffRoles : primaryStaffRoles;
+
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  async function handleGoogleAuth() {
+    try {
+      setGoogleLoading(true);
+      setAuthError(null);
+      const dept = selected === "staff" ? staffRole : undefined;
+      const res = await loginWithGoogle(portal, dept);
+      if (!res.success) {
+        setAuthError(res.error || "Google authentication failed.");
+        setGoogleLoading(false);
+      }
+    } catch (err: any) {
+      setAuthError(err?.message || "Google authentication failed.");
+      setGoogleLoading(false);
+    }
+  }
 
   async function handleLogin() {
     if ((!selected && !emailInput) || loading) return;
@@ -307,103 +325,106 @@ export default function Login() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=DM+Serif+Display:ital@0;1&display=swap');
-        .login-root, .login-root * { font-family: 'DM Sans', sans-serif !important; }
-        .serif-hero { font-family: 'DM Serif Display', serif !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap');
+        .login-root, .login-root * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important; }
+        .serif-hero { font-family: 'Playfair Display', Georgia, serif !important; }
       `}</style>
 
       <div className="login-root min-h-screen flex bg-slate-50">
 
         {/* ── LEFT BRAND PANEL ──────────────────────────────────────── */}
-        {/*
-          DESKTOP CHANGE 1: Reduced panel width from w-[460px] min-w-[460px]
-          to w-[400px] min-w-[400px] — was dominating too much of the viewport
-          (~36% on 1280px). Now sits at ~31%, giving the form side more room.
-        */}
-        <aside className="hidden lg:flex w-[480px] min-w-[480px] bg-primary flex-col p-12 relative overflow-hidden">
-          {/* Subtle Branded Background orbs */}
-          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-emerald-500/15 pointer-events-none blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-amber-500/10 pointer-events-none blur-3xl" />
+        <aside className="hidden lg:flex w-[480px] min-w-[480px] bg-primary flex-col justify-between p-10 relative overflow-hidden border-r border-indigo-950/20">
+          {/* Subtle Ambient Radial Lighting */}
+          <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-emerald-500/15 pointer-events-none blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-indigo-400/10 pointer-events-none blur-3xl" />
+          <div className="absolute top-1/2 left-1/3 w-64 h-64 rounded-full bg-amber-400/5 pointer-events-none blur-3xl" />
 
-          {/*
-            DESKTOP CHANGE 2: Edge-to-Edge Hero Branding
-            Removed negative margins and gradient overlays to maximize image clarity.
-            The image now spans the full width of the side panel for maximum impact.
-          */}
-          <div className="relative z-10 -mx-12 -mt-12 mb-10 overflow-hidden border-b border-indigo-300/10 group">
-            <img
-              src="/login-hero.png"
-              alt="EduCore Branding"
-              className="w-full h-auto object-contain transition-transform duration-1000 group-hover:scale-[1.02]"
-            />
+          {/* Top Header & Crest */}
+          <div className="relative z-10 flex items-center justify-between pb-6 border-b border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center p-2 shadow-inner">
+                <img src="/logo.png" alt="EduCore" className="h-full w-auto object-contain brightness-200" />
+              </div>
+              <div>
+                <p className="text-[16px] font-black tracking-tight text-white flex items-center gap-1.5">
+                  EduCore<span className="text-emerald-400 text-xs">●</span>
+                </p>
+                <p className="text-[10px] font-bold text-indigo-200/70 uppercase tracking-widest">
+                  Enterprise Academic OS
+                </p>
+              </div>
+            </div>
+
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.07] border border-white/15 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
+              <ShieldCheck size={12} className="text-emerald-400" />
+              <span>Certified MOE</span>
+            </div>
           </div>
 
-          {/* Headline - Centered Stack */}
-          <div className="flex-1 flex flex-col justify-center relative z-10 max-w-[340px]">
-            <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6 w-fit">
-              <Crown className="size-3 text-amber-400" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-300">
-                
+          {/* Middle Focus Hero Content */}
+          <div className="relative z-10 my-auto py-8 max-w-[380px]">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 mb-5">
+              <Crown className="size-3 text-amber-300" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-200">
+                Kenya & East Africa Standard
               </span>
             </div>
 
-            <h1 className="serif-hero text-[34px] text-white leading-[1.1] mb-5 tracking-tight">
+            <h1 className="serif-hero text-[36px] xl:text-[40px] text-white leading-[1.08] mb-4 tracking-tight">
               Manage your school<br />
-              <span className="text-emerald-300 italic">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-200 to-amber-200 italic">
                 with absolute clarity.
               </span>
             </h1>
-            
-            <p className="text-[14px] text-indigo-300/80 leading-relaxed font-medium mb-8">
-              A unified ecosystem for administrators, teachers, parents and staff — engineered for excellence in Kenyan education.
+
+            <p className="text-[14px] text-indigo-100/80 leading-relaxed font-normal mb-8">
+              A unified, cloud-ready architecture for administrators, teachers, learners, and bursars — crafted for CBC and KCSE excellence.
             </p>
 
-            {/* Stats - Grid Architecture */}
-            <div className="grid grid-cols-3 gap-6 pt-6 border-t border-indigo-300/10 mb-10">
+            {/* Key Statistics Grid */}
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/10 mb-8">
               {stats.map((s) => (
-                <div key={s.label}>
-                   <p className="text-2xl font-black text-white tracking-tighter">{s.value}</p>
-                   <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mt-1.5">{s.label}</p>
+                <div key={s.label} className="p-3 rounded-2xl bg-white/[0.04] border border-white/5">
+                  <p className="text-xl font-black text-white tracking-tight">{s.value}</p>
+                  <p className="text-[9px] font-bold text-indigo-200/70 uppercase tracking-wider mt-1">{s.label}</p>
                 </div>
               ))}
             </div>
 
-            {/* Premium Testimonial Card */}
-            <Card className="bg-white/[0.03] border-white/5 backdrop-blur-md rounded-[24px] overflow-hidden">
-                <CardContent className="p-6">
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={12} className="text-amber-400 fill-amber-400" />
-                    ))}
-                  </div>
-                  <p className="text-[13px] text-indigo-100 leading-relaxed font-medium italic mb-5">
-                    "{testimonial.quote}"
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-600 flex items-center justify-center text-[11px] font-bold text-white shadow-lg shadow-indigo-950/50">
-                      {testimonial.initials}
-                    </div>
-                    <div>
-                      <p className="text-[12px] font-bold text-white leading-tight">{testimonial.name}</p>
-                      <p className="text-[10px] text-indigo-400 font-medium">{testimonial.role}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Endorsed Testimonial */}
+            <div className="bg-white/[0.05] border border-white/10 backdrop-blur-xl rounded-[24px] p-5 shadow-2xl shadow-indigo-950/60">
+              <div className="flex gap-1 mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={11} className="text-amber-400 fill-amber-400" />
+                ))}
+              </div>
+              <p className="text-[12.5px] text-indigo-50 leading-relaxed italic mb-4 font-normal">
+                "{testimonial.quote}"
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-indigo-600 flex items-center justify-center text-[11px] font-black text-white shadow-md">
+                  {testimonial.initials}
+                </div>
+                <div>
+                  <p className="text-[12px] font-bold text-white leading-tight">{testimonial.name}</p>
+                  <p className="text-[10px] text-indigo-200/70 font-medium">{testimonial.role}</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Footer - Anchored to bottom */}
-          <div className="relative z-10 mt-12 pt-6 border-t border-indigo-300/10 flex items-center justify-between opacity-60">
+          {/* Bottom Trust Status */}
+          <div className="relative z-10 pt-5 border-t border-white/10 flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <span className="relative flex h-1.5 w-1.5">
+              <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
               </span>
-              <span className="text-[10px] text-indigo-300 font-bold">
-                System Operational
+              <span className="text-[11px] font-medium text-emerald-200">
+                Supabase & M-Pesa Live
               </span>
             </div>
-            <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">
+            <span className="text-[10px] font-bold text-indigo-200/60 uppercase tracking-widest">
               v1.2.0-PRO · 🇰🇪
             </span>
           </div>
@@ -412,65 +433,43 @@ export default function Login() {
         {/* ══════════════════════════════════════════
             RIGHT FORM PANEL
         ══════════════════════════════════════════ */}
-        <main className="flex-1 flex flex-col items-center lg:justify-center overflow-y-auto bg-white lg:bg-slate-50/50">
+        <main className="flex-1 flex flex-col items-center justify-center overflow-y-auto bg-slate-50/60 min-h-screen py-8 px-4 sm:px-6 lg:px-10">
           
-          {/* Marketing Image - True Full Width on Mobile */}
-          <div className="lg:hidden w-full overflow-hidden rounded-b-[40px] shadow-sm shadow-slate-200 bg-white">
-            <img 
-              src="/wwp1.png" 
-              alt="EduCore Features" 
-              className="w-full h-auto block" 
-            />
+          {/* Mobile Top Header */}
+          <div className="lg:hidden w-full max-w-[460px] flex items-center justify-between mb-6 px-1">
+            <div className="flex items-center gap-2.5">
+              <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center p-1.5 shadow-md">
+                <img src="/logo.png" alt="EduCore" className="h-full w-auto object-contain brightness-200" />
+              </div>
+              <div>
+                <p className="text-[15px] font-black tracking-tight text-slate-900 leading-none">
+                  EduCore<span className="text-emerald-500">●</span>
+                </p>
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">
+                  Academic Portal
+                </p>
+              </div>
+            </div>
+
+            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-full flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live Server
+            </span>
           </div>
 
           <motion.div 
-            initial={{ opacity: 0, scale: 0.98, y: 30 }}
+            initial={{ opacity: 0, scale: 0.98, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12 relative overflow-hidden"
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full max-w-[480px] relative z-10"
           >
-            {/* ── Background Orbs (Glass3D Atmos) ── */}
-            <motion.div
-              className="absolute rounded-full bg-emerald-500/5 blur-[120px] pointer-events-none"
-              style={{ width: 400, height: 400, top: "20%", left: "10%" }}
-              animate={{ x: [0, 40, 0], y: [0, 30, 0] }}
-              transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div
-              className="absolute rounded-full bg-amber-500/5 blur-[100px] pointer-events-none"
-              style={{ width: 300, height: 300, bottom: "20%", right: "10%" }}
-              animate={{ x: [0, -30, 0], y: [0, -40, 0] }}
-              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            />
-            <motion.div
-              className="absolute rounded-full bg-indigo-500/5 blur-[80px] pointer-events-none"
-              style={{ width: 250, height: 250, top: "50%", left: "60%" }}
-              animate={{ x: [0, 20, 0], y: [0, -20, 0] }}
-              transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-            />
+            {/* Ambient Backing Glow */}
+            <div className="absolute -top-16 -left-16 w-64 h-64 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-16 -right-16 w-64 h-64 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
 
-            {/*
-              DESKTOP CHANGE 3: Reduced lg padding from lg:p-12 to lg:p-8
-              on the card so the full form fits without scrolling on a standard
-              1366×768 laptop screen.
-            */}
-            <Card className="w-full max-w-[540px] relative z-10 border border-white/50 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08),0_0_1px_rgba(255,255,255,1)_inset] bg-white/70 backdrop-blur-3xl rounded-[40px] transition-all duration-1000 overflow-hidden">
-              {/* Grain/Noise Overlay */}
-              <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+            <Card className="w-full relative z-10 border border-slate-200/80 shadow-[0_20px_50px_-15px_rgba(10,37,64,0.08),0_0_1px_rgba(0,0,0,0.05)] bg-white rounded-[32px] overflow-hidden">
               
-              <CardContent className="p-7 sm:p-10 lg:p-8 relative z-20">
+              <CardContent className="p-6 sm:p-8 lg:p-8 relative z-20">
                 <div className="w-full">
-
-            {/* Mobile logo */}
-            <div className="flex lg:hidden justify-center mb-10">
-              <motion.img 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                src="/loader,logo.png" 
-                alt="EduCore" 
-                className="h-19 w-auto object-contain brightness-110" 
-              />
-            </div>
 
             {/* ── Top Toggles ── */}
             <div className="w-full flex flex-col gap-3 mb-8">
@@ -535,42 +534,49 @@ export default function Login() {
 
 
             {/* ── Greeting ── */}
-            <div className="mb-8 text-center sm:text-left animate-in slide-in-from-bottom-2 duration-500">
-              <h2 className="text-[32px] font-black text-slate-900 tracking-tighter leading-[1.1] mb-2">
+            <div className="mb-6 text-center sm:text-left">
+              <h2 className="text-[26px] sm:text-[30px] font-black text-slate-900 tracking-tight leading-tight mb-1.5">
                 {authMode === "signin" ? "Welcome back" : "Join EduCore"}
               </h2>
-              <p className="text-[14px] text-slate-500 font-medium tracking-tight">
+              <p className="text-[13px] text-slate-500 font-normal leading-normal">
                 {authMode === "signin" 
-                  ? "Authentication required for secure gateway access." 
-                  : "Register your account for full system access."}
+                  ? "Select your profile below or enter credentials to sign in." 
+                  : "Register your institution credentials for gateway access."}
               </p>
             </div>
 
             {/* ── Role Selector ── */}
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-normal mb-4">
-              Select Your Role
-            </p>
-            <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                Select Your Role
+              </p>
+              {selected && (
+                <button
+                  type="button"
+                  onClick={() => setSelected(null)}
+                  className="text-[11px] font-semibold text-primary hover:underline"
+                >
+                  Clear Selection
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 mb-6">
               {roles.map((r, idx) => (
                 <motion.button
                   key={r.role}
                   type="button"
                   onClick={() => setSelected(r.role)}
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + idx * 0.08, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                  whileHover={{ y: -6, transition: { type: "spring", stiffness: 400, damping: 25 } }}
-                  whileTap={{ scale: 0.97 }}
+                  transition={{ delay: 0.1 + idx * 0.05, duration: 0.4 }}
+                  whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                  whileTap={{ scale: 0.98 }}
                   className={cn(
-                    /*
-                      DESKTOP CHANGE 4: Reduced role card border-radius from
-                      rounded-[28px] to rounded-2xl (24px). At smaller card
-                      sizes the 28px radius was collapsing into a pill shape.
-                    */
-                    "relative rounded-2xl p-5 text-left border transition-all duration-500 group overflow-hidden",
+                    "relative rounded-2xl p-4 text-left border transition-all duration-300 group overflow-hidden",
                     selected === r.role
-                      ? "border-primary/40 bg-white shadow-[0_12px_24px_-8px_rgba(10,37,64,0.15)] ring-1 ring-primary/10"
-                      : "border-slate-100 bg-slate-50/30 hover:border-primary/30 hover:bg-white"
+                      ? "border-primary bg-indigo-50/40 shadow-sm ring-1 ring-primary"
+                      : "border-slate-200/80 bg-white hover:border-slate-300 hover:bg-slate-50/50"
                   )}
                 >
                   <AnimatePresence>
@@ -579,26 +585,26 @@ export default function Login() {
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
-                        className="absolute top-4 right-4 h-5 w-5 rounded-full bg-primary flex items-center justify-center ring-4 ring-indigo-50"
+                        className="absolute top-3.5 right-3.5 h-4.5 w-4.5 rounded-full bg-primary flex items-center justify-center text-white shadow-sm"
                       >
-                        <Check size={11} className="text-white" strokeWidth={3} />
+                        <Check size={11} strokeWidth={3} />
                       </motion.div>
                     )}
                   </AnimatePresence>
                   <div
                     className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-transform duration-500",
+                      "w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition-transform duration-300 shadow-sm",
                       r.iconBg,
                       r.iconColor,
-                      selected === r.role && "scale-110"
+                      selected === r.role && "scale-105"
                     )}
                   >
                     {r.icon}
                   </div>
-                  <p className="text-[13px] font-bold text-slate-900 mb-1 leading-tight">
+                  <p className="text-[13px] font-bold text-slate-900 mb-0.5 leading-snug">
                     {r.label}
                   </p>
-                  <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                  <p className="text-[11px] text-slate-500 font-normal leading-tight line-clamp-1">
                     {r.desc}
                   </p>
                 </motion.button>
@@ -655,72 +661,72 @@ export default function Login() {
             )}
 
             {/* ── Credentials ── */}
-            <div className="space-y-5 mb-6 animate-in slide-in-from-bottom-2 duration-500">
+            <div className="space-y-4 mb-5">
               
               {authMode === "signup" && (
                 <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">First Name</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">First Name</Label>
                       <Input
                         type="text"
                         placeholder="John"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 transition-all"
+                        className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Last Name</Label>
+                    <div className="space-y-1.5">
+                      <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Last Name</Label>
                       <Input
                         type="text"
                         placeholder="Doe"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 transition-all"
+                        className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Phone</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Phone Number</Label>
                       <Input
                         type="tel"
-                        placeholder="+254 7XX "
+                        placeholder="+254 7XX XXX XXX"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 transition-all"
+                        className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">School Code (Optional)</Label>
+                    <div className="space-y-1.5">
+                      <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">School Code (Optional)</Label>
                       <Input
                         type="text"
                         placeholder="BFA-2025"
                         value={schoolCode}
                         onChange={(e) => setSchoolCode(e.target.value)}
-                        className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 transition-all uppercase"
+                        className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">School Name</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">School Name</Label>
                       <Input
                         type="text"
-                        placeholder="e.g. Bright Futures Academy"
+                        placeholder="e.g. Alliance High School"
                         value={schoolName}
                         onChange={(e) => setSchoolName(e.target.value)}
-                        className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 transition-all"
+                        className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Join Date</Label>
+                    <div className="space-y-1.5">
+                      <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Join Date</Label>
                       <Input
                         type="date"
                         value={joinDate}
                         onChange={(e) => setJoinDate(e.target.value)}
-                        className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 transition-all text-slate-600 block w-full"
+                        className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all text-slate-700 block w-full bg-white"
                       />
                     </div>
                   </div>
@@ -729,29 +735,29 @@ export default function Login() {
                   <AnimatePresence mode="popLayout">
                     {selected === "student" && (
                       <motion.div
-                        initial={{ opacity: 0, y: -10 }}
+                        initial={{ opacity: 0, y: -8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="grid grid-cols-2 gap-4"
+                        exit={{ opacity: 0, y: -8 }}
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
                       >
-                        <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Admission Number</Label>
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Admission Number</Label>
                           <Input
                             type="text"
                             placeholder="e.g. ADM/2026/001"
                             value={admissionNumber}
                             onChange={(e) => setAdmissionNumber(e.target.value)}
-                            className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 transition-all uppercase"
+                            className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Class / Grade</Label>
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Class / Grade</Label>
                           <Input
                             type="text"
                             placeholder={portal === "highschool" ? "e.g. Form 3 East" : "e.g. Grade 5 Blue"}
                             value={studentClass}
                             onChange={(e) => setStudentClass(e.target.value)}
-                            className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 transition-all"
+                            className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                           />
                         </div>
                       </motion.div>
@@ -759,29 +765,29 @@ export default function Login() {
 
                     {selected === "parent" && (
                       <motion.div
-                        initial={{ opacity: 0, y: -10 }}
+                        initial={{ opacity: 0, y: -8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="grid grid-cols-2 gap-4"
+                        exit={{ opacity: 0, y: -8 }}
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
                       >
-                        <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Admission Number</Label>
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Student Admission Number</Label>
                           <Input
                             type="text"
                             placeholder="e.g. ADM/2026/001"
                             value={admissionNumber}
                             onChange={(e) => setAdmissionNumber(e.target.value)}
-                            className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 transition-all uppercase"
+                            className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Child's Class / Grade</Label>
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Child's Class / Grade</Label>
                           <Input
                             type="text"
                             placeholder={portal === "highschool" ? "e.g. Form 2 West" : "e.g. Grade 4 Green"}
                             value={studentClass}
                             onChange={(e) => setStudentClass(e.target.value)}
-                            className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 transition-all"
+                            className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                           />
                         </div>
                       </motion.div>
@@ -789,29 +795,29 @@ export default function Login() {
 
                     {selected === "teacher" && (
                       <motion.div
-                        initial={{ opacity: 0, y: -10 }}
+                        initial={{ opacity: 0, y: -8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="grid grid-cols-2 gap-4"
+                        exit={{ opacity: 0, y: -8 }}
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
                       >
-                        <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">TSC Number</Label>
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">TSC Number</Label>
                           <Input
                             type="text"
                             placeholder="e.g. 543210"
                             value={tscNumber}
                             onChange={(e) => setTscNumber(e.target.value)}
-                            className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 transition-all"
+                            className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Employee Number</Label>
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Employee Number</Label>
                           <Input
                             type="text"
                             placeholder="e.g. EMP-998"
                             value={employeeNumber}
                             onChange={(e) => setEmployeeNumber(e.target.value)}
-                            className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 transition-all uppercase"
+                            className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
                           />
                         </div>
                       </motion.div>
@@ -819,29 +825,29 @@ export default function Login() {
 
                     {selected === "staff" && (
                       <motion.div
-                        initial={{ opacity: 0, y: -10 }}
+                        initial={{ opacity: 0, y: -8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="grid grid-cols-2 gap-4"
+                        exit={{ opacity: 0, y: -8 }}
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
                       >
-                        <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Employee Number</Label>
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Employee Number</Label>
                           <Input
                             type="text"
                             placeholder="e.g. STF-012"
                             value={employeeNumber}
                             onChange={(e) => setEmployeeNumber(e.target.value)}
-                            className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 transition-all uppercase"
+                            className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Position / Title</Label>
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Position / Title</Label>
                           <Input
                             type="text"
                             placeholder="e.g. Accountant, Librarian"
                             value={position}
                             onChange={(e) => setPosition(e.target.value)}
-                            className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 transition-all"
+                            className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                           />
                         </div>
                       </motion.div>
@@ -850,9 +856,9 @@ export default function Login() {
                 </>
               )}
 
-              <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">
-                  System Identity
+              <div className="space-y-1.5">
+                <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                  Email Address / Username
                 </Label>
                 <Input
                   type="email"
@@ -862,17 +868,17 @@ export default function Login() {
                   readOnly={!!selected && authMode === "signin"}
                   key={selected && authMode === "signin" ? `sel-${selected}` : "custom-email"}
                   className={cn(
-                    "h-12 px-5 text-[14px] border-slate-200 rounded-[18px] transition-all duration-300",
-                    "focus-visible:ring-[6px] focus-visible:ring-primary/10 focus-visible:border-primary/40",
-                    selected && authMode === "signin" && "bg-slate-50/80 font-semibold text-primary border-indigo-200/50"
+                    "h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl transition-all duration-200 bg-white",
+                    "focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary",
+                    selected && authMode === "signin" && "bg-slate-50/90 font-semibold text-primary border-indigo-200"
                   )}
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2 md:col-span-1">
-                  <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">
-                    {authMode === "signup" ? "Create Password" : "Access Key"}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className={cn("space-y-1.5", authMode === "signin" && "sm:col-span-2")}>
+                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                    {authMode === "signup" ? "Password" : "Password / Access Key"}
                   </Label>
                   <div className="relative group">
                     <Input
@@ -881,12 +887,12 @@ export default function Login() {
                       value={passwordInput}
                       onChange={(e) => setPasswordInput(e.target.value)}
                       key={`pwd-${selected || "custom"}`}
-                      className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 focus-visible:border-primary/40 transition-all duration-300"
+                      className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 bg-white"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-primary transition-colors"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors p-1"
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -894,30 +900,15 @@ export default function Login() {
                 </div>
 
                 {authMode === "signup" && (
-                  <div className="space-y-2 md:col-span-1 border-l pl-4 border-slate-100 hidden md:block">
-                    <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Confirm Password</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Confirm Password</Label>
                     <div className="relative group">
                       <Input
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         value={confirmPasswordInput}
                         onChange={(e) => setConfirmPasswordInput(e.target.value)}
-                        className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 focus-visible:border-primary/40 transition-all duration-300"
-                      />
-                    </div>
-                  </div>
-                )}
-                {/* Mobile version for confirm password */}
-                {authMode === "signup" && (
-                  <div className="space-y-2 md:col-span-1 md:hidden">
-                    <Label className="text-[10px] font-bold uppercase tracking-normal text-slate-400 ml-1">Confirm Password</Label>
-                    <div className="relative group">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="••••••••"
-                        value={confirmPasswordInput}
-                        onChange={(e) => setConfirmPasswordInput(e.target.value)}
-                        className="h-12 px-5 text-[14px] border-slate-200 rounded-[18px] focus-visible:ring-[6px] focus-visible:ring-primary/10 focus-visible:border-primary/40 transition-all duration-300"
+                        className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 bg-white"
                       />
                     </div>
                   </div>
@@ -1064,6 +1055,49 @@ export default function Login() {
                 </span>
               </Button>
             </motion.div>
+
+            {/* ── Social / Google Auth Divider ── */}
+            <div className="flex items-center gap-3 my-5">
+              <div className="h-px flex-1 bg-slate-200/70" />
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">or continue with</span>
+              <div className="h-px flex-1 bg-slate-200/70" />
+            </div>
+
+            {/* ── Google Sign In / Sign Up Button ── */}
+            <button
+              type="button"
+              onClick={handleGoogleAuth}
+              disabled={googleLoading}
+              className="w-full h-13 px-4 rounded-[20px] border border-slate-200 bg-white hover:bg-slate-50/80 active:bg-slate-100/90 text-slate-700 font-bold text-[14px] shadow-sm hover:shadow transition-all duration-200 flex items-center justify-center gap-3 group disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {googleLoading ? (
+                <ButtonLoader className="text-slate-600" />
+              ) : (
+                <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
+                  <path
+                    fill="#4285F4"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                  />
+                </svg>
+              )}
+              <span>
+                {googleLoading 
+                  ? "Connecting to Google..." 
+                  : authMode === "signup" ? "Sign up with Google" : "Sign in with Google"}
+              </span>
+            </button>
 
             {/* ── Demo Portals (Sign In Only) ── */}
             {authMode === "signin" && (

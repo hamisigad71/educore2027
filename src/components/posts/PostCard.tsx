@@ -104,9 +104,9 @@ export function PostCard({ post, className, isAdmin, onDelete }: PostCardProps) 
         </div>
 
         {/* Comments Hint */}
-        {(post.comments || 0) > 0 && (
+        {(post.commentsCount || (post as any).comments || 0) > 0 && (
           <button className="text-sm text-gray-500 mt-2 block hover:underline">
-            View all {post.comments} comments
+            View all {post.commentsCount || (post as any).comments} comments
           </button>
         )}
       </div>

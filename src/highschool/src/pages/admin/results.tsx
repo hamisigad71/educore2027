@@ -24,15 +24,33 @@ import {
   Clock, AlertCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ReportCardModal } from "@/components/portal/ReportCardModal";
+import { useToast } from "@/components/ui/use-toast";
 
 const initials = (name: string) =>
   name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 
 export default function AdminResults() {
+  const { toast } = useToast();
   const [klass, setKlass] = useState("Form 4 Red");
   const [exam, setExam] = useState("Term 2 - Finals");
+  const [selectedStudentForReport, setSelectedStudentForReport] = useState<any | null>(null);
   
   const list = studentsSeed.filter((s) => s.klass === klass);
+
+  const handleExportMarks = () => {
+    toast({
+      title: "Exporting Broadsheet",
+      description: `Secondary marksheet for ${klass} (${exam}) exported as CSV broadsheet.`,
+    });
+  };
+
+  const handlePublishResults = () => {
+    toast({
+      title: "Results Published to Portal",
+      description: `Secondary school exam results for ${klass} are now live for parents & students.`,
+    });
+  };
 
   const submissions = [
     { subject: "Mathematics", teacher: "Mr. Omondi", status: "Finalized", color: "text-emerald-600 bg-emerald-50", icon: CheckCircle2 },
@@ -58,10 +76,18 @@ export default function AdminResults() {
         subtitle="Monitor school-wide academic performance and exam outcomes" 
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-9 border-slate-200 text-slate-700 bg-white shadow-sm gap-1.5 font-bold text-xs ring-offset-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleExportMarks}
+              className="h-9 border-slate-200 text-slate-700 bg-white shadow-sm gap-1.5 font-bold text-xs ring-offset-2"
+            >
               <Download size={14} /> Export Marks
             </Button>
-            <Button className="bg-indigo-600 hover:bg-indigo-700 shadow-sm gap-1.5 font-bold text-xs h-9 shadow-indigo-100 border-0">
+            <Button 
+              onClick={handlePublishResults}
+              className="bg-indigo-600 hover:bg-indigo-700 shadow-sm gap-1.5 font-bold text-xs h-9 shadow-indigo-100 border-0 text-white"
+            >
                <Award size={14} /> Publish Results
             </Button>
           </div>
@@ -258,7 +284,12 @@ export default function AdminResults() {
                             </div>
                          </TableCell>
                          <TableCell className="pr-6 py-4 text-right">
-                            <Button variant="ghost" size="sm" className="h-8 text-[11px] font-bold text-slate-400 hover:text-indigo-600 gap-1 px-4 border-0">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => setSelectedStudentForReport(s)}
+                              className="h-8 text-[11px] font-bold text-slate-500 hover:text-indigo-600 gap-1 px-4 border-0"
+                            >
                                Full Report <ChevronRight size={14} />
                             </Button>
                          </TableCell>
@@ -269,6 +300,30 @@ export default function AdminResults() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Report Card Modal */}
+      {selectedStudentForReport && (
+        <ReportCardModal
+          open={!!selectedStudentForReport}
+          onOpenChange={(open) => !open && setSelectedStudentForReport(null)}
+          student={{
+            name: selectedStudentForReport.name,
+            admissionNumber: selectedStudentForReport.admission,
+            className: selectedStudentForReport.klass,
+            term: "Term 2",
+            year: "2025",
+            attendance: "98%",
+          }}
+          subjects={[
+            { subjectName: "English Language", marks: selectedStudentForReport.performance + 3, grade: "A", remarks: "Outstanding literacy and essay skills" },
+            { subjectName: "Kiswahili", marks: selectedStudentForReport.performance, grade: "A-", remarks: "Uelewa wa kina wa lugha na insha" },
+            { subjectName: "Mathematics", marks: selectedStudentForReport.performance - 2, grade: "B+", remarks: "Strong problem solving aptitude" },
+            { subjectName: "Physics", marks: selectedStudentForReport.performance + 1, grade: "A", remarks: "Very strong experimental competence" },
+            { subjectName: "Chemistry", marks: selectedStudentForReport.performance, grade: "B+", remarks: "Solid organic chemistry grasp" },
+            { subjectName: "History & Government", marks: selectedStudentForReport.performance + 2, grade: "A", remarks: "Excellent historical analysis" },
+          ]}
+        />
+      )}
     </div>
   );
 }

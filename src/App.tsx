@@ -63,6 +63,7 @@ import AdminResults from "@/primaryschool/src/pages/admin/results";
 import AdminAttendance from "@/primaryschool/src/pages/admin/attendance";
 import AdminTimetable from "@/primaryschool/src/pages/admin/timetable";
 import AdminStaffManagement from "@/primaryschool/src/pages/admin/staff";
+import NemisSyncPage from "@/primaryschool/src/pages/admin/nemis";
 
 // Teacher
 import TeacherLayout from "@/primaryschool/src/pages/teacher/layout";
@@ -71,6 +72,7 @@ import TeacherClasses from "@/primaryschool/src/pages/teacher/classes";
 import TeacherStudents from "@/primaryschool/src/pages/teacher/students";
 import TeacherMarks from "@/primaryschool/src/pages/teacher/marks";
 import TeacherUploadMarks from "@/primaryschool/src/pages/teacher/upload-marks";
+import CbcAssessmentPage from "@/primaryschool/src/pages/teacher/cbc-assessments";
 import TeacherAttendance from "@/primaryschool/src/pages/teacher/attendance";
 import TeacherProfile from "@/primaryschool/src/pages/teacher/profile";
 import TeacherLessons from "@/primaryschool/src/pages/teacher/lessons";
@@ -141,6 +143,7 @@ import HSAdminResults from "@/highschool/src/pages/admin/results";
 import HSAdminAttendance from "@/highschool/src/pages/admin/attendance";
 import HSAdminTimetable from "@/highschool/src/pages/admin/timetable";
 import HSAdminStaffManagement from "@/highschool/src/pages/admin/staff";
+import GateExeatPage from "@/highschool/src/pages/admin/exeat";
 
 // High School Teacher
 import HSTeacherLayout from "@/highschool/src/pages/teacher/layout";
@@ -250,6 +253,7 @@ function AppRoutes() {
         <Route path="results" element={<HSAdminResults />} />
         <Route path="attendance" element={<HSAdminAttendance />} />
         <Route path="timetable" element={<HSAdminTimetable />} />
+        <Route path="exeat" element={<GateExeatPage />} />
         <Route path="staff" element={<HSAdminStaffManagement />} />
       </Route>
 
@@ -376,6 +380,8 @@ function AppRoutes() {
         <Route path="results" element={<AdminResults />} />
         <Route path="attendance" element={<AdminAttendance />} />
         <Route path="timetable" element={<AdminTimetable />} />
+        <Route path="nemis" element={<NemisSyncPage />} />
+        <Route path="exeat" element={<GateExeatPage />} />
         <Route path="staff" element={<AdminStaffManagement />} />
       </Route>
 
@@ -387,6 +393,7 @@ function AppRoutes() {
         <Route path="classes" element={<TeacherClasses />} />
         <Route path="students" element={<TeacherStudents />} />
         <Route path="marks" element={<TeacherMarks />} />
+        <Route path="cbc-assessments" element={<CbcAssessmentPage />} />
         <Route path="upload-marks" element={<TeacherUploadMarks />} />
         <Route path="attendance" element={<TeacherAttendance />} />
         <Route path="profile" element={<TeacherProfile />} />
@@ -554,6 +561,9 @@ function NavigationLoader() {
   );
 }
 
+import { Toaster } from "@/components/ui/toaster";
+import { PwaInstallBanner } from "@/components/pwa/PwaInstallBanner";
+
 export default function App() {
   return (
     <ErrorBoundary>
@@ -567,6 +577,8 @@ export default function App() {
             <NavigationLoader />
             <AppRoutes />
             <ChatbotWidget />
+            <PwaInstallBanner />
+            <Toaster />
           </div>
         </AuthProvider>
       </BrowserRouter>

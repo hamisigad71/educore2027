@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import { LogoFull } from "../components/Logo";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
-const fadeUp = {
+const fadeUp: any = {
   hidden: { opacity: 0, y: 28 },
-  visible: (delay = 0) => ({
+  visible: (delay: number = 0) => ({
     opacity: 1,
     y: 0,
     transition: { duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] },

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Plus, Filter, Pill, Bandage, Stethoscope, Settings2 } from "lucide-react";
+import { Search, Plus, Filter, Pill, Bandage, Stethoscope, Settings2, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const mockSupplies = [

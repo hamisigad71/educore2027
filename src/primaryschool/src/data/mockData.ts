@@ -75,42 +75,76 @@ export function classGrade(klass: string) {
 // ========================
 
 const kenyanNames = [
-  "Amani Otieno", "Wanjiku Njoroge", "Kiptoo Cheruiyot", "Fatma Hassan",
-  "Brian Ochieng", "Faith Mutiso", "Samuel Mwangi", "Aisha Mohammed",
-  "Derrick Kamau", "Cynthia Wairimu", "Ian Kiprotich", "Mercy Akoth",
-  "Victor Owino", "Grace Muthoni", "Emmanuel Kariuki", "Lilian Akinyi",
+  "Amani Otieno",
+  "Wanjiku Njoroge",
+  "Kiptoo Cheruiyot",
+  "Fatma Hassan",
+  "Brian Ochieng",
+  "Faith Mutiso",
+  "Samuel Mwangi",
+  "Aisha Mohammed",
+  "Derrick Kamau",
+  "Cynthia Wairimu",
+  "Ian Kiprotich",
+  "Mercy Akoth",
+  "Victor Owino",
+  "Grace Muthoni",
+  "Emmanuel Kariuki",
+  "Lilian Akinyi",
 ];
 
 export const teachersSeed: Teacher[] = [
   {
-    id: "t1", name: "Mrs. Loveth Wambui", subject: "Mathematics",
-    email: "Loveth.wambui@shule.go.ke", phone: "+254712345678",
+    id: "t1",
+    name: "Mrs. Loveth Wambui",
+    subject: "Mathematics",
+    email: "Loveth.wambui@shule.go.ke",
+    phone: "+254712345678",
     classes: ["Grade 5A", "Grade 6B"],
-    photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200",
+    photo:
+      "https://i.pinimg.com/736x/5e/d6/39/5ed63905c998c5c3cd29f2ab3890ee2e.jpg",
   },
   {
-    id: "t2", name: "Mr. Peter Otieno", subject: "English",
-    email: "peter.otieno@shule.go.ke", phone: "+254722334455",
+    id: "t2",
+    name: "Mr. Peter Otieno",
+    subject: "English",
+    email: "peter.otieno@shule.go.ke",
+    phone: "+254722334455",
     classes: ["Grade 7A", "Grade 8A"],
-    photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200",
+    photo:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200",
   },
   {
-    id: "t3", name: "Ms. Salome Njeri", subject: "Science",
-    email: "salome.njeri@shule.go.ke", phone: "+254733221100",
+    id: "t3",
+    name: "Ms. Salome Njeri",
+    subject: "Science",
+    email: "salome.njeri@shule.go.ke",
+    phone: "+254733221100",
     classes: ["Grade 4B", "Grade 5B"],
-    photo: "https://images.unsplash.com/photo-1546967191-fdfb13ed6b1e?q=80&w=200",
+    photo:
+      "https://images.unsplash.com/photo-1546967191-fdfb13ed6b1e?q=80&w=200",
   },
   {
-    id: "t4", name: "Mr. Joseph Mwenda", subject: "Kiswahili",
-    email: "joseph.mwenda@shule.go.ke", phone: "+254701998877",
+    id: "t4",
+    name: "Mr. Joseph Mwenda",
+    subject: "Kiswahili",
+    email: "joseph.mwenda@shule.go.ke",
+    phone: "+254701998877",
     classes: ["Grade 6A", "Grade 9A"],
-    photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200",
+    photo:
+      "https://i.pinimg.com/736x/5e/d6/39/5ed63905c998c5c3cd29f2ab3890ee2e.jpg",
   },
 ];
 
 export const classesSeed: ClassInfo[] = [
-  "Grade 4B", "Grade 5A", "Grade 5B", "Grade 6A",
-  "Grade 6B", "Grade 7A", "Grade 8A", "Grade 9A",
+  "Grade 4B",
+  "Grade 5A",
+  "Grade 5B",
+  "Grade 6A",
+  "Grade 6B",
+  "Grade 7A",
+  "Grade 8A",
+  "Grade 9A",
 ].map((name, i) => ({
   id: `c${i + 1}`,
   name,
@@ -145,10 +179,29 @@ function makeMarks(): Mark[] {
     subjects.forEach((subj) => {
       const score = rand(45, 98);
       const grade =
-        score >= 80 ? "A" : score >= 75 ? "A-" : score >= 70 ? "B+" :
-        score >= 65 ? "B" : score >= 60 ? "B-" : score >= 55 ? "C+" :
-        score >= 50 ? "C" : "D";
-      out.push({ id: `${s.id}-${subj}`, studentId: s.id, subject: subj, term: "Term 2", score, grade });
+        score >= 80
+          ? "A"
+          : score >= 75
+            ? "A-"
+            : score >= 70
+              ? "B+"
+              : score >= 65
+                ? "B"
+                : score >= 60
+                  ? "B-"
+                  : score >= 55
+                    ? "C+"
+                    : score >= 50
+                      ? "C"
+                      : "D";
+      out.push({
+        id: `${s.id}-${subj}`,
+        studentId: s.id,
+        subject: subj,
+        term: "Term 2",
+        score,
+        grade,
+      });
     });
   });
   return out;

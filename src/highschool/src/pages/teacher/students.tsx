@@ -57,7 +57,7 @@ export default function TeacherStudents() {
     loadData();
   }, []);
 
-  const myStudents = isLoaded && liveStudents.length > 0
+  const myStudents: any[] = isLoaded && liveStudents.length > 0
     ? liveStudents
     : studentsSeed.filter((s) => mockTeacher.classes.includes(s.klass));
 
@@ -67,7 +67,7 @@ export default function TeacherStudents() {
     () =>
       myStudents.filter(
         (s) =>
-          (klassFilter === "All" || s.klass === klassFilter) &&
+          (klassFilter === "All" || (s.className ?? s.klass) === klassFilter) &&
           s.name.toLowerCase().includes(q.toLowerCase())
       ),
     [myStudents, q, klassFilter]

@@ -1,0 +1,49 @@
+{
+  "name": "EduCore - School Management System",
+  "short_name": "EduCore",
+  "description": "Enterprise Academic OS for primary & secondary schools in Kenya. Manage fees, CBC rubrics, attendance, timetables, and exams.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0A2540",
+  "theme_color": "#0A2540",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Admin Portal",
+      "url": "/login",
+      "description": "Log in to administrative dashboard"
+    },
+    {
+      "name": "Teacher Portal",
+      "url": "/login",
+      "description": "Marks entry and class timetables"
+    },
+    {
+      "name": "Parent Portal",
+      "url": "/login",
+      "description": "Check fees and academic reports"
+    }
+  ]
+}
+

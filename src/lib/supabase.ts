@@ -1,13 +1,16 @@
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl  = import.meta.env.VITE_SUPABASE_URL  as string
-const supabaseKey  = import.meta.env.VITE_SUPABASE_ANON_KEY as string
+const supabaseKey  = (
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+) as string
 
 const hasEnvVars = !!supabaseUrl && !!supabaseKey;
 
 if (!hasEnvVars) {
   console.warn(
-    '[EduCore] Missing Supabase env vars (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY). ' +
+    '[EduCore] Missing Supabase env vars (VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY). ' +
     'Authentication features will be disabled. Add these in Vercel → Project Settings → Environment Variables.'
   )
 }
@@ -57,6 +60,22 @@ export async function signUpUser({
 /** Sign in with email + password */
 export const signIn = (email: string, password: string) =>
   supabase.auth.signInWithPassword({ email, password })
+
+/** Sign in with Google OAuth */
+export async function signInWithGoogle(redirectTo?: string) {
+  const redirect = redirectTo || `${window.location.origin}/login`;
+  return supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: redirect,
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'consent',
+      },
+    },
+  });
+}
+
 
 /** Sign out the current session */
 export const signOut = () => supabase.auth.signOut()
@@ -119,4 +138,3 @@ export async function verifyOtpCode(destination: string, token: string, channel:
     })
   }
 }
-

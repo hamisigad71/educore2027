@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { 
   Calendar, 
   ChevronLeft, 
@@ -14,8 +14,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/components/ui/use-toast";
 
 const TimetablePage = () => {
+  const { toast } = useToast();
+  const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
+
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
   const hours = ["08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM"];
 
@@ -30,6 +34,25 @@ const TimetablePage = () => {
     "Fri-09:00 AM": { subject: "Science", class: "6B", room: "Lab 2", color: "bg-emerald-50/90 text-emerald-900 border-emerald-200/60 border-l-[4px] border-l-emerald-500" },
   };
 
+  const handleExportPDF = () => {
+    toast({
+      title: "Generating Timetable PDF",
+      description: "Teacher schedule exported successfully. Starting download...",
+    });
+    window.print();
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const getWeekLabel = () => {
+    if (currentWeekOffset === 0) return "May 4 - May 10, 2025 (Current)";
+    if (currentWeekOffset === 1) return "May 11 - May 17, 2025 (Next Week)";
+    if (currentWeekOffset === -1) return "Apr 27 - May 3, 2025 (Previous Week)";
+    return `Week Offset: ${currentWeekOffset > 0 ? `+${currentWeekOffset}` : currentWeekOffset}`;
+  };
+
   return (
     <div className="p-6 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Header section */}
@@ -39,15 +62,26 @@ const TimetablePage = () => {
           <p className="text-slate-500 font-medium">Weekly teaching schedule and venue allocations.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="rounded-xl">
+          <Button 
+            variant="outline" 
+            onClick={handleExportPDF}
+            className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm"
+          >
             <Download className="h-4 w-4 mr-2" />
             Export PDF
           </Button>
-          <Button variant="outline" className="rounded-xl">
+          <Button 
+            variant="outline" 
+            onClick={handlePrint}
+            className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm"
+          >
             <Printer className="h-4 w-4 mr-2" />
             Print
           </Button>
-          <Button className="rounded-xl bg-indigo-600 hover:bg-indigo-700">
+          <Button 
+            onClick={() => setCurrentWeekOffset(0)}
+            className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
+          >
             Current Week
           </Button>
         </div>
@@ -56,16 +90,30 @@ const TimetablePage = () => {
       {/* Date Navigator */}
       <div className="flex items-center justify-between bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="rounded-xl h-9 w-9"><ChevronLeft size={18} /></Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setCurrentWeekOffset(c => c - 1)}
+            className="rounded-xl h-9 w-9 text-slate-500 hover:text-slate-900"
+          >
+            <ChevronLeft size={18} />
+          </Button>
           <div className="flex items-center gap-2 px-4 py-1.5 bg-indigo-50/50 rounded-xl">
             <CalendarDays size={16} className="text-indigo-600" />
-            <span className="text-sm font-bold text-indigo-700">May 4 - May 10, 2025</span>
+            <span className="text-sm font-bold text-indigo-700">{getWeekLabel()}</span>
           </div>
-          <Button variant="ghost" size="icon" className="rounded-xl h-9 w-9"><ChevronRight size={18} /></Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setCurrentWeekOffset(c => c + 1)}
+            className="rounded-xl h-9 w-9 text-slate-500 hover:text-slate-900"
+          >
+            <ChevronRight size={18} />
+          </Button>
         </div>
         <div className="flex items-center gap-2 pr-2">
           <Badge variant="outline" className="rounded-lg h-7 font-bold text-[10px] uppercase tracking-wider text-slate-400">Term 2</Badge>
-          <Badge variant="outline" className="rounded-lg h-7 font-bold text-[10px] uppercase tracking-wider text-slate-400">Week 6</Badge>
+          <Badge variant="outline" className="rounded-lg h-7 font-bold text-[10px] uppercase tracking-wider text-slate-400">Week {6 + currentWeekOffset}</Badge>
         </div>
       </div>
 

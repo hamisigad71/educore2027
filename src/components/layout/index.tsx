@@ -39,7 +39,7 @@ import {
   Wrench, Bus, ShieldAlert,
   Bed, Scale, Library,
   FileText, BadgeDollarSign, MapPin, Building2,
-  Utensils, Coffee, Upload
+  Utensils, Coffee, Upload, RefreshCw, KeyRound, Award
 } from "lucide-react";
 
 export { Topbar } from "./Topbar";
@@ -83,6 +83,8 @@ const adminNav: NavGroup[] = [
       { to: "/admin/results",    label: "Results",    icon: BarChart3    },
       { to: "/admin/attendance", label: "Attendance", icon: CalendarDays },
       { to: "/admin/timetable",  label: "Timetable",  icon: CalendarClock },
+      { to: "/admin/nemis",      label: "NEMIS Sync", icon: RefreshCw },
+      { to: "/admin/exeat",      label: "Gate Pass / Exeat", icon: KeyRound },
     ],
   },
   {
@@ -112,6 +114,7 @@ const teacherNav: NavGroup[] = [
       { to: "/teacher/classes",     label: "My Classes",     icon: Users, badge: "5" },
       { to: "/teacher/lessons",     label: "Lesson Planner", icon: BookOpen },
       { to: "/teacher/timetable",   label: "My Timetable",   icon: CalendarClock },
+      { to: "/teacher/cbc-assessments", label: "CBC Rubrics", icon: Award, badge: "CBC", badgeVariant: "success" as const },
       { to: "/teacher/resources",   label: "Resources",      icon: Library },
       { to: "/teacher/assignments", label: "Assignments",    icon: FileText },
     ],
@@ -965,16 +968,19 @@ export function getHSStaffBottomNav(department?: string) {
 export function PageHeader({
   title,
   subtitle,
+  description,
   actions,
   badge,
   variant = "default",
 }: {
   title: string;
   subtitle?: string;
+  description?: string;
   actions?: React.ReactNode;
   badge?: { label: string; variant?: "default" | "success" | "warning" | "danger" };
   variant?: "default" | "banner";
 }) {
+  const sub = subtitle || description;
   if (variant === "banner") {
     return (
       <div className="relative overflow-hidden rounded-[24px] bg-primary text-white p-6 sm:p-8 mb-8 shadow-xl shadow-indigo-200/20">
@@ -1026,8 +1032,8 @@ export function PageHeader({
               </Badge>
             )}
           </div>
-          {subtitle && (
-            <p className="text-sm text-muted-foreground mt-1 leading-snug">{subtitle}</p>
+          {sub && (
+            <p className="text-sm text-muted-foreground mt-1 leading-snug">{sub}</p>
           )}
         </div>
       </div>

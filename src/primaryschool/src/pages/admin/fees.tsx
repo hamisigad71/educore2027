@@ -28,6 +28,9 @@ import {
   Clock, CheckCircle2, ChevronRight, Send, Loader2
 } from "lucide-react";
 
+import { StampedFeeReceiptModal } from "@/components/portal/StampedFeeReceiptModal";
+import { createOfficialReceipt } from "@/lib/schoolFeatures";
+
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 const currency = (val: number) =>
@@ -103,6 +106,7 @@ export default function AdminFees() {
   const [isSaving, setIsSaving] = useState(false);
   
   const [modal, setModal] = useState(false);
+  const [activeReceiptModal, setActiveReceiptModal] = useState<any | null>(null);
   
   // Payment form states
   const [selStudentId, setSelStudentId] = useState<string>("");
@@ -351,9 +355,52 @@ export default function AdminFees() {
                           <MethodBadge method={f.paymentMethod} />
                         </TableCell>
                         <TableCell className="py-3.5">
-                          <code className="text-[11px] font-mono text-slate-400 bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5">
-                            {f.reference || f.mpesaReceipt || "-"}
-                          </code>
+                          <div className="flex items-center gap-2">
+                            <code className="text-[11px] font-mono text-slate-500 bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5">
+                              {f.reference || f.mpesaReceipt || `RCP-${f.id.slice(0, 6)}`}
+                            </code>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => {
+                                const receiptNo = f.reference || f.mpesaReceipt || `RCP-2026-${f.id.slice(0, 5).toUpperCase()}`;
+                                const stName = s?.name || f.studentName || "Student Learner";
+                                const admNo = s?.admission_number || f.admissionNumber || "ADM-2024-001";
+                                const cls = s?.className || "Grade 5A";
+                                const bal = s?.balance || 12000;
+                                
+                                setActiveReceiptModal({
+                                  receiptNumber: receiptNo,
+                                  studentName: stName,
+                                  admissionNumber: admNo,
+                                  className: cls,
+                                  amountPaid: f.amount,
+                                  totalBalance: bal,
+                                  paymentMethod: f.paymentMethod || "M-Pesa",
+                                  transactionRef: f.reference || f.mpesaReceipt || "MPESA-AUTO-OK",
+                                  date: dateStr,
+                                  term: "Term 2",
+                                  year: 2026,
+                                });
+
+                                createOfficialReceipt({
+                                  receiptNumber: receiptNo,
+                                  studentName: stName,
+                                  admissionNumber: admNo,
+                                  className: cls,
+                                  amountPaid: f.amount,
+                                  totalBalance: bal,
+                                  paymentMethod: f.paymentMethod || "M-Pesa",
+                                  transactionRef: f.reference || f.mpesaReceipt || "MPESA-AUTO-OK",
+                                  term: "Term 2",
+                                  year: 2026,
+                                });
+                              }}
+                              className="h-7 px-2 text-[10px] font-bold text-indigo-600 hover:bg-indigo-50 rounded-lg"
+                            >
+                              Official Receipt
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
@@ -569,6 +616,15 @@ export default function AdminFees() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Official Stamped Fee Voucher Modal */}
+      {activeReceiptModal && (
+        <StampedFeeReceiptModal
+          open={!!activeReceiptModal}
+          onOpenChange={(open) => !open && setActiveReceiptModal(null)}
+          receiptData={activeReceiptModal}
+        />
+      )}
 
       <Toaster />
     </div>

@@ -23,10 +23,12 @@ import {
   Calendar
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ReportCardModal } from "@/components/portal/ReportCardModal";
 
 export default function PortalResults() {
   const [childData, setChildData] = React.useState<any>(null);
   const [liveMarks, setLiveMarks] = React.useState<any[]>([]);
+  const [reportModalOpen, setReportModalOpen] = React.useState(false);
 
   React.useEffect(() => {
     async function loadData() {
@@ -77,8 +79,12 @@ export default function PortalResults() {
             <Button variant="outline" size="sm" className="hidden sm:flex bg-white border-slate-200 text-slate-700 shadow-sm gap-1.5 font-bold text-xs h-9 px-4">
               <Medal size={14} className="text-amber-500" /> View Certificates
             </Button>
-            <Button size="sm" className="bg-indigo-600 hover:bg-black text-white shadow-lg shadow-indigo-100 gap-1.5 font-bold text-xs h-9 px-6 group">
-              <Download size={14} className="group-hover:translate-y-0.5 transition-transform" /> Download Report
+            <Button 
+              size="sm" 
+              onClick={() => setReportModalOpen(true)}
+              className="bg-indigo-600 hover:bg-black text-white shadow-lg shadow-indigo-100 gap-1.5 font-bold text-xs h-9 px-6 group"
+            >
+              <Download size={14} className="group-hover:translate-y-0.5 transition-transform" /> Print / PDF Report Card
             </Button>
           </div>
         }
@@ -366,6 +372,29 @@ export default function PortalResults() {
             </div>
          </CardContent>
       </Card>
+
+      {/* Official Printable Report Card Modal */}
+      <ReportCardModal
+        open={reportModalOpen}
+        onOpenChange={setReportModalOpen}
+        student={{
+          name: childData?.name || "David A.",
+          admissionNumber: childData?.admissionNumber || "ADM-2024-001",
+          className: childData?.className || "Grade 5 Blue",
+          term: "Term 1",
+          year: "2026",
+          rank: "2",
+          totalStudents: 45,
+          attendance: "98%",
+        }}
+        subjects={marks.map((m: any) => ({
+          subjectName: m.subject,
+          marks: m.score,
+          grade: m.grade,
+          remarks: m.score >= 80 ? "Exceeds Expectations" : m.score >= 60 ? "Meets Expectations" : "Approaching Expectations",
+          teacher: "TR",
+        }))}
+      />
     </div>
   );
 }

@@ -22,10 +22,12 @@ import {
   Calendar
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ReportCardModal } from "@/components/portal/ReportCardModal";
 
 export default function PortalResults() {
   const [examResults, setExamResults] = useState<ExamResultItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -64,8 +66,12 @@ export default function PortalResults() {
             <Button variant="outline" size="sm" className="hidden sm:flex bg-white border-slate-200 text-slate-700 shadow-sm gap-1.5 font-bold text-xs h-9 px-4">
               <Medal size={14} className="text-amber-500" /> View Certificates
             </Button>
-            <Button size="sm" className="bg-indigo-600 hover:bg-black text-white shadow-lg shadow-indigo-100 gap-1.5 font-bold text-xs h-9 px-6 group">
-              <Download size={14} className="group-hover:translate-y-0.5 transition-transform" /> Download Report
+            <Button 
+              size="sm" 
+              onClick={() => setReportModalOpen(true)}
+              className="bg-indigo-600 hover:bg-black text-white shadow-lg shadow-indigo-100 gap-1.5 font-bold text-xs h-9 px-6 group"
+            >
+              <Download size={14} className="group-hover:translate-y-0.5 transition-transform" /> Print / PDF Report Card
             </Button>
           </div>
         }
@@ -346,6 +352,29 @@ export default function PortalResults() {
             </div>
          </CardContent>
       </Card>
+
+      {/* Official Printable Report Card Modal */}
+      <ReportCardModal
+        open={reportModalOpen}
+        onOpenChange={setReportModalOpen}
+        student={{
+          name: "Kevin Njoroge",
+          admissionNumber: "HS-2024-0042",
+          className: "Form 3 East",
+          term: "Term 1",
+          year: "2026",
+          rank: "8",
+          totalStudents: 38,
+          attendance: "96%",
+        }}
+        subjects={marks.map((m) => ({
+          subjectName: m.subjectName,
+          marks: m.marks,
+          grade: m.grade,
+          remarks: m.remarks || "Exemplary progress",
+          teacher: (m as any).teacher || "TR",
+        }))}
+      />
     </div>
   );
 }

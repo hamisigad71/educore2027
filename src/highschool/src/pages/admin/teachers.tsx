@@ -183,7 +183,22 @@ export default function AdminTeachers() {
         subtitle={`${filtered.length} teachers · ${subjects.length} subjects`}
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="border-slate-300 text-slate-700 hover:bg-slate-50 gap-1.5">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => {
+                const csvContent = "data:text/csv;charset=utf-8,Name,Subject,Classes,Email,Phone\n" + 
+                  teachers.map(t => `"${t.name}","${t.subject}","${t.classes.join("; ")}","${t.email}","${t.phone}"`).join("\n");
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "teachers_roster_highschool.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}
+              className="border-slate-300 text-slate-700 hover:bg-slate-50 gap-1.5"
+            >
               <Download size={14} />Export
             </Button>
             <Button

@@ -53,7 +53,7 @@ export default function TeacherStudents() {
   }, []);
 
   const teacher = teacherProfile ? teacherProfile : teachersSeed[0];
-  const students = myStudents.length > 0 ? myStudents : studentsSeed.filter((s) => teachersSeed[0].classes.includes(s.className ?? s.klass));
+  const students: any[] = myStudents.length > 0 ? myStudents : studentsSeed.filter((s: any) => teachersSeed[0].classes.includes(s.className ?? s.klass));
   const myStudentsFiltered = useMemo(() =>
     students.filter(
       (s) => (klassFilter === "All" || (s.className ?? s.klass) === klassFilter) && s.name.toLowerCase().includes(q.toLowerCase())

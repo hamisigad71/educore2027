@@ -119,36 +119,73 @@ export function classGrade(klass: string) {
 // ========================
 
 const kenyanNames = [
-  "Amani Otieno", "Wanjiku Njoroge", "Kiptoo Cheruiyot", "Fatma Hassan",
-  "Brian Ochieng", "Faith Mutiso", "Samuel Mwangi", "Aisha Mohammed",
-  "Derrick Kamau", "Cynthia Wairimu", "Ian Kiprotich", "Mercy Akoth",
-  "Victor Owino", "Grace Muthoni", "Emmanuel Kariuki", "Lilian Akinyi",
-  "Zainab Abdalla", "Felix Kemboi", "Stacy Moraa", "Collins Juma"
+  "Amani Otieno",
+  "Wanjiku Njoroge",
+  "Kiptoo Cheruiyot",
+  "Fatma Hassan",
+  "Brian Ochieng",
+  "Faith Mutiso",
+  "Samuel Mwangi",
+  "Aisha Mohammed",
+  "Derrick Kamau",
+  "Cynthia Wairimu",
+  "Ian Kiprotich",
+  "Mercy Akoth",
+  "Victor Owino",
+  "Grace Muthoni",
+  "Emmanuel Kariuki",
+  "Lilian Akinyi",
+  "Zainab Abdalla",
+  "Felix Kemboi",
+  "Stacy Moraa",
+  "Collins Juma",
 ];
 
 const highSchoolSubjects = [
-  "Mathematics", "English", "Kiswahili", "Physics", "Chemistry", "Biology",
-  "History", "Geography", "C.R.E", "Business Studies", "Agriculture", "Computer Studies"
+  "Mathematics",
+  "English",
+  "Kiswahili",
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "History",
+  "Geography",
+  "C.R.E",
+  "Business Studies",
+  "Agriculture",
+  "Computer Studies",
 ];
 
 export const teachersSeed: Teacher[] = [
   {
-    id: "t1", name: "Mr. David Kimani", subject: "Physics",
-    email: "david.kimani@shulesec.go.ke", phone: "+254712345678",
+    id: "t1",
+    name: "Mr. David Kimani",
+    subject: "Physics",
+    email: "david.kimani@shulesec.go.ke",
+    phone: "+254712345678",
     classes: ["Form 4 Red", "Form 3 Blue"],
-    photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200",
+    photo:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200",
   },
   {
-    id: "t2", name: "Mrs. Sarah Njui", subject: "Chemistry",
-    email: "sarah.njui@shulesec.go.ke", phone: "+254722334455",
+    id: "t2",
+    name: "Mrs. Sarah Njui",
+    subject: "Chemistry",
+    email: "sarah.njui@shulesec.go.ke",
+    phone: "+254722334455",
     classes: ["Form 4 Green", "Form 2 White"],
-    photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200",
+    photo:
+      "https://i.pinimg.com/736x/5e/d6/39/5ed63905c998c5c3cd29f2ab3890ee2e.jpg",
   },
   {
-    id: "t3", name: "Mr. Omar Hassan", subject: "Biology",
-    email: "omar.hassan@shulesec.go.ke", phone: "+254733221100",
+    id: "t3",
+    name: "Mr. Omar Hassan",
+    subject: "Biology",
+    email: "omar.hassan@shulesec.go.ke",
+    phone: "+254733221100",
     classes: ["Form 1 Red", "Form 4 Blue"],
-    photo: "https://images.unsplash.com/photo-1546967191-fdfb13ed6b1e?q=80&w=200",
+    photo:
+      "https://images.unsplash.com/photo-1546967191-fdfb13ed6b1e?q=80&w=200",
   },
 ];
 
@@ -156,8 +193,8 @@ const streams = ["White", "Blue", "Green", "Red"];
 const forms = ["1", "2", "3", "4"];
 
 export const classesSeed: ClassInfo[] = [];
-forms.forEach(f => {
-  streams.forEach(s => {
+forms.forEach((f) => {
+  streams.forEach((s) => {
     classesSeed.push({
       id: `c-${f}-${s}`,
       name: `Form ${f} ${s}`,
@@ -193,10 +230,33 @@ function makeMarks(): Mark[] {
     highSchoolSubjects.slice(0, 8).forEach((subj) => {
       const score = rand(30, 98);
       const grade =
-        score >= 80 ? "A" : score >= 75 ? "A-" : score >= 70 ? "B+" :
-        score >= 65 ? "B" : score >= 60 ? "B-" : score >= 55 ? "C+" :
-        score >= 50 ? "C" : score >= 45 ? "C-" : score >= 40 ? "D+" : "D";
-      out.push({ id: `${s.id}-${subj}`, studentId: s.id, subject: subj, term: "Term 2", score, grade });
+        score >= 80
+          ? "A"
+          : score >= 75
+            ? "A-"
+            : score >= 70
+              ? "B+"
+              : score >= 65
+                ? "B"
+                : score >= 60
+                  ? "B-"
+                  : score >= 55
+                    ? "C+"
+                    : score >= 50
+                      ? "C"
+                      : score >= 45
+                        ? "C-"
+                        : score >= 40
+                          ? "D+"
+                          : "D";
+      out.push({
+        id: `${s.id}-${subj}`,
+        studentId: s.id,
+        subject: subj,
+        term: "Term 2",
+        score,
+        grade,
+      });
     });
   });
   return out;
@@ -225,29 +285,117 @@ export const feesSeed: FeeRecord[] = makeFees();
 // --- New Staff Seeds ---
 
 export const inventorySeed: InventoryItem[] = [
-  { id: "inv1", name: "Laptop - Dell Latitude", category: "ICT", stock: 12, unit: "units", status: "In Stock" },
-  { id: "inv2", name: "Bunsen Burner", category: "Science Lab", stock: 24, unit: "pcs", status: "In Stock" },
-  { id: "inv3", name: "Hydrochloric Acid", category: "Science Lab", stock: 2, unit: "liters", status: "Low Stock" },
-  { id: "inv4", name: "Whiteboards", category: "Maintenance", stock: 5, unit: "units", status: "In Stock" },
-  { id: "inv5", name: "Cooking Oil", category: "Kitchen", stock: 20, unit: "liters", status: "In Stock" },
+  {
+    id: "inv1",
+    name: "Laptop - Dell Latitude",
+    category: "ICT",
+    stock: 12,
+    unit: "units",
+    status: "In Stock",
+  },
+  {
+    id: "inv2",
+    name: "Bunsen Burner",
+    category: "Science Lab",
+    stock: 24,
+    unit: "pcs",
+    status: "In Stock",
+  },
+  {
+    id: "inv3",
+    name: "Hydrochloric Acid",
+    category: "Science Lab",
+    stock: 2,
+    unit: "liters",
+    status: "Low Stock",
+  },
+  {
+    id: "inv4",
+    name: "Whiteboards",
+    category: "Maintenance",
+    stock: 5,
+    unit: "units",
+    status: "In Stock",
+  },
+  {
+    id: "inv5",
+    name: "Cooking Oil",
+    category: "Kitchen",
+    stock: 20,
+    unit: "liters",
+    status: "In Stock",
+  },
 ];
 
 export const librarySeed: LibraryRecord[] = [
-  { id: "lib1", bookTitle: "Advanced Biology", studentName: kenyanNames[0], borrowDate: "2025-05-10", dueDate: "2025-05-17", status: "Borrowed" },
-  { id: "lib2", bookTitle: "Geographical Atlas", studentName: kenyanNames[5], borrowDate: "2025-05-01", dueDate: "2025-05-08", status: "Overdue" },
+  {
+    id: "lib1",
+    bookTitle: "Advanced Biology",
+    studentName: kenyanNames[0],
+    borrowDate: "2025-05-10",
+    dueDate: "2025-05-17",
+    status: "Borrowed",
+  },
+  {
+    id: "lib2",
+    bookTitle: "Geographical Atlas",
+    studentName: kenyanNames[5],
+    borrowDate: "2025-05-01",
+    dueDate: "2025-05-08",
+    status: "Overdue",
+  },
 ];
 
 export const medicalLogsSeed: MedicalLog[] = [
-  { id: "med1", studentName: kenyanNames[2], complaint: "Flu-like symptoms", treatment: "Paracetamol & Rest", date: "2025-05-20", status: "Discharged" },
-  { id: "med2", studentName: kenyanNames[10], complaint: "Sprained Ankle", treatment: "Elastic bandage applied", date: "2025-05-21", status: "Observation" },
+  {
+    id: "med1",
+    studentName: kenyanNames[2],
+    complaint: "Flu-like symptoms",
+    treatment: "Paracetamol & Rest",
+    date: "2025-05-20",
+    status: "Discharged",
+  },
+  {
+    id: "med2",
+    studentName: kenyanNames[10],
+    complaint: "Sprained Ankle",
+    treatment: "Elastic bandage applied",
+    date: "2025-05-21",
+    status: "Observation",
+  },
 ];
 
 export const visitorLogsSeed: VisitorLog[] = [
-  { id: "v1", name: "James Maina", purpose: "Deliver stationery", timeIn: "08:30 AM", timeOut: "09:12 AM", idNumber: "23456789" },
-  { id: "v2", name: "Sarah Otieno", purpose: "Parent Meeting", timeIn: "10:15 AM", idNumber: "87654321" },
+  {
+    id: "v1",
+    name: "James Maina",
+    purpose: "Deliver stationery",
+    timeIn: "08:30 AM",
+    timeOut: "09:12 AM",
+    idNumber: "23456789",
+  },
+  {
+    id: "v2",
+    name: "Sarah Otieno",
+    purpose: "Parent Meeting",
+    timeIn: "10:15 AM",
+    idNumber: "87654321",
+  },
 ];
 
 export const transportSeed: BusRoute[] = [
-  { id: "bus1", routeName: "Nairobi West - South C", driver: "John Kamau", students: 32, status: "En Route" },
-  { id: "bus2", routeName: "Lang'ata - Rongai", driver: "Peter Owino", students: 45, status: "Scheduled" },
+  {
+    id: "bus1",
+    routeName: "Nairobi West - South C",
+    driver: "John Kamau",
+    students: 32,
+    status: "En Route",
+  },
+  {
+    id: "bus2",
+    routeName: "Lang'ata - Rongai",
+    driver: "Peter Owino",
+    students: 45,
+    status: "Scheduled",
+  },
 ];
