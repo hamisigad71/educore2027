@@ -342,8 +342,8 @@ export default function Login() {
           {/* Top Header & Crest */}
           <div className="relative z-10 flex items-center justify-between pb-6 border-b border-white/10">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center p-2 shadow-inner">
-                <img src="/logo.png" alt="EduCore" className="h-full w-auto object-contain brightness-200" />
+              <div className="h-10 w-10 rounded-xl bg-white p-1.5 shadow-md flex items-center justify-center">
+                <img src="/favicon.png" alt="EduCore" className="h-full w-full object-contain" />
               </div>
               <div>
                 <p className="text-[16px] font-black tracking-tight text-white flex items-center gap-1.5">
@@ -438,8 +438,8 @@ export default function Login() {
           {/* Mobile Top Header */}
           <div className="lg:hidden w-full max-w-[460px] flex items-center justify-between mb-6 px-1">
             <div className="flex items-center gap-2.5">
-              <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center p-1.5 shadow-md">
-                <img src="/logo.png" alt="EduCore" className="h-full w-auto object-contain brightness-200" />
+              <div className="h-9 w-9 rounded-xl bg-white p-1.5 shadow-sm border border-slate-200/80 flex items-center justify-center">
+                <img src="/favicon.png" alt="EduCore" className="h-full w-full object-contain" />
               </div>
               <div>
                 <p className="text-[15px] font-black tracking-tight text-slate-900 leading-none">
@@ -451,7 +451,7 @@ export default function Login() {
               </div>
             </div>
 
-            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-full flex items-center gap-1">
+            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xs">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live Server
             </span>
           </div>
@@ -471,64 +471,67 @@ export default function Login() {
               <CardContent className="p-6 sm:p-8 lg:p-8 relative z-20">
                 <div className="w-full">
 
-            {/* ── Top Toggles ── */}
-            <div className="w-full flex flex-col gap-3 mb-8">
-              {/* Portal Toggle */}
-              <div className="flex bg-slate-100/80 p-1 rounded-2xl gap-1 border border-slate-200/60">
-                {(["primary", "highschool"] as const).map((p) => (
-                  <button
-                    key={p}
-                    type="button"
-                    onClick={() => setPortal(p)}
-                    className={cn(
-                      "flex-1 flex items-center justify-center gap-2 h-11 rounded-xl text-[13px] font-bold transition-all duration-300",
-                      portal === p
-                        ? "bg-white text-primary shadow-md shadow-slate-200/80 border border-slate-200/80 scale-[1.01]"
-                        : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
-                    )}
-                  >
-                    {p === "primary" ? (
-                      <School size={15} className={portal === p ? "text-indigo-600" : "text-slate-400"} strokeWidth={2.5} />
-                    ) : (
-                      <GraduationCap size={15} className={portal === p ? "text-emerald-600" : "text-slate-400"} strokeWidth={2.5} />
-                    )}
-                    <span className={portal === p ? "text-slate-800" : ""}>
-                      {p === "primary" ? "Primary" : "High School"}
-                    </span>
-                    {portal === p && (
-                      <span className={cn(
-                        "h-1.5 w-1.5 rounded-full animate-pulse",
-                        p === "primary" ? "bg-indigo-500" : "bg-emerald-500"
-                      )} />
-                    )}
-                  </button>
-                ))}
+            {/* ── Segmented Control Toggles ── */}
+            <div className="w-full flex flex-col gap-2.5 mb-6">
+              {/* Institution Portal Segmented Switch */}
+              <div className="grid grid-cols-2 p-1 rounded-2xl bg-slate-100/90 border border-slate-200/70">
+                {(["primary", "highschool"] as const).map((p) => {
+                  const active = portal === p;
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => setPortal(p)}
+                      className={cn(
+                        "relative flex items-center justify-center gap-2 h-10 rounded-xl text-[12.5px] font-bold transition-all duration-200",
+                        active
+                          ? "bg-white text-slate-900 shadow-sm border border-slate-200/60"
+                          : "text-slate-500 hover:text-slate-800"
+                      )}
+                    >
+                      {p === "primary" ? (
+                        <School size={14} className={cn("transition-colors", active ? "text-indigo-600" : "text-slate-400")} />
+                      ) : (
+                        <GraduationCap size={15} className={cn("transition-colors", active ? "text-emerald-600" : "text-slate-400")} />
+                      )}
+                      <span>{p === "primary" ? "Primary School" : "High School"}</span>
+                      {active && (
+                        <span className={cn(
+                          "h-1.5 w-1.5 rounded-full ml-0.5",
+                          p === "primary" ? "bg-indigo-600" : "bg-emerald-600"
+                        )} />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* Mode Toggle */}
-              <div className="flex bg-slate-100/80 p-1 rounded-2xl gap-1 border border-slate-200/60">
-                {([
-                  { id: "signin", label: "Sign In", emoji: "→" },
-                  { id: "signup", label: "Create Account", emoji: "✦" },
-                ] as const).map((m) => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => {
-                      setAuthMode(m.id);
-                      setAuthError(null);
-                    }}
-                    className={cn(
-                      "flex-1 flex items-center justify-center gap-1.5 h-11 rounded-xl text-[13px] font-bold transition-all duration-300",
-                      authMode === m.id
-                        ? "bg-gradient-to-r from-primary to-indigo-600 text-white shadow-lg shadow-indigo-200 scale-[1.01]"
-                        : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
-                    )}
-                  >
-                    <span className={authMode === m.id ? "opacity-70 text-xs" : "opacity-0 text-xs"}>{m.emoji}</span>
-                    {m.label}
-                  </button>
-                ))}
+              {/* Sign In / Sign Up Mode Segmented Switch */}
+              <div className="grid grid-cols-2 p-1 rounded-2xl bg-slate-100/90 border border-slate-200/70">
+                {[
+                  { id: "signin", label: "Sign In" },
+                  { id: "signup", label: "Create Account" },
+                ].map((m) => {
+                  const active = authMode === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => {
+                        setAuthMode(m.id as "signin" | "signup");
+                        setAuthError(null);
+                      }}
+                      className={cn(
+                        "flex items-center justify-center gap-1.5 h-10 rounded-xl text-[12.5px] font-bold transition-all duration-200",
+                        active
+                          ? "bg-[#0A2540] text-white shadow-sm"
+                          : "text-slate-500 hover:text-slate-800"
+                      )}
+                    >
+                      <span>{m.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
