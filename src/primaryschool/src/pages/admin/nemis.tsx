@@ -6,6 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
+import { 
   Building2, Download, CheckCircle2, AlertCircle, 
   Search, RefreshCw, FileSpreadsheet, ShieldCheck, ExternalLink
 } from "lucide-react";
@@ -114,51 +122,51 @@ export default function NemisSyncPage() {
         />
       </div>
 
-      {/* Roster Table */}
-      <Card className="border-slate-200 shadow-sm bg-white rounded-3xl overflow-hidden">
+      {/* Roster Table using shadcn/ui Table */}
+      <Card className="border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(10,37,64,0.04)] bg-white rounded-3xl overflow-hidden">
         <CardContent className="p-0 overflow-x-auto">
-          <table className="w-full text-xs text-left min-w-[700px]">
-            <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] border-b border-slate-200">
-              <tr>
-                <th className="py-3 px-4">UPI Identifier</th>
-                <th className="py-3 px-4">Student Name</th>
-                <th className="py-3 px-3">Class</th>
-                <th className="py-3 px-4">Birth Cert No.</th>
-                <th className="py-3 px-3">Gender</th>
-                <th className="py-3 px-4 text-right">Ministry Verification</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
+          <Table className="min-w-[700px]">
+            <TableHeader className="bg-slate-50/80">
+              <TableRow className="hover:bg-transparent border-b border-slate-200/70">
+                <TableHead className="py-3 px-4 font-bold text-slate-500 uppercase text-[10px] tracking-wider">UPI Identifier</TableHead>
+                <TableHead className="py-3 px-4 font-bold text-slate-500 uppercase text-[10px] tracking-wider">Student Name</TableHead>
+                <TableHead className="py-3 px-3 font-bold text-slate-500 uppercase text-[10px] tracking-wider">Class</TableHead>
+                <TableHead className="py-3 px-4 font-bold text-slate-500 uppercase text-[10px] tracking-wider">Birth Cert No.</TableHead>
+                <TableHead className="py-3 px-3 font-bold text-slate-500 uppercase text-[10px] tracking-wider">Gender</TableHead>
+                <TableHead className="py-3 px-4 font-bold text-slate-500 uppercase text-[10px] tracking-wider text-right">Ministry Verification</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="divide-y divide-slate-100">
               {filtered.map((s) => (
-                <tr key={s.id} className="hover:bg-slate-50/70">
-                  <td className="py-3.5 px-4 font-mono font-bold text-indigo-700">
+                <TableRow key={s.id} className="hover:bg-slate-50/80 transition-colors">
+                  <TableCell className="py-3.5 px-4 font-mono font-bold text-[#0A2540]">
                     {s.upi}
-                  </td>
-                  <td className="py-3.5 px-4 font-bold text-slate-900">
+                  </TableCell>
+                  <TableCell className="py-3.5 px-4 font-bold text-slate-900">
                     {s.name}
-                  </td>
-                  <td className="py-3.5 px-3 font-semibold text-slate-600">
+                  </TableCell>
+                  <TableCell className="py-3.5 px-3 font-semibold text-slate-600">
                     {s.class}
-                  </td>
-                  <td className="py-3.5 px-4 font-mono text-slate-500">
+                  </TableCell>
+                  <TableCell className="py-3.5 px-4 font-mono text-slate-500">
                     {s.birthCert}
-                  </td>
-                  <td className="py-3.5 px-3 text-slate-600 font-medium">
+                  </TableCell>
+                  <TableCell className="py-3.5 px-3 text-slate-600 font-medium">
                     {s.gender}
-                  </td>
-                  <td className="py-3.5 px-4 text-right">
-                    <Badge className={
+                  </TableCell>
+                  <TableCell className="py-3.5 px-4 text-right">
+                    <Badge variant="outline" className={
                       s.status.includes("Verified") 
-                        ? "bg-emerald-50 text-emerald-800 border-emerald-200 font-bold text-[10px]"
-                        : "bg-amber-50 text-amber-800 border-amber-200 font-bold text-[10px]"
+                        ? "bg-emerald-50 text-emerald-800 border-emerald-200/80 font-bold text-[10px]"
+                        : "bg-amber-50 text-amber-800 border-amber-200/80 font-bold text-[10px]"
                     }>
                       {s.status}
                     </Badge>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>

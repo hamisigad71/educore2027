@@ -595,9 +595,10 @@ export default function Login() {
                   <AnimatePresence>
                     {selected === r.role && (
                       <motion.div 
-                        initial={{ scale: 0, opacity: 0 }}
+                        initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
                         className="absolute top-3.5 right-3.5 h-4.5 w-4.5 rounded-full bg-primary flex items-center justify-center text-white shadow-sm"
                       >
                         <Check size={11} strokeWidth={3} />
