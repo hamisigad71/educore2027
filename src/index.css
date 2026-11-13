@@ -155,6 +155,12 @@
     /* Custom Shadows */
     --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.04);
     --shadow-specular: 0 0 20px rgba(10, 37, 64, 0.15);
+
+    /* Emil Kowalski / Apple Design Tokens: Springs & Transitions */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.23, 1, 0.32, 1);
+    --duration-fast: 150ms;
+    --duration-normal: 250ms;
 }
 
 @utility shadow-soft {
@@ -168,11 +174,29 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
     @apply bg-background text-foreground;
-    }
+  }
   html {
     @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Universal Emil Kowalski Direct Manipulation Feedback: Responsive on-press feedback */
+  button, [role="button"], a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Accessible Reduced Motion Gating */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
+  }
 }

@@ -372,7 +372,7 @@ export default function Login() {
 
             <h1 className="serif-hero text-[36px] xl:text-[40px] text-white leading-[1.08] mb-4 tracking-tight">
               Manage your school<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-200 to-amber-200 italic">
+              <span className="text-emerald-300 italic">
                 with absolute clarity.
               </span>
             </h1>
@@ -471,10 +471,10 @@ export default function Login() {
               <CardContent className="p-6 sm:p-8 lg:p-8 relative z-20">
                 <div className="w-full">
 
-            {/* ── Segmented Control Toggles ── */}
+            {/* ── Segmented Control Toggles (Emil Kowalski Shared-Pill Physics) ── */}
             <div className="w-full flex flex-col gap-2.5 mb-6">
               {/* Institution Portal Segmented Switch */}
-              <div className="grid grid-cols-2 p-1 rounded-2xl bg-slate-100/90 border border-slate-200/70">
+              <div className="grid grid-cols-2 p-1 rounded-2xl bg-slate-100/90 border border-slate-200/70 relative">
                 {(["primary", "highschool"] as const).map((p) => {
                   const active = portal === p;
                   return (
@@ -483,12 +483,17 @@ export default function Login() {
                       type="button"
                       onClick={() => setPortal(p)}
                       className={cn(
-                        "relative flex items-center justify-center gap-2 h-10 rounded-xl text-[12.5px] font-bold transition-all duration-200",
-                        active
-                          ? "bg-white text-slate-900 shadow-sm border border-slate-200/60"
-                          : "text-slate-500 hover:text-slate-800"
+                        "relative z-10 flex items-center justify-center gap-2 h-10 rounded-xl text-[12.5px] font-bold transition-colors duration-150 active:scale-[0.98]",
+                        active ? "text-slate-900" : "text-slate-500 hover:text-slate-800"
                       )}
                     >
+                      {active && (
+                        <motion.div
+                          layoutId="activePortalIndicator"
+                          transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                          className="absolute inset-0 bg-white rounded-xl shadow-sm border border-slate-200/60 z-[-1]"
+                        />
+                      )}
                       {p === "primary" ? (
                         <School size={14} className={cn("transition-colors", active ? "text-indigo-600" : "text-slate-400")} />
                       ) : (
@@ -507,7 +512,7 @@ export default function Login() {
               </div>
 
               {/* Sign In / Sign Up Mode Segmented Switch */}
-              <div className="grid grid-cols-2 p-1 rounded-2xl bg-slate-100/90 border border-slate-200/70">
+              <div className="grid grid-cols-2 p-1 rounded-2xl bg-slate-100/90 border border-slate-200/70 relative">
                 {[
                   { id: "signin", label: "Sign In" },
                   { id: "signup", label: "Create Account" },
@@ -522,12 +527,17 @@ export default function Login() {
                         setAuthError(null);
                       }}
                       className={cn(
-                        "flex items-center justify-center gap-1.5 h-10 rounded-xl text-[12.5px] font-bold transition-all duration-200",
-                        active
-                          ? "bg-[#0A2540] text-white shadow-sm"
-                          : "text-slate-500 hover:text-slate-800"
+                        "relative z-10 flex items-center justify-center gap-1.5 h-10 rounded-xl text-[12.5px] font-bold transition-colors duration-150 active:scale-[0.98]",
+                        active ? "text-white" : "text-slate-500 hover:text-slate-800"
                       )}
                     >
+                      {active && (
+                        <motion.div
+                          layoutId="activeAuthModeIndicator"
+                          transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                          className="absolute inset-0 bg-[#0A2540] rounded-xl shadow-sm z-[-1]"
+                        />
+                      )}
                       <span>{m.label}</span>
                     </button>
                   );

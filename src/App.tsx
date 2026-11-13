@@ -49,6 +49,7 @@ class ErrorBoundary extends Component<
 // Pages
 import Home from "@/pages/home";
 import Login from "@/pages/login";
+import WelcomeScreen from "@/pages/welcome";
 import OnboardingVideo from "@/pages/onboarding-video";
 
 // Admin
@@ -358,6 +359,7 @@ function AppRoutes() {
       </Route>
 
       {/* Onboarding Video (shown after account creation) */}
+      <Route path="/welcome" element={<WelcomeScreen />} />
       <Route path="/onboarding" element={<OnboardingVideo />} />
 
       {/* Login */}

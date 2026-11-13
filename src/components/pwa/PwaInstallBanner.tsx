@@ -107,11 +107,20 @@ export function PwaInstallBanner() {
       <AnimatePresence>
         <motion.aside
           aria-label="Install EduCore Application"
-          initial={{ y: 120, opacity: 0, scale: 0.95 }}
+          layout
+          drag="y"
+          dragConstraints={{ top: 0, bottom: 120 }}
+          dragElastic={{ top: 0, bottom: 0.5 }}
+          onDragEnd={(_, info) => {
+            if (info.offset.y > 60 || info.velocity.y > 400) {
+              handleDismiss();
+            }
+          }}
+          initial={{ y: 80, opacity: 0, scale: 0.96 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
-          exit={{ y: 120, opacity: 0, scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 350, damping: 28 }}
-          className="fixed bottom-4 left-3 right-3 sm:left-auto sm:right-6 sm:max-w-[430px] z-50 pointer-events-auto"
+          exit={{ y: 80, opacity: 0, scale: 0.96 }}
+          transition={{ type: "spring", stiffness: 420, damping: 32 }}
+          className="fixed bottom-4 left-3 right-3 sm:left-auto sm:right-6 sm:max-w-[430px] z-50 pointer-events-auto touch-pan-y"
         >
           <div className="bg-[#0A2540] text-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 shadow-[0_20px_50px_rgba(10,37,64,0.45)] border border-slate-700/60 relative overflow-hidden">
             <div className="flex items-center gap-3 relative z-10">

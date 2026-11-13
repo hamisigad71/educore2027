@@ -47,15 +47,15 @@ export function BottomNav({ items }: BottomNavProps) {
         isVisible ? "bottom-4 opacity-100 translate-y-0" : "-bottom-20 opacity-0 translate-y-10"
       )}
     >
-      <div className="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-lg shadow-indigo-500/10 h-16 flex items-center justify-around px-2">
+      <div className="bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-[0_12px_36px_-6px_rgba(10,37,64,0.18)] h-16 flex items-center justify-around px-2">
         {items.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
               cn(
-                "flex flex-col items-center justify-center gap-1 w-full h-full transition-all duration-200 group relative",
-                isActive ? "text-indigo-600" : "text-slate-400 hover:text-slate-600"
+                "flex flex-col items-center justify-center gap-1 w-full h-full active:scale-95 transition-transform duration-100 ease-out group relative",
+                isActive ? "text-[#0A2540] font-bold" : "text-slate-400 hover:text-slate-600"
               )
             }
           >
@@ -65,7 +65,7 @@ export function BottomNav({ items }: BottomNavProps) {
                   size={20}
                   className={cn(
                     "transition-transform duration-200",
-                    isActive ? "scale-110" : "group-hover:scale-105"
+                    isActive ? "scale-105" : "group-hover:scale-105"
                   )}
                   fill={isActive ? "currentColor" : "none"}
                   fillOpacity={isActive ? 0.2 : 0}
@@ -74,7 +74,7 @@ export function BottomNav({ items }: BottomNavProps) {
                   {item.label}
                 </span>
                 {isActive && (
-                   <span className="absolute bottom-1 w-1 h-1 rounded-full bg-indigo-600 animate-in fade-in zoom-in duration-300" />
+                   <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-[#0A2540] animate-in fade-in zoom-in duration-300" />
                 )}
               </>
             )}

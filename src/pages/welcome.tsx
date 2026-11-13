@@ -73,7 +73,7 @@ export default function WelcomeScreen() {
         >
           <h1 className="text-[1.85rem] xs:text-[2.1rem] font-black text-white leading-[1.12] tracking-tight">
             Manage your school<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-200 to-sky-300">
+            <span className="text-emerald-300">
               with absolute clarity.
             </span>
           </h1>
@@ -129,7 +129,7 @@ export default function WelcomeScreen() {
             ))}
           </motion.div>
 
-          {/* Prominent Action Buttons */}
+          {/* Prominent Action Buttons with Emil Kowalski Direct Touch Physics */}
           <motion.div
             variants={fadeUp}
             initial="hidden"
@@ -137,20 +137,30 @@ export default function WelcomeScreen() {
             custom={0.35}
             className="flex flex-col gap-2.5 pt-1"
           >
-            <Link
-              to="/login?tab=register"
-              className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl font-bold text-[13.5px] text-white shadow-md shadow-[#0A2540]/25 bg-[#0A2540] hover:bg-[#0A2540]/90 active:scale-[0.98] transition-all"
+            <motion.div
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 450, damping: 25 }}
             >
-              <span>Get Started</span>
-              <ArrowRight size={15} />
-            </Link>
+              <Link
+                to="/login?tab=register"
+                className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl font-bold text-[13.5px] text-white shadow-md shadow-[#0A2540]/25 bg-[#0A2540] hover:bg-[#0A2540]/90 transition-colors"
+              >
+                <span>Create Account</span>
+                <ArrowRight size={15} />
+              </Link>
+            </motion.div>
 
-            <Link
-              to="/login"
-              className="w-full h-11 flex items-center justify-center rounded-2xl font-bold text-[13px] text-slate-700 border border-slate-200/90 bg-white hover:bg-slate-50 active:scale-[0.98] transition-all"
+            <motion.div
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 450, damping: 25 }}
             >
-              Sign In to Portal
-            </Link>
+              <Link
+                to="/login"
+                className="w-full h-11 flex items-center justify-center rounded-2xl font-bold text-[13px] text-slate-700 border border-slate-200/90 bg-white hover:bg-slate-50 transition-colors"
+              >
+                Sign In
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
 

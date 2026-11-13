@@ -228,9 +228,9 @@ export default function StaffNotices() {
             <Card
               key={n.id}
               className={cn(
-                "shadow-sm border-slate-200/80 group transition-all hover:shadow-md relative overflow-hidden",
-                n.pinned && "border-l-4 border-l-indigo-600",
-                !n.viewed && "bg-indigo-50/30"
+                "shadow-sm border-slate-200/80 group transition-shadow hover:shadow-md relative overflow-hidden",
+                n.pinned && "ring-1 ring-slate-300 bg-slate-50/40",
+                !n.viewed && "bg-slate-50/60"
               )}
             >
               {!n.viewed && (

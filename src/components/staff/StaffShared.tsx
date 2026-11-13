@@ -35,8 +35,8 @@ export function StaffStatCard({
   return (
     <Card
       className={cn(
-        "relative overflow-hidden border-0 shadow-lg bg-gradient-to-br from-primary to-indigo-700 text-white transition-all duration-300",
-        interactive && "cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+        "relative overflow-hidden border-0 shadow-lg bg-gradient-to-br from-primary to-indigo-700 text-white transition-transform duration-150 ease-out",
+        interactive && "cursor-pointer hover:scale-[1.015] active:scale-[0.98]"
       )}
       onClick={onClick}
     >
