@@ -3,12 +3,12 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
 
-// Register Service Worker for PWA installability
-if ("serviceWorker" in navigator && import.meta.env.PROD) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch((err) => {
-      console.log("SW registration notice:", err);
-    });
+// Clean unregister any old/broken service workers to prevent blank cached screens
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    for (const registration of registrations) {
+      registration.unregister();
+    }
   });
 }
 
