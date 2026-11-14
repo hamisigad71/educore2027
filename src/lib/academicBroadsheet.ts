@@ -67,9 +67,15 @@ export function downloadClassBroadsheetTemplate(
   className: string,
   examName: string,
   students: Array<{ admission_number: string; name: string }>,
-  isHighSchool = true
+  isHighSchool = true,
+  teacherSubjects?: string[]
 ) {
-  const subjects = isHighSchool ? HIGH_SCHOOL_SUBJECTS.slice(0, 7) : PRIMARY_CBC_AREAS;
+  let subjects = isHighSchool ? HIGH_SCHOOL_SUBJECTS.slice(0, 7) : PRIMARY_CBC_AREAS;
+  
+  // If specific teacher subjects are passed (and non-empty), restrict broadsheet to those subjects
+  if (teacherSubjects && teacherSubjects.length > 0) {
+    subjects = teacherSubjects;
+  }
   
   const headers = ["Admission_No", "Student_Name", "Class", ...subjects];
   

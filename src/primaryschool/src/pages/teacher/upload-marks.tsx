@@ -165,10 +165,17 @@ export default function PrimaryTeacherUploadMarks() {
       admission_number: s.admission_number,
       name: s.name
     }));
-    downloadClassBroadsheetTemplate(klass || "Grade 4 East", exam, classRoster, false);
+    // If teacher is NOT class teacher and has specific learning areas, only include their areas
+    const specificSubjects = !profile?.isClassTeacher && profile?.subjects && profile.subjects.length > 0
+      ? profile.subjects
+      : undefined;
+
+    downloadClassBroadsheetTemplate(klass || "Grade 4 East", exam, classRoster, false, specificSubjects);
     toast({
       title: "CBC Template Downloaded",
-      description: `Broadsheet for ${klass} pre-filled with ${classRoster.length} students.`
+      description: specificSubjects 
+        ? `CBC Broadsheet for ${klass} with your learning areas: ${specificSubjects.join(", ")}.`
+        : `Broadsheet for ${klass} pre-filled with ${classRoster.length} students.`
     });
   };
 

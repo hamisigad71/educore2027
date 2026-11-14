@@ -170,10 +170,17 @@ export default function HSTeacherUploadMarks() {
       admission_number: s.admission_number,
       name: s.name
     }));
-    downloadClassBroadsheetTemplate(klass || "Form 3 West", exam, classRoster, true);
+    // If teacher is NOT class teacher and has specific subjects, only include their subjects
+    const specificSubjects = !profile?.isClassTeacher && profile?.subjects && profile.subjects.length > 0
+      ? profile.subjects
+      : undefined;
+
+    downloadClassBroadsheetTemplate(klass || "Form 3 West", exam, classRoster, true, specificSubjects);
     toast({
       title: "Template Downloaded",
-      description: `Broadsheet for ${klass} pre-filled with ${classRoster.length} students.`
+      description: specificSubjects 
+        ? `Broadsheet for ${klass} with your subjects: ${specificSubjects.join(", ")}.`
+        : `Broadsheet for ${klass} pre-filled with ${classRoster.length} students.`
     });
   };
 

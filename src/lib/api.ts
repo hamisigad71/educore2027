@@ -134,6 +134,9 @@ export interface TeacherProfile {
   name: string;
   tscNumber: string;
   subject: string;
+  subjects?: string[];
+  isClassTeacher?: boolean;
+  assignedClass?: string;
   classes: string[];
   totalStudents: number;
 }
@@ -191,15 +194,28 @@ export async function getTeacherProfile(userId?: string): Promise<TeacherProfile
 
     const isClassTeacher = typeof window !== "undefined" && localStorage.getItem("educore_teacher_is_class_teacher") === "true";
     const customClass = typeof window !== "undefined" ? localStorage.getItem("educore_teacher_class") : null;
+    const rawSubjects = typeof window !== "undefined" ? localStorage.getItem("educore_teacher_subjects") : null;
     const teacherName = typeof window !== "undefined" ? (JSON.parse(localStorage.getItem("user") || "{}").name || "Teacher") : "Teacher";
 
+    let teacherSubjects: string[] = ["Mathematics & English"];
+    if (rawSubjects) {
+      try {
+        const parsed = JSON.parse(rawSubjects);
+        if (Array.isArray(parsed) && parsed.length > 0) teacherSubjects = parsed;
+      } catch (_) {}
+    }
+
     const assignedClasses = customClass ? [customClass] : ["Grade 5 Blue", "Grade 3 Red"];
+    const subjectTitle = teacherSubjects.join(" & ");
 
     return {
       id: "teacher-dynamic-001",
       name: teacherName,
       tscNumber: typeof window !== "undefined" ? (localStorage.getItem("educore_teacher_tsc") || "TSC/204850") : "TSC/204850",
-      subject: isClassTeacher ? `Class Teacher (${assignedClasses[0]})` : "Subject Specialist",
+      subject: isClassTeacher ? `Class Teacher (${assignedClasses[0]}) · ${subjectTitle}` : subjectTitle,
+      subjects: teacherSubjects,
+      isClassTeacher,
+      assignedClass: customClass || undefined,
       classes: assignedClasses,
       totalStudents: assignedClasses.length * 35,
     };

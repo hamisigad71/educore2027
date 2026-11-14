@@ -140,6 +140,7 @@ export default function Login() {
   const [position, setPosition] = useState("");
   const [isClassTeacher, setIsClassTeacher] = useState<boolean>(false);
   const [assignedClass, setAssignedClass] = useState<string>("");
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
 
   const [authSuccess, setAuthSuccess] = useState<boolean>(false);
   const [showOtpModal, setShowOtpModal] = useState<boolean>(false);
@@ -279,6 +280,10 @@ export default function Login() {
             setAuthError("Please provide both TSC Number and Employee Number.");
             return;
           }
+          if (selectedSubjects.length === 0) {
+            setAuthError("Please select at least one teaching subject / learning area.");
+            return;
+          }
           if (isClassTeacher && !assignedClass.trim()) {
             setAuthError("Please specify which Class / Stream you manage as Class Teacher.");
             return;
@@ -301,6 +306,7 @@ export default function Login() {
             selected === "teacher" || selected === "staff"
               ? employeeNumber
               : undefined,
+          subjects: selected === "teacher" ? selectedSubjects : undefined,
           isClassTeacher: selected === "teacher" ? isClassTeacher : undefined,
           assignedClass: selected === "teacher" && isClassTeacher ? assignedClass.trim() : undefined,
           position: selected === "staff" ? position : undefined,
@@ -347,6 +353,9 @@ export default function Login() {
           localStorage.setItem("educore_teacher_is_class_teacher", isClassTeacher ? "true" : "false");
           if (isClassTeacher && assignedClass.trim()) {
             localStorage.setItem("educore_teacher_class", assignedClass.trim());
+          }
+          if (selectedSubjects.length > 0) {
+            localStorage.setItem("educore_teacher_subjects", JSON.stringify(selectedSubjects));
           }
         }
 
@@ -1072,6 +1081,69 @@ export default function Login() {
                                     className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
                                   />
                                 </div>
+                              </div>
+
+                              {/* Teaching Subjects Multi-Select */}
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                                    Teaching Subjects / Learning Areas (Select All That Apply)
+                                  </Label>
+                                  <span className="text-[10px] text-sky-600 font-bold">
+                                    {selectedSubjects.length} selected
+                                  </span>
+                                </div>
+                                
+                                <div className="flex flex-wrap gap-1.5 p-3 rounded-2xl border border-slate-200 bg-white max-h-36 overflow-y-auto">
+                                  {(portal === "highschool" ? [
+                                    "Mathematics",
+                                    "English",
+                                    "Kiswahili",
+                                    "Chemistry",
+                                    "Biology",
+                                    "Physics",
+                                    "History",
+                                    "Geography",
+                                    "CRE",
+                                    "Business Studies",
+                                    "Agriculture"
+                                  ] : [
+                                    "Mathematics Activities",
+                                    "English Language Activities",
+                                    "Kiswahili Language Activities",
+                                    "Science & Technology",
+                                    "Social Studies & Citizenship",
+                                    "Agriculture & Nutrition",
+                                    "Creative Arts & Sports"
+                                  ]).map((subj) => {
+                                    const isChosen = selectedSubjects.includes(subj);
+                                    return (
+                                      <button
+                                        key={subj}
+                                        type="button"
+                                        onClick={() => {
+                                          if (isChosen) {
+                                            setSelectedSubjects((prev) => prev.filter((s) => s !== subj));
+                                          } else {
+                                            setSelectedSubjects((prev) => [...prev, subj]);
+                                          }
+                                        }}
+                                        className={cn(
+                                          "px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border flex items-center gap-1.5",
+                                          isChosen
+                                            ? "bg-[#0A2540] border-[#0A2540] text-white shadow-xs"
+                                            : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                                        )}
+                                      >
+                                        {isChosen && <Check size={12} className="text-emerald-400 stroke-[3]" />}
+                                        {subj}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                                <p className="text-[10px] text-slate-400 font-medium ml-1">
+                                  Teachers who instruct multiple subjects can select 2 or more areas.
+                                </p>
                               </div>
 
                               {/* Class Teacher Inquiry Card */}
