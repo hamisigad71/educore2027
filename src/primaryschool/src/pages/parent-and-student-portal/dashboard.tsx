@@ -223,6 +223,8 @@ const DEMO_ATTENDANCE = { rate: 92 };
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+import { getActiveStudentProfile } from "@/lib/demoSchoolSeed";
+
 export default function PortalDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -232,11 +234,16 @@ export default function PortalDashboard() {
   const [liveMarks, setLiveMarks] = React.useState<any[]>([]);
   const [liveAttendance, setLiveAttendance] = React.useState<any>(null);
 
-  // Detect demo session: demo users have no Supabase UUID (no user.id)
+  // Retrieve active personalized student profile from session or registration
+  const activeStudentProfile = React.useMemo(() => {
+    const activeAdm = typeof window !== "undefined" ? localStorage.getItem("educore_active_student_adm") : null;
+    return getActiveStudentProfile(activeAdm || undefined);
+  }, []);
+
   const isDemo = !user?.id;
 
   React.useEffect(() => {
-    if (isDemo) return; // skip API calls for demo sessions
+    if (isDemo) return;
     async function loadData() {
       try {
         const children = await getParentChildren();
@@ -260,37 +267,37 @@ export default function PortalDashboard() {
     loadData();
   }, [isDemo]);
 
-  // Use demo data for demo sessions, live data for real users
-  const student = isDemo ? DEMO_STUDENT : childData ? {
+  // Priority: 1. Live Database Child -> 2. Registered Student Profile -> 3. Fallback
+  const student = childData ? {
     id: childData.id,
     name: childData.name,
     admission: childData.admissionNumber,
-    klass: childData.className || "Unassigned",
-    balance: liveFees?.balance || 0,
-    attendance: liveAttendance?.rate || 0,
+    klass: childData.className || activeStudentProfile.className,
+    balance: liveFees?.balance !== undefined ? liveFees.balance : activeStudentProfile.balance,
+    attendance: liveAttendance?.rate || 96,
     photo: user?.photo || "",
   } : {
-    id: "new",
-    name: user?.name || "Student",
-    admission: "Pending Admission",
-    klass: "Unassigned",
-    balance: 0,
-    attendance: 0,
+    id: activeStudentProfile.id,
+    name: user?.name && user.name !== "Student" ? user.name : activeStudentProfile.name,
+    admission: activeStudentProfile.admission_number,
+    klass: activeStudentProfile.className,
+    balance: activeStudentProfile.balance,
+    attendance: 96,
     photo: user?.photo || "",
   };
 
-  const rawMarks = isDemo ? DEMO_MARKS : childData ? liveMarks : [];
-  const marks = isDemo ? DEMO_MARKS : rawMarks.map((m: any) => ({
+  const rawMarks = childData && liveMarks.length > 0 ? liveMarks : activeStudentProfile.academicResults;
+  const marks = rawMarks.map((m: any) => ({
     subject: m.subjectName || m.subject,
     score: m.marks ?? m.score,
     grade: m.grade
   }));
 
-  const paid = isDemo ? DEMO_FEES.totalPaid : childData ? (liveFees?.totalPaid || 0) : 0;
+  const paid = childData && liveFees ? liveFees.totalPaid : activeStudentProfile.totalPaid;
   
   const avgScore = marks.length
     ? Math.round(marks.reduce((t: number, m: any) => t + (m.score || 0), 0) / marks.length)
-    : 0;
+    : activeStudentProfile.meanScore;
   
   const topSubject = [...marks].sort((a: any, b: any) => b.score - a.score)[0];
   const feesCleared = student.balance === 0;
