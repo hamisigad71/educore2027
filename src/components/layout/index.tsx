@@ -481,7 +481,7 @@ function Sidebar({
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[11px] font-semibold text-slate-800 truncate leading-tight">
-                  Bright Futures Academy
+                  {typeof window !== "undefined" && localStorage.getItem("educore_school_name") ? localStorage.getItem("educore_school_name") : "Bright Futures Academy"}
                 </p>
                 <div className="flex items-center gap-1 mt-0.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 flex-shrink-0" />

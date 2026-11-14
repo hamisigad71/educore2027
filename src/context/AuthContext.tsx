@@ -16,6 +16,7 @@ export interface AuthUser {
   email: string;
   photo?: string;
   schoolId?: string;
+  schoolName?: string;
 }
 
 interface AuthContextType {
@@ -312,14 +313,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } else {
         // Fallback user session for local/offline environments (ensures student can always access their account)
+        const schoolNameEntered = userData.identificationData?.schoolName || userData.schoolName || localStorage.getItem("educore_school_name") || "Bright Futures Academy";
         const fallbackUser: AuthUser = {
           name: `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'Student User',
           email,
           role: userData.role || 'student',
           schoolId: userData.schoolId || 'BFA-2027',
+          schoolName: schoolNameEntered,
         };
         setUser(fallbackUser);
         localStorage.setItem("user", JSON.stringify(fallbackUser));
+        localStorage.setItem("educore_school_name", schoolNameEntered);
       }
 
       setPortal(portalVal);
@@ -335,14 +339,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { success: true };
     } catch (err: any) {
       // Ultimate safety guard: Never lock out an authorized student
+      const schoolNameEntered = userData.identificationData?.schoolName || userData.schoolName || localStorage.getItem("educore_school_name") || "Bright Futures Academy";
       const fallbackUser: AuthUser = {
         name: `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'Student User',
         email,
         role: userData.role || 'student',
         schoolId: userData.schoolId || 'BFA-2027',
+        schoolName: schoolNameEntered,
       };
       setUser(fallbackUser);
       localStorage.setItem("user", JSON.stringify(fallbackUser));
+      localStorage.setItem("educore_school_name", schoolNameEntered);
       setPortal(portalVal);
       localStorage.setItem("portal", portalVal);
       return { success: true };

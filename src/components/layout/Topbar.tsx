@@ -503,7 +503,9 @@ export function Topbar({
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
           </span>
-          <span className="text-[10px] text-slate-400 font-medium">Bright Futures Academy</span>
+          <span className="text-[10px] text-slate-500 font-bold">
+            {localStorage.getItem("educore_school_name") || "Bright Futures Academy"}
+          </span>
         </div>
       </div>
     </header>

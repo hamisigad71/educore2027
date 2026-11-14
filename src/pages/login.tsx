@@ -326,9 +326,12 @@ export default function Login() {
           return;
         }
 
-        // Store active admission number so Student Portal personalizes to this exact student
+        // Store active admission number and school name so Portal personalizes dynamically
         if (admissionNumber) {
           localStorage.setItem("educore_active_student_adm", admissionNumber.trim());
+        }
+        if (schoolName) {
+          localStorage.setItem("educore_school_name", schoolName.trim());
         }
 
         notify.success("Account Created Successfully!", "Welcome to EduCore! Setting up your portal access...");
