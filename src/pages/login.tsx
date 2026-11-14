@@ -223,8 +223,13 @@ export default function Login() {
           return;
         }
 
+        if (selected === "parent" && (!admissionNumber || !studentClass)) {
+          setAuthError("Please provide your child's Admission Number and Class/Grade.");
+          return;
+        }
+
         // Whitelist Verification Gate: Only officially enrolled students/guardians can register
-        if (selected === "student" && admissionNumber) {
+        if ((selected === "student" || selected === "parent") && admissionNumber) {
           setLoading(true);
           const verify = await verifyStudentAdmissionNumber(admissionNumber, schoolCode);
           setLoading(false);
@@ -236,7 +241,7 @@ export default function Login() {
             return;
           }
 
-          if (verify.alreadyClaimed) {
+          if (selected === "student" && verify.alreadyClaimed) {
             const warnMsg = `Admission number "${admissionNumber}" is already registered. If this is your account, please sign in.`;
             setAuthError(`Notice: ${warnMsg}`);
             notify.warning("Already Registered", warnMsg);
@@ -825,10 +830,13 @@ export default function Login() {
                         className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
                       >
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Student Admission Number</Label>
+                          <div className="flex items-center justify-between">
+                            <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Student Admission Number</Label>
+                            <span className="text-[10px] text-sky-600 font-bold">Try: ADM-2027-001 to 015</span>
+                          </div>
                           <Input
                             type="text"
-                            placeholder="e.g. ADM/2026/001"
+                            placeholder="e.g. ADM-2027-001"
                             value={admissionNumber}
                             onChange={(e) => setAdmissionNumber(e.target.value)}
                             className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
@@ -838,7 +846,7 @@ export default function Login() {
                           <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Child's Class / Grade</Label>
                           <Input
                             type="text"
-                            placeholder={portal === "highschool" ? "e.g. Form 2 West" : "e.g. Grade 4 Green"}
+                            placeholder={portal === "highschool" ? "e.g. Form 3 West" : "e.g. Grade 5 Blue"}
                             value={studentClass}
                             onChange={(e) => setStudentClass(e.target.value)}
                             className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
