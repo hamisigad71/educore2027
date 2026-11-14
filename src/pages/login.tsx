@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import OtpVerificationModal from "@/components/auth/OtpVerificationModal";
 import OnboardingVideo from "./onboarding-video";
+import { verifyStudentAdmissionNumber } from "@/lib/api";
+
 
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -218,6 +220,28 @@ export default function Login() {
           setAuthError("Please provide both Admission Number and Class/Grade.");
           return;
         }
+
+        // Whitelist Verification Gate: Only officially enrolled students/guardians can register
+        if (selected === "student" && admissionNumber) {
+          setLoading(true);
+          const verify = await verifyStudentAdmissionNumber(admissionNumber, schoolCode);
+          setLoading(false);
+
+          if (!verify.exists) {
+            setAuthError(
+              `Error: Admission number "${admissionNumber}" does not exist in the school register. Kindly contact the school administration or class teacher to be enrolled.`
+            );
+            return;
+          }
+
+          if (verify.alreadyClaimed) {
+            setAuthError(
+              `Notice: Admission number "${admissionNumber}" is already registered. If this is your account, please sign in or use password reset.`
+            );
+            return;
+          }
+        }
+
 
         if (selected === "teacher" && (!tscNumber || !employeeNumber)) {
           setAuthError("Please provide both TSC Number and Employee Number.");

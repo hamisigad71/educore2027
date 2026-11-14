@@ -25,30 +25,57 @@ serve(async (req: Request) => {
     const { role, identificationData } = await req.json();
 
     if (role === 'student') {
-      await supabaseClient.from('students').insert({
-        user_id: user.id,
-        admission_number: identificationData.admissionNumber
-      });
-      // TODO: Link class in enrollments table if studentClass exists
+      const admissionNumber = identificationData?.admissionNumber?.trim();
+      
+      if (admissionNumber) {
+        // 1. Check if student record was pre-created during Admin Bulk Upload
+        const { data: existingStudent } = await supabaseClient
+          .from('students')
+          .select('id, user_id, school_id')
+          .eq('admission_number', admissionNumber)
+          .maybeSingle();
+
+        if (existingStudent) {
+          // Link this registered auth account to the pre-existing student record!
+          await supabaseClient
+            .from('students')
+            .update({ user_id: user.id })
+            .eq('id', existingStudent.id);
+        } else {
+          // New student enrollment fallback
+          await supabaseClient.from('students').insert({
+            user_id: user.id,
+            admission_number: admissionNumber,
+            school_id: user.user_metadata?.school_id || null
+          });
+        }
+      }
     } else if (role === 'parent') {
-      // Assuming student exists with given admissionNumber
-      const { data: student } = await supabaseClient.from('students').select('user_id').eq('admission_number', identificationData.admissionNumber).single();
-      if (student) {
-        await supabaseClient.from('parent_student').insert({
-          parent_id: user.id,
-          student_id: student.user_id,
-          relationship: 'parent'
-        });
+      const admissionNumber = identificationData?.admissionNumber?.trim();
+      if (admissionNumber) {
+        const { data: student } = await supabaseClient
+          .from('students')
+          .select('id, user_id')
+          .eq('admission_number', admissionNumber)
+          .maybeSingle();
+
+        if (student) {
+          await supabaseClient.from('parent_student').upsert({
+            parent_id: user.id,
+            student_id: student.user_id || student.id,
+            relationship: 'parent'
+          });
+        }
       }
     } else if (role === 'teacher') {
-       await supabaseClient.from('teachers').insert({
+      await supabaseClient.from('teachers').insert({
         user_id: user.id,
         tsc_number: identificationData.tscNumber,
         employee_number: identificationData.employeeNumber,
         date_employed: identificationData.joinDate
       });
     } else if (role === 'staff') {
-       await supabaseClient.from('staff').insert({
+      await supabaseClient.from('staff').insert({
         user_id: user.id,
         employee_number: identificationData.employeeNumber,
         position: identificationData.position,

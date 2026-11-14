@@ -232,6 +232,15 @@ export function BulkStudentUploadModal({
     }
 
     onImportSuccess(validRows);
+
+    // Sync to local registered student whitelist for offline/hybrid instant validation
+    try {
+      const existing = localStorage.getItem("educore_registered_students");
+      const currentList: any[] = existing ? JSON.parse(existing) : [];
+      const updated = [...currentList, ...validRows];
+      localStorage.setItem("educore_registered_students", JSON.stringify(updated));
+    } catch (_) {}
+
     onOpenChange(false);
     setRows([]);
     setFileName("");

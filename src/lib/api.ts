@@ -1213,3 +1213,91 @@ export async function uploadPostImage(file: File): Promise<string> {
     return URL.createObjectURL(file);
   }
 }
+
+/**
+ * Verify whether an admission number exists in the school register
+ * and whether it has already been claimed by another student account.
+ */
+export async function verifyStudentAdmissionNumber(
+  admissionNumber: string,
+  schoolId?: string
+): Promise<{ exists: boolean; alreadyClaimed: boolean; studentName?: string; error?: string }> {
+  if (!admissionNumber || !admissionNumber.trim()) {
+    return { exists: false, alreadyClaimed: false, error: "Admission number is required." };
+  }
+
+  const cleanAdm = admissionNumber.trim();
+
+  try {
+    let query = supabase
+      .from('students')
+      .select('id, user_id, users(first_name, last_name)')
+      .ilike('admission_number', cleanAdm);
+
+    if (schoolId) {
+      query = query.eq('school_id', schoolId);
+    }
+
+    const { data, error } = await query.maybeSingle();
+
+    if (error) {
+      console.warn("Admission verification check query notice:", error.message);
+      // Fallback check against cached registered students in localStorage if offline/local
+      const cached = localStorage.getItem('educore_registered_students');
+      if (cached) {
+        try {
+          const list: any[] = JSON.parse(cached);
+          const found = list.find(s => 
+            s.admission?.toLowerCase() === cleanAdm.toLowerCase() ||
+            s.admission_number?.toLowerCase() === cleanAdm.toLowerCase()
+          );
+          if (found) {
+            return {
+              exists: true,
+              alreadyClaimed: Boolean(found.user_id),
+              studentName: found.name || found.Full_Name
+            };
+          }
+        } catch (_) {}
+      }
+      return { exists: false, alreadyClaimed: false };
+    }
+
+    if (!data) {
+      // Also check local registered student cache from bulk imports
+      const cached = localStorage.getItem('educore_registered_students');
+      if (cached) {
+        try {
+          const list: any[] = JSON.parse(cached);
+          const found = list.find(s => 
+            s.admission?.toLowerCase() === cleanAdm.toLowerCase() ||
+            s.admission_number?.toLowerCase() === cleanAdm.toLowerCase()
+          );
+          if (found) {
+            return {
+              exists: true,
+              alreadyClaimed: Boolean(found.user_id),
+              studentName: found.name || found.Full_Name
+            };
+          }
+        } catch (_) {}
+      }
+
+      return { exists: false, alreadyClaimed: false };
+    }
+
+    const u = (data as any).users;
+    const studentName = u ? `${u.first_name || ''} ${u.last_name || ''}`.trim() : undefined;
+    const alreadyClaimed = Boolean(data.user_id);
+
+    return {
+      exists: true,
+      alreadyClaimed,
+      studentName
+    };
+  } catch (err: any) {
+    console.error("Admission check exception:", err);
+    return { exists: false, alreadyClaimed: false, error: err.message };
+  }
+}
+
