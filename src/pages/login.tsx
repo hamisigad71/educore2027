@@ -1555,7 +1555,7 @@ export default function Login() {
             fullScreen
             variant="progress"
             text="Securing your session"
-            subText="Bright Futures Academy · School Management System"
+            subText={`${typeof window !== "undefined" && localStorage.getItem("educore_school_name") ? localStorage.getItem("educore_school_name") : "EduCore"} · School Management System`}
             size="lg"
             progress={progress}
             steps={[
