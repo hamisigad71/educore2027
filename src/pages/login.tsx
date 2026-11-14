@@ -342,6 +342,11 @@ export default function Login() {
           return;
         }
 
+        // Store active admission number so Student Portal personalizes to this exact student
+        if (pending.userData?.identificationData?.admissionNumber) {
+          localStorage.setItem("educore_active_student_adm", pending.userData.identificationData.admissionNumber);
+        }
+
         notify.success("Account Created Successfully!", "Welcome to EduCore! Setting up your portal access...");
         setVideoTarget(pending.targetPath);
         setShowVideoOverlay(true);
@@ -787,10 +792,13 @@ export default function Login() {
                         className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
                       >
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Admission Number</Label>
+                          <div className="flex items-center justify-between">
+                            <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Admission Number</Label>
+                            <span className="text-[10px] text-sky-600 font-bold">Try: ADM-2027-001 to 015</span>
+                          </div>
                           <Input
                             type="text"
-                            placeholder="e.g. ADM/2026/001"
+                            placeholder="e.g. ADM-2027-001"
                             value={admissionNumber}
                             onChange={(e) => setAdmissionNumber(e.target.value)}
                             className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
@@ -800,7 +808,7 @@ export default function Login() {
                           <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Class / Grade</Label>
                           <Input
                             type="text"
-                            placeholder={portal === "highschool" ? "e.g. Form 3 East" : "e.g. Grade 5 Blue"}
+                            placeholder={portal === "highschool" ? "e.g. Form 3 West" : "e.g. Grade 5 Blue"}
                             value={studentClass}
                             onChange={(e) => setStudentClass(e.target.value)}
                             className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"

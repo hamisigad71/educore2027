@@ -491,8 +491,29 @@ export async function getExamResults(classId?: string): Promise<ExamResultItem[]
       };
     });
   } catch (e) {
-    console.warn("getExamResults fallback:", e);
-    return [];
+    console.warn("getExamResults fallback to active student profile:", e);
+    // Dynamic fallback to the logged-in student's exact pre-seeded results
+    try {
+      const activeAdm = typeof window !== "undefined" ? localStorage.getItem("educore_active_student_adm") : null;
+      const { getActiveStudentProfile } = await import("./demoSchoolSeed");
+      const st = getActiveStudentProfile(activeAdm || undefined);
+
+      return st.academicResults.map((r, i) => ({
+        id: `res_${st.id}_${i}`,
+        studentId: st.id,
+        studentName: st.name,
+        admissionNumber: st.admission_number,
+        className: st.className,
+        subjectName: r.subjectName,
+        examName: "Term 3 End of Term Exam",
+        marks: r.marks,
+        grade: r.grade,
+        points: r.points,
+        remarks: r.remarks,
+      }));
+    } catch (_) {
+      return [];
+    }
   }
 }
 
@@ -582,8 +603,25 @@ export async function getStudentFees(studentId: string): Promise<FeeAccountItem 
       status: data.status || "unpaid",
     };
   } catch (e) {
-    console.warn("getStudentFees error:", e);
-    return null;
+    console.warn("getStudentFees error, resolving active student profile:", e);
+    try {
+      const activeAdm = typeof window !== "undefined" ? localStorage.getItem("educore_active_student_adm") : null;
+      const { getActiveStudentProfile } = await import("./demoSchoolSeed");
+      const st = getActiveStudentProfile(activeAdm || undefined);
+
+      return {
+        id: `fee_${st.id}`,
+        studentName: st.name,
+        admissionNumber: st.admission_number,
+        className: st.className,
+        totalBilled: st.totalBilled,
+        totalPaid: st.totalPaid,
+        balance: st.balance,
+        status: (st.feeStatus === "cleared" ? "paid" : st.feeStatus) as "paid" | "partial" | "unpaid",
+      };
+    } catch (_) {
+      return null;
+    }
   }
 }
 
