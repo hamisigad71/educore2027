@@ -55,11 +55,19 @@ const PAYMENT_METHODS = [
   { value: "card",     label: "Debit Card",    icon: CreditCard,  color: "text-slate-600",   bg: "bg-slate-50 border-slate-200"     },
 ];
 
+import { getActiveStudentProfile } from "@/lib/demoSchoolSeed";
+
 export default function PortalFees() {
   const { toast } = useToast();
 
   const [childData, setChildData] = useState<any>(null);
   const [liveFees, setLiveFees] = useState<any>(null);
+
+  // Retrieve active personalized student profile from session or registration
+  const activeStudentProfile = React.useMemo(() => {
+    const activeAdm = typeof window !== "undefined" ? localStorage.getItem("educore_active_student_adm") : null;
+    return getActiveStudentProfile(activeAdm || undefined);
+  }, []);
 
   React.useEffect(() => {
     async function loadData() {
@@ -76,22 +84,25 @@ export default function PortalFees() {
     loadData();
   }, []);
 
-  const mockStudent = studentsSeed[0];
   const student = childData ? {
     id: childData.id,
     name: childData.name,
     admission: childData.admissionNumber,
-    klass: childData.className || "Unassigned",
-    balance: liveFees?.balance || 0,
-  } : mockStudent;
+    klass: childData.className || activeStudentProfile.className,
+    balance: liveFees?.balance !== undefined ? liveFees.balance : activeStudentProfile.balance,
+  } : {
+    id: activeStudentProfile.id,
+    name: activeStudentProfile.name,
+    admission: activeStudentProfile.admission_number,
+    klass: activeStudentProfile.className,
+    balance: activeStudentProfile.balance,
+  };
   
-  const mockFees = feesSeed.filter((f) => f.studentId === mockStudent.id);
-  const fees = childData ? [] : mockFees; // live transactions table can be added later
-  
-  const paidTotal   = childData ? (liveFees?.totalPaid || 0) : mockFees.reduce((s, f) => s + f.amount, 0);
-  const totalDue    = childData ? (liveFees?.totalBilled || 0) : (paidTotal + mockStudent.balance);
+  const paidTotal   = childData && liveFees ? liveFees.totalPaid : activeStudentProfile.totalPaid;
+  const totalDue    = childData && liveFees ? liveFees.totalBilled : activeStudentProfile.totalBilled;
   const paidPercent = totalDue === 0 ? 100 : Math.round((paidTotal / totalDue) * 100);
   const isCleared   = student.balance <= 0;
+  const fees: any[] = [];
 
   const [payOpen, setPayOpen]       = useState(false);
   const [payAmount, setPayAmount]   = useState("");
