@@ -70,7 +70,9 @@ import {
   Phone,
   ChevronRight,
   TrendingUp,
+  FileSpreadsheet,
 } from "lucide-react";
+import { BulkStudentUploadModal, ParsedStudentRow } from "@/components/portal/BulkStudentUploadModal";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -134,6 +136,15 @@ export default function AdminStudents() {
   const [modal, setModal] = useState<{ open: boolean; data?: Student }>({
     open: false,
   });
+  const [bulkModalOpen, setBulkModalOpen] = useState(false);
+  const [formInput, setFormInput] = useState({
+    name: "",
+    admission: "",
+    klass: "Grade 5A",
+    parent: "",
+    phone: "+254",
+    balance: 0,
+  });
   const { toast } = useToast();
 
   const classes = useMemo(
@@ -153,25 +164,72 @@ export default function AdminStudents() {
     [students, q, klassFilter],
   );
 
+  const openEnrollModal = (student?: Student) => {
+    if (student) {
+      setFormInput({
+        name: student.name,
+        admission: student.admission,
+        klass: student.klass,
+        parent: student.parent,
+        phone: student.phone,
+        balance: student.balance,
+      });
+      setModal({ open: true, data: student });
+    } else {
+      setFormInput({
+        name: "",
+        admission: `ADM/2026/${String(students.length + 1).padStart(3, "0")}`,
+        klass: classes[0] || "Grade 5A",
+        parent: "",
+        phone: "+2547",
+        balance: 0,
+      });
+      setModal({ open: true });
+    }
+  };
+
   function handleSave() {
+    if (!formInput.name.trim()) {
+      toast({
+        title: "Name Required",
+        description: "Please enter the student's full name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (modal.data) {
+      setStudents((prev) =>
+        prev.map((s) =>
+          s.id === modal.data?.id
+            ? {
+                ...s,
+                name: formInput.name,
+                admission: formInput.admission,
+                klass: formInput.klass,
+                parent: formInput.parent,
+                phone: formInput.phone,
+                balance: Number(formInput.balance) || 0,
+              }
+            : s
+        )
+      );
       toast({
         title: "Student updated",
-        description: "Changes saved successfully.",
+        description: `${formInput.name}'s records have been updated.`,
       });
     } else {
       const newS: Student = {
         id: `s${Date.now()}`,
-        admission: `ADM/2025/${String(students.length + 1).padStart(3, "0")}`,
-        name: "New Student",
-        klass: "Grade 5A",
-        parent: "Parent Name",
-        phone: "+254700000000",
-        balance: 0,
-        attendance: 95,
-        performance: 72,
-        photo:
-          "https://i.pinimg.com/736x/5e/d6/39/5ed63905c998c5c3cd29f2ab3890ee2e.jpg",
+        admission: formInput.admission || `ADM/2026/${String(students.length + 1).padStart(3, "0")}`,
+        name: formInput.name,
+        klass: formInput.klass,
+        parent: formInput.parent || "Parent/Guardian",
+        phone: formInput.phone,
+        balance: Number(formInput.balance) || 0,
+        attendance: 100,
+        performance: 75,
+        photo: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200",
       };
       setStudents((p) => [newS, ...p]);
       toast({
@@ -181,6 +239,23 @@ export default function AdminStudents() {
     }
     setModal({ open: false });
   }
+
+  const handleBulkImport = (imported: ParsedStudentRow[]) => {
+    const newStudents: Student[] = imported.map((r, i) => ({
+      id: `s_import_${Date.now()}_${i}`,
+      admission: r.admission,
+      name: r.name,
+      klass: r.klass,
+      parent: r.parent,
+      phone: r.phone,
+      balance: r.balance || 0,
+      attendance: 100,
+      performance: 70,
+      photo: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200",
+    }));
+
+    setStudents((prev) => [...newStudents, ...prev]);
+  };
 
   function handleDelete(s: Student) {
     setStudents((p) => p.filter((x) => x.id !== s.id));
@@ -201,15 +276,16 @@ export default function AdminStudents() {
             <Button
               variant="outline"
               size="sm"
-              className="border-slate-300 text-slate-700 hover:bg-slate-50 gap-1.5"
+              onClick={() => setBulkModalOpen(true)}
+              className="border-slate-300 text-[#0A2540] hover:bg-slate-50 gap-1.5 font-bold rounded-xl"
             >
-              <Download size={14} />
-              Export
+              <FileSpreadsheet size={15} className="text-emerald-600" />
+              Import CSV / Excel
             </Button>
             <Button
               size="sm"
-              onClick={() => setModal({ open: true })}
-              className="bg-indigo-600 hover:bg-indigo-700 shadow-sm gap-1.5"
+              onClick={() => openEnrollModal()}
+              className="bg-[#0A2540] hover:bg-[#0A2540]/90 text-white shadow-sm gap-1.5 font-bold rounded-xl"
             >
               <Plus size={14} />
               Add Student
@@ -500,24 +576,30 @@ export default function AdminStudents() {
           <div className="px-6 py-5 space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label className="text-xs">Full Name *</Label>
+                <Label className="text-xs font-bold text-slate-700">Full Name *</Label>
                 <Input
-                  defaultValue={modal.data?.name ?? ""}
-                  placeholder="Amani Otieno"
-                  className="h-9 text-sm"
+                  value={formInput.name}
+                  onChange={(e) => setFormInput((p) => ({ ...p, name: e.target.value }))}
+                  placeholder="e.g. Amani Otieno"
+                  className="h-10 text-sm rounded-xl border-slate-200"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs">Admission ID *</Label>
+                <Label className="text-xs font-bold text-slate-700">Admission Number *</Label>
                 <Input
-                  defaultValue={modal.data?.admission ?? ""}
-                  className="h-9 text-sm font-mono"
+                  value={formInput.admission}
+                  onChange={(e) => setFormInput((p) => ({ ...p, admission: e.target.value }))}
+                  placeholder="ADM/2026/001"
+                  className="h-10 text-sm font-mono rounded-xl border-slate-200"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs">Class *</Label>
-                <Select defaultValue={modal.data?.klass ?? "Grade 5A"}>
-                  <SelectTrigger className="h-9 text-sm">
+                <Label className="text-xs font-bold text-slate-700">Class / Grade *</Label>
+                <Select
+                  value={formInput.klass}
+                  onValueChange={(val) => setFormInput((p) => ({ ...p, klass: val }))}
+                >
+                  <SelectTrigger className="h-10 text-sm rounded-xl border-slate-200">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -530,25 +612,31 @@ export default function AdminStudents() {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs">Parent/Guardian *</Label>
+                <Label className="text-xs font-bold text-slate-700">Parent / Guardian Name *</Label>
                 <Input
-                  defaultValue={modal.data?.parent ?? ""}
-                  className="h-9 text-sm"
+                  value={formInput.parent}
+                  onChange={(e) => setFormInput((p) => ({ ...p, parent: e.target.value }))}
+                  placeholder="e.g. Sarah Otieno"
+                  className="h-10 text-sm rounded-xl border-slate-200"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs">Phone *</Label>
+                <Label className="text-xs font-bold text-slate-700">Guardian Phone (M-Pesa/SMS) *</Label>
                 <Input
-                  defaultValue={modal.data?.phone ?? "+254"}
-                  className="h-9 text-sm font-mono"
+                  value={formInput.phone}
+                  onChange={(e) => setFormInput((p) => ({ ...p, phone: e.target.value }))}
+                  placeholder="+254 7XX XXX XXX"
+                  className="h-10 text-sm font-mono rounded-xl border-slate-200"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs">Fee Balance (KES)</Label>
+                <Label className="text-xs font-bold text-slate-700">Fee Balance (KES)</Label>
                 <Input
                   type="number"
-                  defaultValue={modal.data?.balance ?? 0}
-                  className="h-9 text-sm"
+                  value={formInput.balance}
+                  onChange={(e) => setFormInput((p) => ({ ...p, balance: Number(e.target.value) || 0 }))}
+                  placeholder="0"
+                  className="h-10 text-sm rounded-xl border-slate-200"
                 />
               </div>
             </div>
@@ -559,20 +647,27 @@ export default function AdminStudents() {
               variant="outline"
               size="sm"
               onClick={() => setModal({ open: false })}
-              className="border-slate-300"
+              className="border-slate-300 rounded-xl"
             >
               Cancel
             </Button>
             <Button
               size="sm"
               onClick={handleSave}
-              className="bg-indigo-600 hover:bg-indigo-700 shadow-sm"
+              className="bg-[#0A2540] hover:bg-[#0A2540]/90 text-white font-bold rounded-xl shadow-sm"
             >
               {modal.data ? "Save Changes" : "Enroll Student"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Bulk Upload Modal */}
+      <BulkStudentUploadModal
+        open={bulkModalOpen}
+        onOpenChange={setBulkModalOpen}
+        onImportSuccess={handleBulkImport}
+      />
 
       <Toaster />
     </div>

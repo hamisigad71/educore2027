@@ -30,8 +30,9 @@ import { cn } from "@/lib/utils";
 import {
   Users, CheckCircle2, AlertCircle, LayoutGrid,
   Search, Download, Plus, Pencil, Trash2, MoreHorizontal,
-  Mail, Phone, ChevronRight, TrendingUp, Loader2,
+  Mail, Phone, ChevronRight, TrendingUp, Loader2, FileSpreadsheet,
 } from "lucide-react";
+import { BulkStudentUploadModal, ParsedStudentRow } from "@/components/portal/BulkStudentUploadModal";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -74,6 +75,7 @@ export default function AdminStudents() {
   const [q, setQ] = useState("");
   const [klassFilter, setKlassFilter] = useState("All");
   const [modal, setModal] = useState<{ open: boolean; data?: StudentItem }>({ open: false });
+  const [bulkModalOpen, setBulkModalOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -191,6 +193,21 @@ export default function AdminStudents() {
     }
   }
 
+  const handleBulkImport = (imported: ParsedStudentRow[]) => {
+    const newItems: StudentItem[] = imported.map((r, i) => ({
+      id: `hs_import_${Date.now()}_${i}`,
+      admission_number: r.admission,
+      name: r.name,
+      className: r.klass,
+      parent_name: r.parent,
+      parent_phone: r.phone,
+      attendance_rate: 100,
+      status: "active",
+    }));
+
+    setStudents((prev) => [...newItems, ...prev]);
+  };
+
   function handleDelete(s: StudentItem) {
     setStudents((p) => p.filter((x) => x.id !== s.id));
     toast({ title: "Student removed", description: `${s.name} deleted from records.` });
@@ -204,13 +221,32 @@ export default function AdminStudents() {
         subtitle={`${filtered.length} students enrolled · ${classes.length} active classes`}
         actions={
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="border-slate-300 text-slate-700 hover:bg-slate-50 gap-1.5">
-              <Download size={14} />Export
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setBulkModalOpen(true)}
+              className="border-slate-300 text-[#0A2540] hover:bg-slate-50 gap-1.5 font-bold rounded-xl"
+            >
+              <FileSpreadsheet size={15} className="text-emerald-600" />
+              Import CSV / Excel
             </Button>
             <Button
               size="sm"
-              onClick={() => setModal({ open: true })}
-              className="bg-indigo-600 hover:bg-indigo-700 shadow-sm gap-1.5"
+              onClick={() => {
+                setFormData({
+                  firstName: "",
+                  lastName: "",
+                  email: "",
+                  admissionNumber: `ADM/2026/${String(students.length + 1).padStart(3, "0")}`,
+                  className: classes[0] || "Form 1 East",
+                  kcpeMarks: "350",
+                  parentName: "",
+                  parentEmail: "",
+                  parentPhone: "+2547",
+                });
+                setModal({ open: true });
+              }}
+              className="bg-[#0A2540] hover:bg-[#0A2540]/90 text-white shadow-sm gap-1.5 font-bold rounded-xl"
             >
               <Plus size={14} />Add Student
             </Button>
@@ -488,15 +524,23 @@ export default function AdminStudents() {
           </div>
 
           <DialogFooter className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 gap-2">
-            <Button variant="outline" size="sm" onClick={() => setModal({ open: false })} className="border-slate-300">
+            <Button variant="outline" size="sm" onClick={() => setModal({ open: false })} className="border-slate-300 rounded-xl">
               Cancel
             </Button>
-            <Button size="sm" onClick={handleSave} disabled={submitting} className="bg-indigo-600 hover:bg-indigo-700 shadow-sm">
+            <Button size="sm" onClick={handleSave} disabled={submitting} className="bg-[#0A2540] hover:bg-[#0A2540]/90 text-white font-bold rounded-xl shadow-sm">
               {submitting ? "Creating Auth..." : modal.data ? "Save Changes" : "Enroll & Create Auth"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Bulk Upload Modal */}
+      <BulkStudentUploadModal
+        open={bulkModalOpen}
+        onOpenChange={setBulkModalOpen}
+        onImportSuccess={handleBulkImport}
+        isHighSchool={true}
+      />
 
       <Toaster />
     </div>
