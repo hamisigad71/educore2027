@@ -20,6 +20,8 @@ import {
 import OtpVerificationModal from "@/components/auth/OtpVerificationModal";
 import OnboardingVideo from "./onboarding-video";
 import { verifyStudentAdmissionNumber } from "@/lib/api";
+import { notify } from "@/lib/notify";
+
 
 
 
@@ -228,16 +230,16 @@ export default function Login() {
           setLoading(false);
 
           if (!verify.exists) {
-            setAuthError(
-              `Error: Admission number "${admissionNumber}" does not exist in the school register. Kindly contact the school administration or class teacher to be enrolled.`
-            );
+            const errMsg = `Admission number "${admissionNumber}" was not found in the school register. Kindly contact the school administration to be enrolled.`;
+            setAuthError(`Error: ${errMsg}`);
+            notify.error("Enrollment Not Found", errMsg);
             return;
           }
 
           if (verify.alreadyClaimed) {
-            setAuthError(
-              `Notice: Admission number "${admissionNumber}" is already registered. If this is your account, please sign in or use password reset.`
-            );
+            const warnMsg = `Admission number "${admissionNumber}" is already registered. If this is your account, please sign in.`;
+            setAuthError(`Notice: ${warnMsg}`);
+            notify.warning("Already Registered", warnMsg);
             return;
           }
         }
@@ -292,8 +294,10 @@ export default function Login() {
         setLoading(false);
         if (!result.success) {
           setAuthError(result.error || "Authentication failed. Please check credentials.");
+          notify.error("Sign In Failed", result.error || "Please check your email and password.");
           return;
         }
+        notify.success("Welcome back!", `Signed in to ${portal === "highschool" ? "High School" : "Primary School"} portal.`);
         setVideoTarget(targetPath);
         setShowVideoOverlay(true);
       }
@@ -304,6 +308,7 @@ export default function Login() {
         setLoading(false);
         const dept = selected === "staff" ? staffRole : undefined;
         login(selected, portal, dept);
+        notify.success("Welcome back!", `Signed in as ${selected?.toUpperCase()} (${portal === "highschool" ? "High School" : "Primary School"}).`);
         setVideoTarget(targetPath);
         setShowVideoOverlay(true);
       }, 1000);
@@ -333,14 +338,17 @@ export default function Login() {
 
         if (!result.success) {
           setAuthError(result.error || "Registration failed. Please try again.");
+          notify.error("Registration Failed", result.error || "Unable to complete account creation.");
           return;
         }
 
+        notify.success("Account Created Successfully!", "Welcome to EduCore! Setting up your portal access...");
         setVideoTarget(pending.targetPath);
         setShowVideoOverlay(true);
       } catch (e) {
         setLoading(false);
         setAuthError("Unexpected error during registration. Please try again.");
+        notify.error("Error", "Unexpected error during registration. Please try again.");
       }
     }
   }
