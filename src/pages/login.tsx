@@ -138,6 +138,8 @@ export default function Login() {
   const [tscNumber, setTscNumber] = useState("");
   const [employeeNumber, setEmployeeNumber] = useState("");
   const [position, setPosition] = useState("");
+  const [isClassTeacher, setIsClassTeacher] = useState<boolean>(false);
+  const [assignedClass, setAssignedClass] = useState<string>("");
 
   const [authSuccess, setAuthSuccess] = useState<boolean>(false);
   const [showOtpModal, setShowOtpModal] = useState<boolean>(false);
@@ -272,9 +274,15 @@ export default function Login() {
           }
         }
 
-        if (selected === "teacher" && (!tscNumber || !employeeNumber)) {
-          setAuthError("Please provide both TSC Number and Employee Number.");
-          return;
+        if (selected === "teacher") {
+          if (!tscNumber || !employeeNumber) {
+            setAuthError("Please provide both TSC Number and Employee Number.");
+            return;
+          }
+          if (isClassTeacher && !assignedClass.trim()) {
+            setAuthError("Please specify which Class / Stream you manage as Class Teacher.");
+            return;
+          }
         }
 
         if (selected === "staff" && (!employeeNumber || !position)) {
@@ -293,6 +301,8 @@ export default function Login() {
             selected === "teacher" || selected === "staff"
               ? employeeNumber
               : undefined,
+          isClassTeacher: selected === "teacher" ? isClassTeacher : undefined,
+          assignedClass: selected === "teacher" && isClassTeacher ? assignedClass.trim() : undefined,
           position: selected === "staff" ? position : undefined,
           schoolName: schoolName || undefined,
           joinDate: joinDate || undefined,
@@ -326,12 +336,18 @@ export default function Login() {
           return;
         }
 
-        // Store active admission number and school name so Portal personalizes dynamically
+        // Store active admission number, teacher class, and school name so Portal personalizes dynamically
         if (admissionNumber) {
           localStorage.setItem("educore_active_student_adm", admissionNumber.trim());
         }
         if (schoolName) {
           localStorage.setItem("educore_school_name", schoolName.trim());
+        }
+        if (selected === "teacher") {
+          localStorage.setItem("educore_teacher_is_class_teacher", isClassTeacher ? "true" : "false");
+          if (isClassTeacher && assignedClass.trim()) {
+            localStorage.setItem("educore_teacher_class", assignedClass.trim());
+          }
         }
 
         notify.success("Account Created Successfully!", "Welcome to EduCore! Setting up your portal access...");
@@ -1027,33 +1043,98 @@ export default function Login() {
                               initial={{ opacity: 0, y: -8 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -8 }}
-                              className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
+                              className="space-y-4"
                             >
-                              <div className="space-y-1.5">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
-                                  TSC Number
-                                </Label>
-                                <Input
-                                  type="text"
-                                  placeholder="e.g. 543210"
-                                  value={tscNumber}
-                                  onChange={(e) => setTscNumber(e.target.value)}
-                                  className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
-                                />
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                <div className="space-y-1.5">
+                                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                                    TSC Number
+                                  </Label>
+                                  <Input
+                                    type="text"
+                                    placeholder="e.g. 543210"
+                                    value={tscNumber}
+                                    onChange={(e) => setTscNumber(e.target.value)}
+                                    className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                                    Employee Number
+                                  </Label>
+                                  <Input
+                                    type="text"
+                                    placeholder="e.g. EMP-998"
+                                    value={employeeNumber}
+                                    onChange={(e) =>
+                                      setEmployeeNumber(e.target.value)
+                                    }
+                                    className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
+                                  />
+                                </div>
                               </div>
-                              <div className="space-y-1.5">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
-                                  Employee Number
-                                </Label>
-                                <Input
-                                  type="text"
-                                  placeholder="e.g. EMP-998"
-                                  value={employeeNumber}
-                                  onChange={(e) =>
-                                    setEmployeeNumber(e.target.value)
-                                  }
-                                  className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
-                                />
+
+                              {/* Class Teacher Inquiry Card */}
+                              <div className="rounded-2xl border border-sky-100 bg-sky-50/50 p-3.5 sm:p-4 space-y-3 transition-all">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <p className="text-xs font-bold text-slate-800">
+                                      Are you a designated Class Teacher?
+                                    </p>
+                                    <p className="text-[11px] text-slate-500">
+                                      Grants broadsheet upload, attendance, and pastoral oversight for your stream
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200/80 shadow-xs">
+                                    <button
+                                      type="button"
+                                      onClick={() => setIsClassTeacher(false)}
+                                      className={cn(
+                                        "px-2.5 py-1 text-xs font-bold rounded-lg transition-all",
+                                        !isClassTeacher
+                                          ? "bg-slate-100 text-slate-700"
+                                          : "text-slate-400 hover:text-slate-600"
+                                      )}
+                                    >
+                                      No
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setIsClassTeacher(true)}
+                                      className={cn(
+                                        "px-2.5 py-1 text-xs font-bold rounded-lg transition-all",
+                                        isClassTeacher
+                                          ? "bg-sky-600 text-white shadow-xs"
+                                          : "text-slate-400 hover:text-slate-600"
+                                      )}
+                                    >
+                                      Yes
+                                    </button>
+                                  </div>
+                                </div>
+
+                                {isClassTeacher && (
+                                  <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="pt-2 border-t border-sky-100/80 space-y-1.5"
+                                  >
+                                    <Label className="text-[11px] font-bold uppercase tracking-wider text-sky-900 ml-1">
+                                      Assigned Class / Stream Name
+                                    </Label>
+                                    <Input
+                                      type="text"
+                                      placeholder={portal === "highschool" ? "e.g. Form 3 West" : "e.g. Grade 5 Blue"}
+                                      value={assignedClass}
+                                      onChange={(e) => setAssignedClass(e.target.value)}
+                                      className="h-10 px-3.5 text-xs font-bold border-sky-200 rounded-xl focus-visible:ring-2 focus-visible:ring-sky-500/20 focus-visible:border-sky-500 bg-white"
+                                    />
+                                    <p className="text-[10px] text-sky-700 font-medium">
+                                      Tip: Match your school's official class name (e.g. Form 3 West or Grade 5 Blue) to auto-link all enrolled learners.
+                                    </p>
+                                  </motion.div>
+                                )}
                               </div>
                             </motion.div>
                           )}

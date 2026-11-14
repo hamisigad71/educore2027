@@ -187,15 +187,21 @@ export async function getTeacherProfile(userId?: string): Promise<TeacherProfile
       totalStudents: studentCount,
     };
   } catch (e) {
-    console.warn("getTeacherProfile fallback:", e);
-    // In demo/unauthenticated mode, provide a rich mock profile
+    console.warn("getTeacherProfile fallback, reading dynamic teacher session:", e);
+
+    const isClassTeacher = typeof window !== "undefined" && localStorage.getItem("educore_teacher_is_class_teacher") === "true";
+    const customClass = typeof window !== "undefined" ? localStorage.getItem("educore_teacher_class") : null;
+    const teacherName = typeof window !== "undefined" ? (JSON.parse(localStorage.getItem("user") || "{}").name || "Teacher") : "Teacher";
+
+    const assignedClasses = customClass ? [customClass] : ["Grade 5 Blue", "Grade 3 Red"];
+
     return {
-      id: "demo-teacher-001",
-      name: "Mrs. Loveth Wangechi",
-      tscNumber: "TSC/204850",
-      subject: "Mathematics & English",
-      classes: ["Grade 5 Blue", "Grade 3 Red"],
-      totalStudents: 74,
+      id: "teacher-dynamic-001",
+      name: teacherName,
+      tscNumber: typeof window !== "undefined" ? (localStorage.getItem("educore_teacher_tsc") || "TSC/204850") : "TSC/204850",
+      subject: isClassTeacher ? `Class Teacher (${assignedClasses[0]})` : "Subject Specialist",
+      classes: assignedClasses,
+      totalStudents: assignedClasses.length * 35,
     };
   }
 }
@@ -248,14 +254,32 @@ export async function getTeacherStudents(classNames: string[]): Promise<StudentI
       })
       .filter((s) => classNames.includes(s.className));
   } catch (e) {
-    console.warn('getTeacherStudents fallback:', e);
+    console.warn('getTeacherStudents fallback, pulling matching students for classes:', classNames, e);
+
+    // Pull from enrolled 15-student test roster or registered list
+    try {
+      const { TEST_STUDENTS_ROSTER } = await import("./demoSchoolSeed");
+      const matched = TEST_STUDENTS_ROSTER.filter(s => classNames.includes(s.className)).map(s => ({
+        id: s.id,
+        admission_number: s.admission_number,
+        name: s.name,
+        email: `${s.admission_number.toLowerCase().replace(/[^a-z0-9]/g, "")}@student.shule.ke`,
+        className: s.className,
+        kcpeMarks: null,
+        feeStatus: s.feeStatus === "cleared" ? "cleared" : s.feeStatus,
+        totalBilled: s.totalBilled,
+        totalPaid: s.totalPaid,
+        balance: s.balance,
+      }));
+
+      if (matched.length > 0) return matched;
+    } catch (_) {}
+
     return [
-      { id: 's1', admission_number: 'ADM-001', name: 'David A.',    email: 'david@example.com',    className: 'Grade 5 Blue', kcpeMarks: null, feeStatus: 'cleared', totalBilled: 0, totalPaid: 0, balance: 0 },
-      { id: 's2', admission_number: 'ADM-002', name: 'Chloe D.',    email: 'chloe@example.com',    className: 'Grade 5 Blue', kcpeMarks: null, feeStatus: 'partial', totalBilled: 0, totalPaid: 0, balance: 4500 },
-      { id: 's3', admission_number: 'ADM-003', name: 'Alisha M.',   email: 'alisha@example.com',   className: 'Grade 5 Blue', kcpeMarks: null, feeStatus: 'unpaid',  totalBilled: 0, totalPaid: 0, balance: 12000 },
-      { id: 's4', admission_number: 'ADM-004', name: 'Emmanuel R.', email: 'emmanuel@example.com', className: 'Grade 5 Blue', kcpeMarks: null, feeStatus: 'cleared', totalBilled: 0, totalPaid: 0, balance: 0 },
-      { id: 's5', admission_number: 'ADM-005', name: 'Grace M.',    email: 'grace@example.com',    className: 'Grade 5 Blue', kcpeMarks: null, feeStatus: 'cleared', totalBilled: 0, totalPaid: 0, balance: 0 },
-    ].filter(s => classNames.includes(s.className));
+      { id: 's1', admission_number: 'ADM-001', name: 'David A.',    email: 'david@example.com',    className: classNames[0] || 'Grade 5 Blue', kcpeMarks: null, feeStatus: 'cleared', totalBilled: 0, totalPaid: 0, balance: 0 },
+      { id: 's2', admission_number: 'ADM-002', name: 'Chloe D.',    email: 'chloe@example.com',    className: classNames[0] || 'Grade 5 Blue', kcpeMarks: null, feeStatus: 'partial', totalBilled: 0, totalPaid: 0, balance: 4500 },
+      { id: 's3', admission_number: 'ADM-003', name: 'Alisha M.',   email: 'alisha@example.com',   className: classNames[0] || 'Grade 5 Blue', kcpeMarks: null, feeStatus: 'unpaid',  totalBilled: 0, totalPaid: 0, balance: 12000 },
+    ];
   }
 }
 
