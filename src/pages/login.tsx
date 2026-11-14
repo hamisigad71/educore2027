@@ -882,9 +882,9 @@ export default function Login() {
                   <div className="space-y-4 mb-5">
                     {authMode === "signup" && (
                       <>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                            <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
                               First Name
                             </Label>
                             <Input
@@ -892,11 +892,11 @@ export default function Login() {
                               placeholder="John"
                               value={firstName}
                               onChange={(e) => setFirstName(e.target.value)}
-                              className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
+                              className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                            <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
                               Last Name
                             </Label>
                             <Input
@@ -904,13 +904,13 @@ export default function Login() {
                               placeholder="Doe"
                               value={lastName}
                               onChange={(e) => setLastName(e.target.value)}
-                              className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
+                              className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                             />
                           </div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                            <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
                               Phone Number
                             </Label>
                             <Input
@@ -918,11 +918,11 @@ export default function Login() {
                               placeholder="+254 7XX XXX XXX"
                               value={phone}
                               onChange={(e) => setPhone(e.target.value)}
-                              className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
+                              className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                            <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
                               School Code (Optional)
                             </Label>
                             <Input
@@ -930,13 +930,13 @@ export default function Login() {
                               placeholder="BFA-2025"
                               value={schoolCode}
                               onChange={(e) => setSchoolCode(e.target.value)}
-                              className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
+                              className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
                             />
                           </div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                            <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
                               School Name
                             </Label>
                             <Input
@@ -944,18 +944,18 @@ export default function Login() {
                               placeholder="e.g. Alliance High School"
                               value={schoolName}
                               onChange={(e) => setSchoolName(e.target.value)}
-                              className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
+                              className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                            <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
                               Join Date
                             </Label>
                             <Input
                               type="date"
                               value={joinDate}
                               onChange={(e) => setJoinDate(e.target.value)}
-                              className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all text-slate-700 block w-full bg-white"
+                              className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all text-slate-700 block w-full bg-white"
                             />
                           </div>
                         </div>
@@ -967,11 +967,11 @@ export default function Login() {
                               initial={{ opacity: 0, y: -8 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -8 }}
-                              className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
+                              className="grid grid-cols-2 gap-2.5 sm:gap-4"
                             >
                               <div className="space-y-1.5">
                                 <div className="flex items-center justify-between">
-                                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                                  <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
                                     Admission Number
                                   </Label>
                                 </div>
@@ -982,11 +982,11 @@ export default function Login() {
                                   onChange={(e) =>
                                     setAdmissionNumber(e.target.value)
                                   }
-                                  className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
+                                  className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
                                 />
                               </div>
                               <div className="space-y-1.5">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                                <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
                                   Class / Grade
                                 </Label>
                                 <Input
@@ -1000,7 +1000,7 @@ export default function Login() {
                                   onChange={(e) =>
                                     setStudentClass(e.target.value)
                                   }
-                                  className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
+                                  className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                                 />
                               </div>
                             </motion.div>
@@ -1011,12 +1011,12 @@ export default function Login() {
                               initial={{ opacity: 0, y: -8 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -8 }}
-                              className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
+                              className="grid grid-cols-2 gap-2.5 sm:gap-4"
                             >
                               <div className="space-y-1.5">
                                 <div className="flex items-center justify-between">
-                                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
-                                    Student Admission Number
+                                  <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                                    Student Admission
                                   </Label>
                                 </div>
                                 <Input
@@ -1026,12 +1026,12 @@ export default function Login() {
                                   onChange={(e) =>
                                     setAdmissionNumber(e.target.value)
                                   }
-                                  className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
+                                  className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
                                 />
                               </div>
                               <div className="space-y-1.5">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
-                                  Child's Class / Grade
+                                <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                                  Child's Class
                                 </Label>
                                 <Input
                                   type="text"
@@ -1044,7 +1044,7 @@ export default function Login() {
                                   onChange={(e) =>
                                     setStudentClass(e.target.value)
                                   }
-                                  className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
+                                  className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                                 />
                               </div>
                             </motion.div>
@@ -1057,9 +1057,9 @@ export default function Login() {
                               exit={{ opacity: 0, y: -8 }}
                               className="space-y-4"
                             >
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                              <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
                                 <div className="space-y-1.5">
-                                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                                  <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
                                     TSC Number
                                   </Label>
                                   <Input
@@ -1067,11 +1067,11 @@ export default function Login() {
                                     placeholder="e.g. 543210"
                                     value={tscNumber}
                                     onChange={(e) => setTscNumber(e.target.value)}
-                                    className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
+                                    className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                                   />
                                 </div>
                                 <div className="space-y-1.5">
-                                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                                  <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
                                     Employee Number
                                   </Label>
                                   <Input
@@ -1081,7 +1081,7 @@ export default function Login() {
                                     onChange={(e) =>
                                       setEmployeeNumber(e.target.value)
                                     }
-                                    className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
+                                    className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
                                   />
                                 </div>
                               </div>
@@ -1286,10 +1286,10 @@ export default function Login() {
                               initial={{ opacity: 0, y: -8 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -8 }}
-                              className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
+                              className="grid grid-cols-2 gap-2.5 sm:gap-4"
                             >
                               <div className="space-y-1.5">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                                <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
                                   Employee Number
                                 </Label>
                                 <Input
@@ -1299,19 +1299,19 @@ export default function Login() {
                                   onChange={(e) =>
                                     setEmployeeNumber(e.target.value)
                                   }
-                                  className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
+                                  className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all uppercase bg-white"
                                 />
                               </div>
                               <div className="space-y-1.5">
-                                <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                                <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
                                   Position / Title
                                 </Label>
                                 <Input
                                   type="text"
-                                  placeholder="e.g. Accountant, Librarian"
+                                  placeholder="e.g. Accountant"
                                   value={position}
                                   onChange={(e) => setPosition(e.target.value)}
-                                  className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
+                                  className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all bg-white"
                                 />
                               </div>
                             </motion.div>
@@ -1349,14 +1349,14 @@ export default function Login() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
                       <div
                         className={cn(
                           "space-y-1.5",
-                          authMode === "signin" && "sm:col-span-2",
+                          authMode === "signin" && "col-span-2",
                         )}
                       >
-                        <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                        <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
                           {authMode === "signup"
                             ? "Password"
                             : "Password / Access Key"}
@@ -1368,7 +1368,7 @@ export default function Login() {
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
                             key={`pwd-${selected || "custom"}`}
-                            className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 bg-white"
+                            className="h-10 sm:h-11 px-3 sm:px-4 pr-10 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 bg-white"
                           />
                           <button
                             type="button"
@@ -1386,7 +1386,7 @@ export default function Login() {
 
                       {authMode === "signup" && (
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
+                          <Label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
                             Confirm Password
                           </Label>
                           <div className="relative group">
@@ -1397,7 +1397,7 @@ export default function Login() {
                               onChange={(e) =>
                                 setConfirmPasswordInput(e.target.value)
                               }
-                              className="h-11 px-4 text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 bg-white"
+                              className="h-10 sm:h-11 px-3 sm:px-4 text-xs sm:text-[13.5px] border-slate-200/90 rounded-xl focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 bg-white"
                             />
                           </div>
                         </div>
