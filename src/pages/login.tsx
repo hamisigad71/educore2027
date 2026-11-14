@@ -31,6 +31,8 @@ import {
   UserCog,
   Crown,
   Check,
+  ChevronDown,
+  X,
 } from "lucide-react";
 import OtpVerificationModal from "@/components/auth/OtpVerificationModal";
 import OnboardingVideo from "./onboarding-video";
@@ -141,6 +143,7 @@ export default function Login() {
   const [isClassTeacher, setIsClassTeacher] = useState<boolean>(false);
   const [assignedClass, setAssignedClass] = useState<string>("");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+  const [isSubjectDropdownOpen, setIsSubjectDropdownOpen] = useState<boolean>(false);
 
   const [authSuccess, setAuthSuccess] = useState<boolean>(false);
   const [showOtpModal, setShowOtpModal] = useState<boolean>(false);
@@ -1083,66 +1086,133 @@ export default function Login() {
                                 </div>
                               </div>
 
-                              {/* Teaching Subjects Multi-Select */}
-                              <div className="space-y-2">
+                              {/* Teaching Subjects Dropdown Multi-Select */}
+                              <div className="space-y-1.5 relative">
                                 <div className="flex items-center justify-between">
                                   <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">
-                                    Teaching Subjects / Learning Areas (Select All That Apply)
+                                    Teaching Subjects / Learning Areas
                                   </Label>
-                                  <span className="text-[10px] text-sky-600 font-bold">
-                                    {selectedSubjects.length} selected
-                                  </span>
+                                  {selectedSubjects.length > 0 && (
+                                    <span className="text-[10px] text-sky-600 font-bold bg-sky-50 px-2 py-0.5 rounded-full border border-sky-100">
+                                      {selectedSubjects.length} selected
+                                    </span>
+                                  )}
                                 </div>
-                                
-                                <div className="flex flex-wrap gap-1.5 p-3 rounded-2xl border border-slate-200 bg-white max-h-36 overflow-y-auto">
-                                  {(portal === "highschool" ? [
-                                    "Mathematics",
-                                    "English",
-                                    "Kiswahili",
-                                    "Chemistry",
-                                    "Biology",
-                                    "Physics",
-                                    "History",
-                                    "Geography",
-                                    "CRE",
-                                    "Business Studies",
-                                    "Agriculture"
-                                  ] : [
-                                    "Mathematics Activities",
-                                    "English Language Activities",
-                                    "Kiswahili Language Activities",
-                                    "Science & Technology",
-                                    "Social Studies & Citizenship",
-                                    "Agriculture & Nutrition",
-                                    "Creative Arts & Sports"
-                                  ]).map((subj) => {
-                                    const isChosen = selectedSubjects.includes(subj);
-                                    return (
-                                      <button
-                                        key={subj}
-                                        type="button"
-                                        onClick={() => {
-                                          if (isChosen) {
+
+                                {/* Custom Dropdown Trigger */}
+                                <div
+                                  onClick={() => setIsSubjectDropdownOpen((prev) => !prev)}
+                                  className={cn(
+                                    "min-h-11 px-3.5 py-2 border rounded-xl bg-white cursor-pointer transition-all flex items-center justify-between gap-2 select-none shadow-xs",
+                                    isSubjectDropdownOpen
+                                      ? "border-sky-500 ring-2 ring-sky-100"
+                                      : "border-slate-200 hover:border-slate-300"
+                                  )}
+                                >
+                                  <div className="flex flex-wrap gap-1.5 items-center flex-1">
+                                    {selectedSubjects.length === 0 ? (
+                                      <span className="text-[13px] text-slate-400 font-normal">
+                                        Select teaching subjects / learning areas...
+                                      </span>
+                                    ) : (
+                                      selectedSubjects.map((subj) => (
+                                        <span
+                                          key={subj}
+                                          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-sky-50 text-sky-800 border border-sky-200 text-xs font-semibold"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
                                             setSelectedSubjects((prev) => prev.filter((s) => s !== subj));
-                                          } else {
-                                            setSelectedSubjects((prev) => [...prev, subj]);
-                                          }
-                                        }}
-                                        className={cn(
-                                          "px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border flex items-center gap-1.5",
-                                          isChosen
-                                            ? "bg-[#0A2540] border-[#0A2540] text-white shadow-xs"
-                                            : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
-                                        )}
-                                      >
-                                        {isChosen && <Check size={12} className="text-emerald-400 stroke-[3]" />}
-                                        {subj}
-                                      </button>
-                                    );
-                                  })}
+                                          }}
+                                        >
+                                          {subj}
+                                          <X size={11} className="hover:text-red-500 transition-colors" />
+                                        </span>
+                                      ))
+                                    )}
+                                  </div>
+                                  <ChevronDown
+                                    size={16}
+                                    className={cn(
+                                      "text-slate-400 transition-transform duration-200 shrink-0",
+                                      isSubjectDropdownOpen && "rotate-180 text-sky-600"
+                                    )}
+                                  />
                                 </div>
+
+                                {/* Dropdown Menu Options */}
+                                {isSubjectDropdownOpen && (
+                                  <div className="absolute z-30 left-0 right-0 mt-1.5 p-2 bg-white rounded-xl border border-slate-200 shadow-xl max-h-56 overflow-y-auto space-y-1">
+                                    <div className="px-2 py-1 flex items-center justify-between text-[11px] text-slate-400 font-semibold border-b border-slate-100 mb-1">
+                                      <span>Select all subjects you teach</span>
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setIsSubjectDropdownOpen(false);
+                                        }}
+                                        className="text-sky-600 hover:text-sky-700 font-bold"
+                                      >
+                                        Done
+                                      </button>
+                                    </div>
+                                    {(portal === "highschool" ? [
+                                      "Mathematics",
+                                      "English",
+                                      "Kiswahili",
+                                      "Chemistry",
+                                      "Biology",
+                                      "Physics",
+                                      "History",
+                                      "Geography",
+                                      "CRE",
+                                      "Business Studies",
+                                      "Agriculture"
+                                    ] : [
+                                      "Mathematics Activities",
+                                      "English Language Activities",
+                                      "Kiswahili Language Activities",
+                                      "Science & Technology",
+                                      "Social Studies & Citizenship",
+                                      "Agriculture & Nutrition",
+                                      "Creative Arts & Sports"
+                                    ]).map((subj) => {
+                                      const isChosen = selectedSubjects.includes(subj);
+                                      return (
+                                        <div
+                                          key={subj}
+                                          onClick={() => {
+                                            if (isChosen) {
+                                              setSelectedSubjects((prev) => prev.filter((s) => s !== subj));
+                                            } else {
+                                              setSelectedSubjects((prev) => [...prev, subj]);
+                                            }
+                                          }}
+                                          className={cn(
+                                            "flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-colors",
+                                            isChosen
+                                              ? "bg-sky-50/80 text-sky-900 font-bold"
+                                              : "text-slate-700 hover:bg-slate-50"
+                                          )}
+                                        >
+                                          <span>{subj}</span>
+                                          <div
+                                            className={cn(
+                                              "w-4 h-4 rounded border flex items-center justify-center transition-all",
+                                              isChosen
+                                                ? "bg-[#0A2540] border-[#0A2540] text-white"
+                                                : "border-slate-300 bg-white"
+                                            )}
+                                          >
+                                            {isChosen && <Check size={11} className="stroke-[3]" />}
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+
                                 <p className="text-[10px] text-slate-400 font-medium ml-1">
-                                  Teachers who instruct multiple subjects can select 2 or more areas.
+                                  Click the dropdown to choose 1 or more subjects you teach.
                                 </p>
                               </div>
 
